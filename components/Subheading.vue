@@ -1,0 +1,47 @@
+<template>
+  <div class="subheading">
+    <h1 :class="[colourMode, { smaller }]" class="subheading-content">
+      <slot>Subheading content</slot>
+    </h1>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Subheading',
+  props: {
+    smaller: Boolean
+  },
+  computed: {
+    colourMode () {
+      return this.$store.getters.colourMode
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+.subheading {
+  padding: 0;
+  border-radius: 100px;
+  max-width: 50ch;
+}
+.subheading-content {
+  margin-top: 30px;
+  color: hsla(253, 100%, 94%);
+  font-size: 1.8rem;
+  font-weight: 500;
+  text-align: left;
+  line-height: 2rem;
+  color: hsl(222, 88%, 15%);
+  transition: all 0.2s linear;
+  &.dark {
+    color: hsl(222, 88%, 75%);
+  }
+  &.smaller {
+    font-size: 1rem;
+    text-transform: uppercase;
+  }
+}
+</style>

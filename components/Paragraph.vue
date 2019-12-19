@@ -1,0 +1,50 @@
+<template>
+  <p :class="colourMode" class="paragraph">
+    <slot>Paragraph content</slot>
+  </p>
+</template>
+
+<script>
+export default {
+  name: 'Paragraph',
+  computed: {
+    colourMode () {
+      return this.$store.getters.colourMode
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+.paragraph {
+  color: hsla(253, 100%, 24%);
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: left;
+  line-height: 2rem;
+  max-width: 50ch;
+  color: hsl(222, 5%, 20%);
+  transition: all 0.2s linear;
+  &.dark {
+    color: hsl(222, 10%, 55%);
+     a {
+      color: hsl(352, 52%, 55%);
+      &:hover {
+        color: hsl(352, 52%, 75%);
+      }
+     }
+  }
+}
+ul {
+  list-style: none;
+  padding-left: 10px;
+}
+@media (max-width: 1000px) {
+  .paragraph {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+  }
+}
+</style>

@@ -1,0 +1,52 @@
+// Colour palette for tasteful.
+
+/*
+-- SHADES --
+*/
+
+// ! Reds
+
+// - light
+//  * saturated
+$saturated-red: hsl(0, 86%, 63%);
+$saturated-red-dim: hsl(0, 86%, 23%);
+//  * soft
+$soft-red: hsl(352, 42%, 61%);
+$soft-red-dim: hsl(352, 42%, 31%);
+
+// - dark
+//  * saturated
+$saturated-red-dark: hsl(0, 66%, 73%);
+$saturated-red-dim-dark: hsl(0, 66%, 33%);
+//  * soft
+$soft-red-dark: hsl(352, 45%, 71%);
+$soft-red-dim-dark: hsl(352, 45%, 20%);
+
+// ! Purples
+
+// - light
+//  * saturated
+$saturated-purple: hsl(252, 70%, 56%);
+$saturated-purple-dim: hsl(252, 70%, 16%);
+
+// ! Blacks
+
+// - light
+$deep-black: hsl(0, 0%, 7%);
+$saturated-purple-dim: hsl(252, 70%, 16%);
+
+// ! Sepia
+
+// - light
+$sepia: hsl(16, 90%, 95%);
+
+// - dark
+$sepia-dark: hsl(16, 10%, 15%);
+
+/*
+-- GRADIENTS --
+*/
+
+$tasteful-gradient: -webkit-linear-gradient(45deg, $saturated-red, $saturated-purple);
+// Note: The rgba() function applies opacity to an existing variable.
+$nav-background: linear-gradient(270deg, rgba($saturated-red, 0.2), rgba($saturated-purple, 0.2));
