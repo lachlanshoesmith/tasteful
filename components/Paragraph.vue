@@ -18,7 +18,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .paragraph {
-  color: hsla(253, 100%, 24%);
+  color: hsl(253, 100%, 24%);
   font-size: 1rem;
   font-weight: 400;
   text-align: left;
@@ -28,12 +28,12 @@ export default {
   transition: all 0.2s linear;
   &.dark {
     color: hsl(222, 10%, 55%);
-     a {
+    a {
       color: hsl(352, 52%, 55%);
       &:hover {
         color: hsl(352, 52%, 75%);
       }
-     }
+    }
   }
 }
 ul {

@@ -29,7 +29,7 @@ export default {
 }
 .subheading-content {
   margin-top: 30px;
-  color: hsla(253, 100%, 94%);
+  color: hsl(253, 100%, 94%);
   font-size: 1.8rem;
   font-weight: 500;
   text-align: left;

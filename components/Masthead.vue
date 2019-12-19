@@ -73,7 +73,7 @@ export default {
 }
 
 .masthead-content {
-  color: hsla(253, 100%, 94%);
+  color: hsl(253, 100%, 94%);
   font-size: 1.8rem;
   font-weight: 900;
   text-align: left;

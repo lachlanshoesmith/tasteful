@@ -1,5 +1,8 @@
 <template>
-  <main :class="{ displayingSearchResults: displaySearchResults }" class="search">
+  <main
+    :class="{ displayingSearchResults: displaySearchResults }"
+    class="search"
+  >
     <transition name="fade">
       <modal @closeModal="showModal = false" v-if="showModal">
         <template v-slot:left>
@@ -10,19 +13,27 @@
         <template v-slot:right>
           <paragraph-container>
             <paragraph>
-              tasteful prides itself on featuring an incredible amount of music that's easy to find.
-              The majority of the work, though, is actually done by the awesome folks over at
-              <a href="https://musicbrainz.org/">MusicBrainz</a>, who we donate to as a part of the
-              <nuxt-link :to="{ path: '/donate', hash: '#care-package-container' }">
+              tasteful prides itself on featuring an incredible amount of music
+              that's easy to find. The majority of the work, though, is actually
+              done by the awesome folks over at
+              <a href="https://musicbrainz.org/">MusicBrainz</a>, who we donate
+              to as a part of the
+              <nuxt-link
+                :to="{ path: '/donate', hash: '#care-package-container' }"
+              >
                 Care Package
               </nuxt-link>.
             </paragraph>
             <paragraph>
-              Since MusicBrainz are responsible for the tasteful database, we advise going to <em>them</em> to add
-              new things to the database; we'd rather promote existing great solutions rather than start from scratch. 💜
+              Since MusicBrainz are responsible for the tasteful database, we
+              advise going to <em>them</em> to add new things to the database;
+              we'd rather promote existing great solutions rather than start
+              from scratch. 💜
             </paragraph>
             <paragraph>
-              You can learn about how to contribute <a href="https://musicbrainz.org/doc/How_to_Contribute">here</a>. Thanks!
+              You can learn about how to contribute
+              <a href="https://musicbrainz.org/doc/How_to_Contribute">here</a>.
+              Thanks!
             </paragraph>
           </paragraph-container>
         </template>
@@ -30,7 +41,10 @@
     </transition>
 
     <article-content :class="{ displayingSearchResults: displaySearchResults }">
-      <paragraph-container id="search-container-paragraph-container" always-full>
+      <paragraph-container
+        id="search-container-paragraph-container"
+        always-full
+      >
         <paragraph>
           <masthead v-show="displaySearchResults" centred smaller>
             Search
@@ -103,12 +117,13 @@
         <subheading>Welcome to the tasteful search engine!</subheading>
         <paragraph>
           tasteful prides itself on featuring a search engine that makes sense.
-          If it doesn't make sense to you, it's designed to be customisable to your liking.
+          If it doesn't make sense to you, it's designed to be customisable to
+          your liking.
         </paragraph>
         <paragraph>
           tasteful would not exist without the absolutely incredible
-          <a href="https://musicbrainz.org/">MusicBrainz</a>,
-          and they are also power the backbone of this search engine. As such, much of the
+          <a href="https://musicbrainz.org/">MusicBrainz</a>, and they are also
+          power the backbone of this search engine. As such, much of the
           <nuxt-link to="/donate">
             Care Package donations
           </nuxt-link>
@@ -119,10 +134,11 @@
         <subheading>Why is it so ugly here?</subheading>
         <paragraph>
           This particular page we're sitting on right now is going to change.
-          The reason it looks the way it does is because we plan on integrating the search bar into
-          the navigation bar - like most websites - but there's a few tweaks under the hood that need
-          to be made to make that feasible at this stage. Think of this page as a placeholder. Thanks for
-          your patience! 🤗
+          The reason it looks the way it does is because we plan on integrating
+          the search bar into the navigation bar - like most websites - but
+          there's a few tweaks under the hood that need to be made to make that
+          feasible at this stage. Think of this page as a placeholder. Thanks
+          for your patience! 🤗
         </paragraph>
       </paragraph-container>
     </article-content>
@@ -140,12 +156,23 @@
             <span v-if="result.aliases">
               AKA
               <span v-for="(alias, i) in result.aliases" :key="alias.id">
-                <span v-if="i === result.aliases.length - 1 && result.aliases.length >= 3"> and </span>
+                <span
+                  v-if="
+                    i === result.aliases.length - 1 &&
+                      result.aliases.length >= 3
+                  "
+                >
+                  and
+                </span>
                 <span v-if="alias !== result.name">{{ alias.name }}</span>
                 <span v-if="i !== result.aliases.length - 1">, </span>
               </span>
             </span>
-            <nuxt-link :to="'/artist/' + result.id" :class="colourMode" class="artist-name">
+            <nuxt-link
+              :to="'/artist/' + result.id"
+              :class="colourMode"
+              class="artist-name"
+            >
               {{ result.name }}
             </nuxt-link>
             <div class="tags">
@@ -155,7 +182,14 @@
             </div>
           </div>
           <div v-else class="album-item">
-            <img :src="'https://coverartarchive.org/release/' + result.releases[0].id + '/front'" class="album-art">
+            <img
+              :src="
+                'https://coverartarchive.org/release/' +
+                  result.releases[0].id +
+                  '/front'
+              "
+              class="album-art"
+            >
             <article>
               <p :class="colourMode">
                 {{ result['artist-credit'][0].artist.name }}
@@ -167,7 +201,10 @@
           </div>
         </li>
       </ul>
-      <a v-show="!loading" @click="showModal = !showModal">Can't find what you're looking for?</a>
+      <a
+        v-show="!loading"
+        @click="showModal = !showModal"
+      >Can't find what you're looking for?</a>
     </div>
   </main>
 </template>
@@ -238,7 +275,10 @@ export default {
       this.displaySearchResults = true
       lottie.play()
 
-      if (this.specificSearch && (!this.lastSearchWasSpecific || !this.searchRequest.includes('"'))) {
+      if (
+        this.specificSearch &&
+        (!this.lastSearchWasSpecific || !this.searchRequest.includes('"'))
+      ) {
         this.searchRequest = '"' + this.searchRequest + '"'
         this.lastSearchWasSpecific = true
       } else if (!this.specificSearch) {
@@ -248,14 +288,26 @@ export default {
 
       if (this.searchType === 'artists') {
         if (this.selectedRegion === 'All regions') {
-          this.axios.get('https://musicbrainz.org/ws/2/artist/?query=artist:' + this.searchRequest + '?inc=url-rels+genres&fmt=json')
+          this.$axios
+            .get(
+              'https://musicbrainz.org/ws/2/artist/?query=artist:' +
+                this.searchRequest +
+                '?inc=url-rels+genres&fmt=json'
+            )
             .then((res) => {
               this.processData(res, false)
               this.loading = false
               lottie.stop()
             })
         } else {
-          this.axios.get('https://musicbrainz.org/ws/2/artist/?query=artist:' + this.searchRequest + '+AND+country:' + countryList.getCode(this.selectedRegion) + '?inc=url-rels+genres&fmt=json')
+          this.$axios
+            .get(
+              'https://musicbrainz.org/ws/2/artist/?query=artist:' +
+                this.searchRequest +
+                '+AND+country:' +
+                countryList.getCode(this.selectedRegion) +
+                '?inc=url-rels+genres&fmt=json'
+            )
             .then((res) => {
               this.processData(res, false)
               this.loading = false
@@ -263,7 +315,12 @@ export default {
             })
         }
       } else {
-        this.axios.get('https://musicbrainz.org/ws/2/release-group/?query=release:' + this.searchRequest + '?inc=genres&inc=recordings&fmt=json')
+        this.$axios
+          .get(
+            'https://musicbrainz.org/ws/2/release-group/?query=release:' +
+              this.searchRequest +
+              '?inc=genres&inc=recordings&fmt=json'
+          )
           .then((res) => {
             this.processData(res, true)
             this.loading = false
@@ -330,7 +387,7 @@ export default {
 #loading-container {
   width: 64px;
   height: 64px;
-  display:  none;
+  display: none;
   &.loading {
     display: block;
   }
@@ -379,24 +436,24 @@ export default {
 }
 
 .radio {
-    appearance: none;
-    display: inline-block;
-    position: relative;
-    background-color: hsl(352, 42%, 61%);
-    color: #666;
-    height: 20px;
-    width: 20px;
-    border: 0;
-    border-radius: 5px;
-    margin-right: 7px;
-    outline: none;
-    transition: all 0.2s linear;
-    &:hover {
-      cursor: pointer;
-    }
-    &:checked {
-      background: hsl(352, 72%, 35%);
-    }
+  appearance: none;
+  display: inline-block;
+  position: relative;
+  background-color: hsl(352, 42%, 61%);
+  color: #666;
+  height: 20px;
+  width: 20px;
+  border: 0;
+  border-radius: 5px;
+  margin-right: 7px;
+  outline: none;
+  transition: all 0.2s linear;
+  &:hover {
+    cursor: pointer;
+  }
+  &:checked {
+    background: hsl(352, 72%, 35%);
+  }
 }
 
 #refine-radios-container {
@@ -434,11 +491,13 @@ export default {
   display: flex;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: all opacity 0.2s;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
