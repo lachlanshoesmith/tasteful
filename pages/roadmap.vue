@@ -14,8 +14,7 @@
         </paragraph>
         <paragraph>
           ⚠️
-          <strong>Note:</strong> None of this is definitive. These time
-          estimates may be pushed back or even completed earlier.
+          <strong>Note:</strong> None of this is definitive. These stages may be pushed back, rearranged, and so on.
         </paragraph>
       </paragraph-container>
       <paragraph-container>
@@ -24,23 +23,23 @@
           <ul>
             <li>
               ✅ ✨
-              <strong>Early October&nbsp;</strong>
+              <strong>Stage 0.1&nbsp;</strong>
               <a href="https://tasteful.reviews">tasteful.reviews</a> goes live.
             </li>
             <li>
               ✅ ⌨️
-              <strong>Late October</strong> Preregistration opens, permitting
+              <strong>Stage 0.2</strong> Preregistration opens, permitting
               users to reserve a username and receive a special badge upon
               launch.
             </li>
             <li>
               🕵️‍♀️
-              <strong>November</strong> Album search functionality opens to the
+              <strong>Stage 0.3</strong> Album search functionality opens to the
               public.
             </li>
             <li>
               📊
-              <strong>December</strong> Chartmaking support will be introduced
+              <strong>Stage 0.4</strong> Chartmaking support will be introduced
               in an alpha stage.
             </li>
           </ul>
@@ -52,17 +51,17 @@
           <ul>
             <li>
               ⭐
-              <strong>January</strong>
+              <strong>Stage 0.5</strong>
               Ratings are completed. Hell Yeah!
             </li>
             <li>
               📝
-              <strong>February</strong> Reviews are completed. Hell Yeah: The
+              <strong>Stage 0.6</strong> Reviews are completed. Hell Yeah: The
               Sequel! Importing ratings and reviews will also be implemented at this time.
             </li>
             <li>
               🥳
-              <strong>March</strong> tasteful opens to the general public in a
+              <strong>Stage 0.7</strong> tasteful opens to the general public in a
               beta stage, donations open.
             </li>
           </ul>
@@ -74,11 +73,11 @@
           <ul>
             <li>
               ✍️
-              <strong>April</strong> Blogs are completed and open to the public.
+              <strong>Stage 0.8</strong> Blogs are completed and open to the public.
             </li>
             <li>
               🔥
-              <strong>May</strong> tasteful is officially fully released. It's
+              <strong>Stage 1.0</strong> tasteful is officially fully released. It's
               not done, but it's ready for primetime!
             </li>
           </ul>
