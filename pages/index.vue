@@ -96,7 +96,7 @@ export default {
   },
   mounted () {
     this.handleResize()
-    this.colourMode = this.$store.getters.colourMode
+    this.colourMode = this.$store.state.theme.colourMode
   },
   methods: {
     onSignup () {
@@ -300,5 +300,12 @@ footer {
     display: flex;
     justify-content: center;
   }
+}
+
+.resize-observer {
+  width: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
 }
 </style>

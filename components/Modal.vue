@@ -22,7 +22,7 @@ export default {
   },
   computed: {
     colourMode () {
-      return this.$store.getters.colourMode
+      return this.$store.state.theme.colourMode
     }
   },
   methods: {

@@ -7,9 +7,3 @@ export const mutations = {
     state.colourMode = payload
   }
 }
-
-export const getters = {
-  colourMode (state) {
-    return state.colourMode
-  }
-}

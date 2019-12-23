@@ -9,7 +9,7 @@ export default {
   name: 'Paragraph',
   computed: {
     colourMode () {
-      return this.$store.getters.colourMode
+      return this.$store.state.theme.colourMode
     }
   }
 }

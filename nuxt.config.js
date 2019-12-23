@@ -23,12 +23,12 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    '~/assets/scss/palette.scss'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~/plugins/vue-resize'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -49,7 +49,9 @@ module.exports = {
     '@nuxtjs/style-resources'
   ],
   styleResources: {
-    scss: []
+    // scss: [
+    //   '~/assets/scss/palette.scss'
+    // ]
   },
   /*
   ** Axios module configuration
