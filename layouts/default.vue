@@ -16,9 +16,9 @@
         </template>
       </modal>
     </transition>
-    <!-- <nav class="maintenance">
+    <nav class="maintenance">
       <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
-    </nav> -->
+    </nav>
     <nav
       id="navigation-bar"
       :class="[{
@@ -95,7 +95,7 @@ export default {
   },
   mounted () {
     window.addEventListener('scroll', this.onScroll)
-    this.colourMode = this.$store.getters.colourMode
+    this.colourMode = this.$store.state.theme.colourMode
   },
   beforeDestroy () {
     window.removeEventListener('scroll', this.onScroll)
@@ -121,10 +121,10 @@ export default {
     },
     toggleColourScheme () {
       if (this.colourMode === 'light') {
-        this.$store.commit('setColourMode', 'dark')
+        this.$store.commit('theme/setColourMode', 'dark')
         this.colourMode = 'dark'
       } else if (this.colourMode === 'dark') {
-        this.$store.commit('setColourMode', 'light')
+        this.$store.commit('theme/setColourMode', 'light')
         this.colourMode = 'light'
       }
     }
