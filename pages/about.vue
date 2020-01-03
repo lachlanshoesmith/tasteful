@@ -25,32 +25,32 @@
         <paragraph>
           Having said that, here's some reasons as to why you
           <em>should</em> consider trying us out:
-          <ul>
-            <li>🦉 Dark mode.</li>
-            <li>📝 Blog-like profiles.</li>
-            <li>👨‍👩‍👧 A tight-knit, small community.</li>
-            <li>🎨 An intuitive, vibrant interface.</li>
-            <li>🕵️‍♀️ An easy-to-use but powerful search engine.</li>
-            <li>
-              📊 Built-in chart making, akin to 'topsters'.
-              <ul>
-                <li>
-                  🤖 This process can be automated, and may use data from your
-                  ratings.
-                </li>
-              </ul>
-            </li>
-            <li>
-              🎼 Comprehensive databases.
-              <ul>
-                <li>
-                  👩‍🏫 tasteful's music database stems from pre-existing sources,
-                  unlike similar solutions.
-                </li>
-              </ul>
-            </li>
-          </ul>
         </paragraph>
+        <list>
+          <li>🦉 Dark mode.</li>
+          <li>📝 Blog-like profiles.</li>
+          <li>👨‍👩‍👧 A tight-knit, small community.</li>
+          <li>🎨 An intuitive, vibrant interface.</li>
+          <li>🕵️‍♀️ An easy-to-use but powerful search engine.</li>
+          <li>
+            📊 Built-in chart making, akin to 'topsters'.
+            <list>
+              <li>
+                🤖 This process can be automated, and may use data from your
+                ratings.
+              </li>
+            </list>
+          </li>
+          <li>
+            🎼 Comprehensive databases.
+            <list>
+              <li>
+                👩‍🏫 tasteful's music database stems from pre-existing sources,
+                unlike similar solutions.
+              </li>
+            </list>
+          </li>
+        </list>
       </paragraph-container>
       <paragraph-container>
         <subheading>
@@ -124,22 +124,27 @@
           music. Here are some of the main people involved in the
           project:
         </paragraph>
+        <list>
+          <li>
+            👩‍💻 <a href="https://twitter.com/lachlantula">Lachlan</a> -
+            development, designing
+          </li>
+          <li>
+            👩‍🎨 <a href="https://twitter.com/kolbbbbb">Kol</a> - icon design
+          </li>
+          <li>
+            🤗 Everyone who follows
+            <a
+              href="https://twitter.com/tastefulreviews"
+            >our Twitter account!</a>
+          </li>
+        </list>
         <paragraph>
-          <ul>
-            <li>
-              <a href="https://twitter.com/lachlantula">Lachlan</a> -
-              development, designing
-            </li>
-            <li>
-              <a href="https://twitter.com/kolbbbbb">Kol</a> - icon design
-            </li>
-            <li>
-              Everyone who follows
-              <a
-                href="https://twitter.com/tastefulreviews"
-              >our Twitter account!</a>
-            </li>
-          </ul>
+          tasteful was developed on the land of the Darug people of modern-day Sydney, who are the traditional custodians and the Traditional Owners of the land on which we
+          developed this software, who we acknowledge with great respect. We also pay our respects to Elders past and present, and acknowledge the Aboriginal people for their custodianship of this land,
+          who have long before us lived, loved, and raised their children on this land.
+          <br>
+          Please be aware that tasteful may feature the names, images, and voices of deceased people.
         </paragraph>
       </paragraph-container>
     </article-content>
@@ -153,6 +158,7 @@ import subheading from '~/components/Subheading.vue'
 import articleContent from '~/components/ArticleContent.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
+import list from '~/components/List.vue'
 
 export default {
   name: 'About',
@@ -161,7 +167,8 @@ export default {
     subheading,
     articleContent,
     paragraph,
-    paragraphContainer
+    paragraphContainer,
+    list
   },
   computed: {
     colourMode () {

@@ -1,7 +1,7 @@
 <template>
   <main class="about">
     <transition name="fade">
-      <modal @closeModal="showModal = false" v-if="showModal">
+      <modal v-if="showModal" @closeModal="showModal = false">
         <template v-slot:left>
           <masthead centred>
             Donation destination

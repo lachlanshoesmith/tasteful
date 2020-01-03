@@ -1,12 +1,12 @@
 <template>
-  <p :class="colourMode" class="paragraph">
-    <slot>Paragraph content</slot>
-  </p>
+  <ul :class="colourMode" class="list">
+    <slot>List content</slot>
+  </ul>
 </template>
 
 <script>
 export default {
-  name: 'Paragraph',
+  name: 'List',
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
@@ -17,7 +17,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.paragraph {
+.list {
   color: hsl(253, 100%, 24%);
   font-size: 1rem;
   font-weight: 400;
@@ -26,6 +26,8 @@ export default {
   max-width: 50ch;
   color: hsl(222, 5%, 20%);
   transition: all 0.2s linear;
+  list-style: none;
+  padding-left: 10px;
   &.dark {
     color: hsl(222, 10%, 55%);
     a {
@@ -36,8 +38,9 @@ export default {
     }
   }
 }
+
 @media (max-width: 1000px) {
-  .paragraph {
+  .list {
     margin-left: auto;
     margin-right: auto;
     text-align: justify;

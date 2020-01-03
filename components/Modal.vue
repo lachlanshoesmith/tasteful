@@ -2,7 +2,7 @@
   <div :class="colourMode" class="modal-container">
     <div :class="colourMode" class="modal">
       <div id="modal-content-left" class="modal-content">
-        <close-icon :class="colourMode" @click="closeModal" class="large-close-icon" title="Close" />
+        <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
         <slot name="left" />
       </div>
       <div id="modal-content-right" class="modal-content">
@@ -87,10 +87,6 @@ export default {
 #modal-content-left {
   width: 40%;
   padding-top: calc(5% - 12px);
-  .paragraph  {
-    font-size: 0.8rem;
-    line-height: 1.5;
-  }
 }
 
 #modal-content-right {

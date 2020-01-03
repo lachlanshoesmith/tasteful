@@ -4,7 +4,7 @@
     class="search"
   >
     <transition name="fade">
-      <modal @closeModal="showModal = false" v-if="showModal">
+      <modal v-if="showModal" @closeModal="showModal = false">
         <template v-slot:left>
           <masthead centred smaller>
             Adding to the database
@@ -52,13 +52,13 @@
           <div id="search-container" :class="colourMode">
             <input
               id="search-box"
+              v-model="searchRequest"
               :class="colourMode"
               :placeholder="'Search ' + searchType + '...'"
-              v-model="searchRequest"
               type="text"
               name="search"
             >
-            <button id="search-button" @click="search" type="submit">
+            <button id="search-button" type="submit" @click="search">
               <magnify-icon title="Search" />
             </button>
           </div>

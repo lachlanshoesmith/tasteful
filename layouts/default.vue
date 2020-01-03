@@ -1,17 +1,30 @@
 <template>
   <div id="app" :class="colourMode">
     <transition name="fade">
-      <modal @closeModal="showModal = false" v-if="showModal">
+      <modal v-if="showModal" @closeModal="showModal = false">
         <template v-slot:left>
-          <subheading>Thanks for joining us!</subheading>
+          <subheading>Welcome back!</subheading>
+          <paragraph>
+            It's always a pleasure to see you.
+          </paragraph>
         </template>
         <template v-slot:right>
           <masthead centred smaller fit-width>
             Log in
           </masthead>
           <form>
-            <input id="username-input" type="text" name="username-input" placeholder="Hello">
+            <text-input name="email-input" placeholder="Email">
+              <template v-slot:icon>
+                <email-icon title="Email" />
+              </template>
+            </text-input>
+            <text-input name="password-input" placeholder="Password" password>
+              <template v-slot:icon>
+                <key-icon title="Password" />
+              </template>
+            </text-input>
           </form>
+          <br>
           <a class="soft">Don't have an account yet?</a>
         </template>
       </modal>
@@ -57,6 +70,7 @@
 </template>
 
 <script>
+import EmailIcon from 'vue-material-design-icons/Email.vue'
 import HomeIcon from 'vue-material-design-icons/Home.vue'
 import InfoIcon from 'vue-material-design-icons/Information.vue'
 import TimelapseIcon from 'vue-material-design-icons/Timelapse.vue'
@@ -66,9 +80,12 @@ import KeyIcon from 'vue-material-design-icons/Key.vue'
 import Modal from '@/components/Modal.vue'
 import Masthead from '@/components/Masthead.vue'
 import Subheading from '@/components/Subheading.vue'
+import Paragraph from '@/components/Paragraph.vue'
+import TextInput from '@/components/TextInput.vue'
 
 export default {
   components: {
+    EmailIcon,
     HomeIcon,
     InfoIcon,
     TimelapseIcon,
@@ -77,7 +94,10 @@ export default {
     KeyIcon,
     Modal,
     Masthead,
-    Subheading
+    Subheading,
+    Paragraph,
+    TextInput
+
   },
   data () {
     return {
@@ -90,7 +110,12 @@ export default {
   },
   watch: {
     $route (to, from) {
-      document.title = 'tasteful | ' + to.meta.title || 'tasteful'
+      const routeName = this.$route.name
+      if (routeName === 'index') {
+        document.title = 'tasteful'
+      } else {
+        document.title = 'tasteful | ' + routeName
+      }
     }
   },
   mounted () {

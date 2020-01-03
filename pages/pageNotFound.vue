@@ -3,7 +3,7 @@
     <main>
       <resize-observer @notify="handleResize" />
       <masthead
-        :fullWidth="isFullWidth"
+        :full-width="isFullWidth"
       >
         There's nothing here. Sorry if you expected otherwise.
       </masthead>

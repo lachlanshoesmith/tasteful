@@ -1,6 +1,6 @@
 <template>
   <div :class="[{ smaller, fitWidth, fullWidth }, colourMode]" class="masthead">
-    <h1 :class="{ centred }" class="masthead-content">
+    <h1 :class="[{ centred, fitWidth }]" class="masthead-content">
       <slot>Masthead content</slot>
     </h1>
   </div>
@@ -71,7 +71,11 @@ export default {
     }
   }
 }
-
+.fitWidth {
+  display: table;
+  padding: 20px;
+  min-width: 150px;
+}
 .masthead-content {
   color: hsl(253, 100%, 94%);
   font-size: 1.8rem;
@@ -80,18 +84,18 @@ export default {
   margin-left: 5%;
   margin-right: 5%;
   line-height: 2rem;
+  &.fitWidth {
+    padding: 0;
+    margin-left: 0;
+    margin-right: 0;
+    white-space: nowrap;
+  }
 }
 .centred {
   text-align: center;
 }
 .smaller {
   padding: 5px;
-}
-.fitWidth {
-  padding-left: 5%;
-  padding-right: 5%;
-  width: fit-content;
-  white-space: nowrap;
 }
 .fullWidth {
   max-width: 50vw;
