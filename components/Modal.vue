@@ -71,6 +71,7 @@ export default {
     width: 50vw;
     height: 50vh;
     border-radius: 50px;
+    transition: all 0.2s linear;
   }
   &.dark {
     background: hsl(0, 0%, 10%);
@@ -117,4 +118,32 @@ export default {
     }
   }
 }
+
+@media (max-width: 1000px) {
+  .modal {
+    width: 90vw;
+    &:before {
+      width: 90vw;
+    }
+  }
+  #modal-content-left {
+    width: 0%;
+    z-index: 5;
+    margin-top: 20px;
+    .subheading, .paragraph {
+      display: none;
+    }
+  }
+  #modal-content-right {
+    width: 100%;
+    padding-left: 0%;
+    text-align: center;
+    .text-input-container {
+      width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}
+
 </style>
