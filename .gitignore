@@ -91,4 +91,12 @@ sw.*
 *.swp
 
 # Firebase
-.firebase/
+.firebase
+firebase-debug.log
+
+# VS Code
+.vscode
+
+# Yarn lockfile
+yarn.lock
+

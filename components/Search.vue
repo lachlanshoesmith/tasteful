@@ -3,104 +3,31 @@
     :class="{ displayingSearchResults: displaySearchResults }"
     class="search"
   >
-    <transition name="fade">
-      <modal v-if="showModal" @closeModal="showModal = false">
-        <template v-slot:left>
-          <masthead centred smaller>
-            Adding to the database
-          </masthead>
-        </template>
-        <template v-slot:right>
-          <paragraph-container>
-            <paragraph>
-              tasteful prides itself on featuring an incredible amount of music
-              that's easy to find. The majority of the work, though, is actually
-              done by the awesome folks over at
-              <a href="https://musicbrainz.org/">MusicBrainz</a>, who we donate
-              to as a part of the
-              <nuxt-link
-                :to="{ path: '/donate', hash: '#care-package-container' }"
-              >
-                Care Package
-              </nuxt-link>.
-            </paragraph>
-            <paragraph>
-              Since MusicBrainz are responsible for the tasteful database, we
-              advise going to <em>them</em> to add new things to the database;
-              we'd rather promote existing great solutions rather than start
-              from scratch. 💜
-            </paragraph>
-            <paragraph>
-              You can learn about how to contribute
-              <a href="https://musicbrainz.org/doc/How_to_Contribute">here</a>.
-              Thanks!
-            </paragraph>
-          </paragraph-container>
-        </template>
-      </modal>
-    </transition>
-    <div id="search-container" :class="{ displayingSearchResults: displaySearchResults, colourMode }">
-      <input
-        id="search-box"
-        v-model="searchRequest"
-        :class="colourMode"
-        :placeholder="'Search ' + searchType + '...'"
-        type="text"
-        name="search"
-      >
-      <button id="search-button" type="submit" @click="search">
-        <magnify-icon title="Search" />
-      </button>
-    </div>
-    <!-- <subheading smaller>
-            Refine
-          </subheading>
-          <form id="refine">
-            <div id="refine-radios-container">
-              <input
-                id="artists-radio"
-                v-model="searchType"
-                class="radio"
-                type="radio"
-                name="search-type"
-                value="artists"
-                checked
-              >
-              <label for="artists-radio">Artists</label>
-              <input
-                id="albums-radio"
-                v-model="searchType"
-                class="radio"
-                type="radio"
-                name="search-type"
-                value="albums"
-              >
-              <label for="album-radios">Albums</label>
-            </div>
-            <div v-if="searchType === 'artists'">
-              <label for="region">Region</label>
-              <select id="region-select" v-model="selectedRegion" name="region">
-                <option value="All regions">
-                  All regions
-                </option>
-                <option v-for="country in listOfCountries" :key="country.id">
-                  {{ country }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label for="specific-check">Specific search</label>
-              <input
-                id="specific-search-check"
-                v-model="specificSearch"
-                class="checkbox"
-                type="checkbox"
-                name="specific-search"
-                value="specific"
-                checked
-              >
-            </div>
-          </form> -->
+    <paragraph :class="{ displayingSearchResults: displaySearchResults }">
+      <div id="search-container" :class="colourMode">
+        <input
+          id="search-box"
+          v-model="searchRequest"
+          :class="colourMode"
+          :placeholder="'Search...'"
+          type="text"
+          name="search"
+        >
+        <nuxt-link
+          id="settings-button"
+          to="/search"
+          class="icon-button"
+          :class="colourMode"
+          @click.native="$emit('close-search-modal')"
+          @click="search"
+        >
+          <settings-icon title="Settings" />
+        </nuxt-link>
+        <button id="search-button" class="icon-button" type="submit" @click="search">
+          <magnify-icon title="Search" />
+        </button>
+      </div>
+    </paragraph>
     <div v-show="displaySearchResults" class="search-results">
       <p v-if="amountOfArtists >= 0">
         {{ amountOfArtists }}
@@ -172,28 +99,20 @@
 // @ is an alias to /src
 import lottie from 'lottie-web'
 import countryList from 'country-list'
+import SettingsIcon from 'vue-material-design-icons/Settings.vue'
 import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
-import masthead from '~/components/Masthead.vue'
-// import subheading from '~/components/Subheading.vue'
-// import articleContent from '~/components/ArticleContent.vue'
-import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
 import tag from '~/components/Tag.vue'
-import modal from '~/components/Modal.vue'
 
 import loadingData from '~/assets/loading.json'
 
 export default {
   name: 'Search',
   components: {
-    masthead,
-    // subheading,
-    // articleContent,
     paragraph,
-    paragraphContainer,
     tag,
-    MagnifyIcon,
-    modal
+    SettingsIcon,
+    MagnifyIcon
   },
   data () {
     return {
@@ -216,6 +135,8 @@ export default {
     }
   },
   mounted () {
+    // focus search
+    document.getElementById('search-box').focus()
     // render animations
     lottie.loadAnimation({
       container: document.getElementById('loading-container'),
@@ -303,13 +224,11 @@ export default {
 
 <style lang="scss" scoped>
 .search {
-  display: flex;
-  position: absolute;
-  padding: 0;
-  margin: 0;
-  top: 0;
-  bottom: 0;
-  width: 100%;
+  transition: all 0.3s linear;
+  &.displayingSearchResults {
+    width: fit-content;
+    height: 100%;
+  }
 }
 
 .album-art {
@@ -350,15 +269,17 @@ export default {
 
 #search-container {
   display: flex;
-  box-shadow: 0px -4px 20px hsl(252, 5%, 70%);
-  transition: all 0.2s linear;
-  height: calc(100% - 10px);
+  background: hsl(252, 15%, 90%);
+  box-shadow: 0px 0px 10px hsl(252, 5%, 70%);
+  border-radius: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
   width: 100%;
+  transition: all 0.1s linear;
   &.dark {
-    box-shadow: 0px -4px 10px hsl(252, 5%, 10%);
-  }
-  &.displayingSearchResults {
-    width: 70%;
+    background: hsl(252, 15%, 10%);
+    box-shadow: 0px 0px 10px hsl(252, 5%, 10%);
   }
 }
 
@@ -367,28 +288,41 @@ export default {
   background: none;
   border: none;
   padding: 5px;
-  padding-left: 5%;
-  padding-right: 5%;
-  font-size: 5rem;
+  padding-left: 20px;
+  padding-right: 10px;
+  font-size: 1rem;
   width: 100%;
-  height: 100%;
   &.dark {
     color: hsl(252, 15%, 70%);
   }
 }
 
-#search-button {
+.icon-button {
   font-size: 24px;
   background: none;
   color: hsl(222, 46%, 36%);
   border: none;
-  transition: 0.2s all linear;
+  transition: 0.1s all linear;
   &:hover {
     color: hsl(222, 68%, 45%);
     cursor: pointer;
   }
   padding-left: 10px;
   padding-right: 20px;
+}
+
+#settings-button {
+  color: hsl(222, 30%, 65%);
+  padding-right: 0px;
+  &:hover {
+    color: hsl(222, 46%, 36%);
+  }
+  &.dark {
+    color: hsl(222, 46%, 26%);
+    &:hover {
+      color: hsl(222, 68%, 45%);
+    }
+  }
 }
 
 .radio {
@@ -403,7 +337,7 @@ export default {
   border-radius: 5px;
   margin-right: 7px;
   outline: none;
-  transition: all 0.2s linear;
+  transition: all 0.1s linear;
   &:hover {
     cursor: pointer;
   }
@@ -427,8 +361,6 @@ export default {
   will-change: contents;
   &.displayingSearchResults {
     border-radius: 20px;
-    flex-basis: auto;
-    width: 20vw;
     height: 100%;
     margin-left: 3vw;
     padding: 3vh 3vw 3vh 3vw;
@@ -438,10 +370,8 @@ export default {
 }
 
 .search-results {
-  width: 60vw;
+  width: 50%;
   height: 80vh;
-  margin-top: 5%;
-  padding-left: 3%;
   overflow: auto;
 }
 
@@ -449,20 +379,23 @@ export default {
   display: flex;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: all opacity 0.2s;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+a {
+  color: $soft-red;
+  &:hover {
+    color: $soft-red-dim;
+    cursor: pointer;
+  }
 }
 
 @media (max-width: 1000px) {
+  .search {
+    &.displayingSearchResults {
+      padding-left: 3vw;
+      padding-right: 3vw;
+    }
+  }
   .article-content {
     &.displayingSearchResults {
-      width: auto;
       margin-left: auto;
       margin-right: auto;
       padding-top: 0;

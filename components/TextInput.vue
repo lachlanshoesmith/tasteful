@@ -3,7 +3,7 @@
     class="text-input-container"
     :class="colourMode"
   >
-    <div class="icon-container">
+    <div class="icon-container" :class="colourMode">
       <slot name="icon" />
     </div>
     <input
@@ -59,14 +59,17 @@ export default {
   padding-right: 10px;
   font-size: 1rem;
   width: 100%;
+  border-left: 1px hsl(252, 15%, 90%) solid;
   &.dark {
     color: hsl(252, 15%, 70%);
+    border-left: 1px hsl(252, 10%, 15%) solid;
   }
 }
 
 .icon-container {
   height: 30px;
   padding-left: 5px;
+  padding-right: 10px; // to make even with the additional 5px padding imposed by .text-input-container
   padding-top: 2.5px;
   padding-bottom: 2.5px;
   color: hsl(252, 5%, 40%);

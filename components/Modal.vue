@@ -126,18 +126,25 @@ export default {
       width: 90vw;
     }
   }
+  .modal-content {
+    padding-left: 0;
+  }
   #modal-content-left {
+    position: relative;
     width: 0%;
     z-index: 5;
     margin-top: 20px;
+    left: 20px;
     .subheading, .paragraph {
       display: none;
     }
   }
   #modal-content-right {
+    overflow: none;
     width: 100%;
-    padding-left: 0%;
     text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
     .text-input-container {
       width: 90%;
       margin-left: auto;

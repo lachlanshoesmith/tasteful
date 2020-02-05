@@ -6,32 +6,60 @@
           <subheading>Welcome back!</subheading>
           <paragraph>
             It's always a pleasure to see you.
+            <br>
+            <a @click="showSignIn = !showSignIn">
+              <span v-if="showSignIn">Don't have an account yet?</span>
+              <span v-else>Already got an account with us?</span>
+            </a>
           </paragraph>
         </template>
         <template v-slot:right>
-          <masthead centred smaller fit-width>
-            Log in
-          </masthead>
-          <form>
-            <text-input name="email-input" placeholder="Email">
-              <template v-slot:icon>
-                <email-icon title="Email" />
-              </template>
-            </text-input>
-            <text-input name="password-input" placeholder="Password" password>
-              <template v-slot:icon>
-                <key-icon title="Password" />
-              </template>
-            </text-input>
-          </form>
+          <div v-if="showSignIn">
+            <masthead centred smaller fit-width>
+              Sign in
+            </masthead>
+            <form>
+              <text-input name="email-input" placeholder="Email">
+                <template v-slot:icon>
+                  <email-icon title="Email" />
+                </template>
+              </text-input>
+              <text-input name="password-input" placeholder="Password" password>
+                <template v-slot:icon>
+                  <key-icon title="Password" />
+                </template>
+              </text-input>
+            </form>
+          </div>
+          <div v-else>
+            <masthead centred smaller fit-width>
+              Sign up
+            </masthead>
+            <form>
+              <text-input name="email-input" placeholder="Email">
+                <template v-slot:icon>
+                  <email-icon title="Email" />
+                </template>
+              </text-input>
+              <text-input name="password-input" placeholder="Password" password>
+                <template v-slot:icon>
+                  <key-icon title="Password" />
+                </template>
+              </text-input>
+            </form>
+          </div>
           <br>
-          <a class="soft">Don't have an account yet?</a>
+          <div id="sign-in-button-container">
+            <button>Sign in</button>
+            <div class="vertical-divider" />
+            <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a>
+          </div>
         </template>
       </modal>
     </transition>
-    <nav class="maintenance">
+    <!-- <nav class="maintenance">
       <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
-    </nav>
+    </nav> -->
     <nav
       id="navigation-bar"
       :class="[{
@@ -40,7 +68,7 @@
       }, colourMode]"
     >
       <div id="nav-content">
-        <h1 @click="$router.push({ name: 'index' })">
+        <h1 id="logo" @click="$router.push({ name: 'index' })">
           tasteful
         </h1>
         <div id="links" :class="colourMode">
@@ -59,6 +87,14 @@
           <a @click="toggleColourScheme">
             <white-balance-sunny-icon title="Toggle colour scheme" />
           </a>
+          <a id="search-button-container">
+            <magnify-icon title="Search" @click="showSearchModal = !showSearchModal" />
+            <transition name="fade">
+              <mini-modal v-if="showSearchModal">
+                <search @close-search-modal="showSearchModal = false" />
+              </mini-modal>
+            </transition>
+          </a>
           <a @click="showModal = !showModal">
             <key-icon title="Log in" />
           </a>
@@ -76,12 +112,15 @@ import InfoIcon from 'vue-material-design-icons/Information.vue'
 import TimelapseIcon from 'vue-material-design-icons/Timelapse.vue'
 import CashIcon from 'vue-material-design-icons/Cash.vue'
 import WhiteBalanceSunnyIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue'
+import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import KeyIcon from 'vue-material-design-icons/Key.vue'
 import Modal from '@/components/Modal.vue'
+import MiniModal from '@/components/MiniModal.vue'
 import Masthead from '@/components/Masthead.vue'
 import Subheading from '@/components/Subheading.vue'
 import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
+import Search from '@/components/Search.vue'
 
 export default {
   components: {
@@ -91,13 +130,15 @@ export default {
     TimelapseIcon,
     CashIcon,
     WhiteBalanceSunnyIcon,
+    MagnifyIcon,
     KeyIcon,
     Modal,
+    MiniModal,
     Masthead,
     Subheading,
     Paragraph,
-    TextInput
-
+    TextInput,
+    Search
   },
   data () {
     return {
@@ -105,7 +146,9 @@ export default {
       showNavBackground: false,
       lastScrollPosition: 0,
       colourMode: 'light',
-      showModal: false
+      showModal: false,
+      showSignIn: true,
+      showSearchModal: false
     }
   },
   watch: {
@@ -201,6 +244,9 @@ html,
     background: $sepia-dark;
   }
 }
+input, textarea, select {
+  font-family: inherit;
+}
 nav {
   position: -webkit-sticky;
   position: sticky;
@@ -254,7 +300,7 @@ nav.nav-beyond-point {
   display: flex;
   align-items: center;
   width: 100%;
-  h1 {
+  #logo {
     color: $saturated-red;
     background: $tasteful-gradient;
     background-clip: text;
@@ -336,6 +382,26 @@ a {
       color: $soft-red-dim;
     }
   }
+  &.modal-link {
+    font-size: 0.8rem;
+  }
+}
+#sign-in-button-container {
+  display: flex;
+  align-items: center;
+}
+.vertical-divider {
+  height: 100%;
+  width: 10px;
+  padding: 5px;
+  content: '';
+  background: hsl(252, 15%, 90%);
+  &.dark {
+    background: hsl(252, 10%, 15%);
+  }
+}
+#search-button-container {
+  display: inline-block;
 }
 @media (max-width: 600px) {
   nav {

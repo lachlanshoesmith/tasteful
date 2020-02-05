@@ -18,7 +18,7 @@ module.exports = {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: { color: '#6040dd' },
   /*
   ** Global CSS
   */
@@ -49,9 +49,9 @@ module.exports = {
     '@nuxtjs/style-resources'
   ],
   styleResources: {
-    // scss: [
-    //   '~/assets/scss/palette.scss'
-    // ]
+    scss: [
+      '~/assets/scss/palette.scss'
+    ]
   },
   /*
   ** Axios module configuration
