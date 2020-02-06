@@ -47,10 +47,15 @@
         :placeholder="'Search ' + searchType + '...'"
         type="text"
         name="search"
+        @keyup.enter="search"
       >
-      <button id="search-button" type="submit" @click="search">
-        <magnify-icon title="Search" />
-      </button>
+      <footer>
+        <paragraph>
+          Scroll down for options
+          <br>
+          Press return to search
+        </paragraph>
+      </footer>
     </div>
     <!-- <subheading smaller>
             Refine
@@ -107,8 +112,7 @@
         <span v-if="amountOfArtists === 1">artist</span>
         <span v-else>artists</span>
         found.
-      </p>
-      <div id="loading-container" :class="{ loading }" />
+      </p><div id="loading-container" :class="{ loading }" />
       <ul>
         <li v-for="result in searchResult" :key="result.id" class="search-item">
           <div v-if="searchType === 'artists'">
@@ -172,7 +176,6 @@
 // @ is an alias to /src
 import lottie from 'lottie-web'
 import countryList from 'country-list'
-import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import masthead from '~/components/Masthead.vue'
 // import subheading from '~/components/Subheading.vue'
 // import articleContent from '~/components/ArticleContent.vue'
@@ -192,7 +195,6 @@ export default {
     paragraph,
     paragraphContainer,
     tag,
-    MagnifyIcon,
     modal
   },
   data () {
@@ -216,6 +218,8 @@ export default {
     }
   },
   mounted () {
+    // focus search
+    document.getElementById('search-box').focus()
     // render animations
     lottie.loadAnimation({
       container: document.getElementById('loading-container'),
@@ -349,26 +353,33 @@ export default {
 }
 
 #search-container {
-  display: flex;
   box-shadow: 0px -4px 20px hsl(252, 5%, 70%);
   transition: all 0.2s linear;
-  height: calc(100% - 10px);
+  height: 100%;
   width: 100%;
+  padding-left: 5%;
+  padding-right: 5%;
   &.dark {
     box-shadow: 0px -4px 10px hsl(252, 5%, 10%);
   }
   &.displayingSearchResults {
+    display: flex;
     width: 70%;
+  }
+  footer {
+    text-transform: uppercase;
+    position: fixed;
+    top: auto;
+    margin-left: auto;
+    bottom: 5%;
   }
 }
 
 #search-box {
-  color: hsl(252, 15%, 10%);
+  color: $deep-black;
   background: none;
   border: none;
-  padding: 5px;
-  padding-left: 5%;
-  padding-right: 5%;
+  padding: 0px; // to account for top and bottom in one line
   font-size: 5rem;
   width: 100%;
   height: 100%;

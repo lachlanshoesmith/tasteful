@@ -4,14 +4,10 @@
       <masthead centred smaller>
         {{ artist.name }}
       </masthead>
-      <paragraph-container>
-        <paragraph>
-          <ul>
-            <li>Country: {{ artist.country }}</li>
-            <li>Gender: {{ artist.gender }}</li>
-          </ul>
-        </paragraph>
-      </paragraph-container>
+      <list>
+        <li>Country: {{ artist.country }}</li>
+        <li>Gender: {{ artist.gender }}</li>
+      </list>
     </article-content>
   </main>
 </template>
@@ -20,20 +16,18 @@
 // @ is an alias to /src
 import masthead from '~/components/Masthead.vue'
 import articleContent from '~/components/ArticleContent.vue'
-import paragraphContainer from '~/components/ParagraphContainer.vue'
-import paragraph from '~/components/Paragraph.vue'
+import list from '~/components/List.vue'
 
 export default {
   name: 'Artist',
   components: {
     masthead,
     articleContent,
-    paragraph,
-    paragraphContainer
+    list
   },
   data () {
     return {
-      id: this.$route.params.artist,
+      id: this.$route.params.id,
       artist: {
         name: 'Querying...'
       }
@@ -45,9 +39,9 @@ export default {
     }
   },
   mounted () {
-    this.axios.get('https://musicbrainz.org/ws/2/artist/?query=arid:' + this.id + '?inc=url-rels+genres&fmt=json')
+    this.$axios.get('https://musicbrainz.org/ws/2/artist/?query=arid:' + this.id + '&fmt=json')
       .then((res) => {
-        this.artist = res.data.artists
+        this.artist = res.data.artists[0]
         document.title = 'tasteful | ' + this.artist.name
       })
   }

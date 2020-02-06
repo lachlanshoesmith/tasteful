@@ -110,7 +110,7 @@
           </paragraph>
           <paragraph>
             In addition to those causes, every month a quarter of all Care Package donations goes to a specific cause.
-            You can view our current destination <a @click="showModal = !showModal">here</a>.
+            <!-- You can view our current destination <a @click="showModal = !showModal">here</a>. -->
           </paragraph>
           <paragraph>
             Donations will be split amongst the following <strong>every month</strong>:
@@ -180,8 +180,8 @@ export default {
 }
 
 #tiers-container {
-  background: hsl(0, 0%, 97%);
-  box-shadow: 0px -30px 50px hsl(0, 0%, 95%);
+  background: $quite-white;
+  box-shadow: 0px -30px 50px $very-light-grey;
   padding-top: 10vh;
   padding-bottom: 10vh;
   padding-left: 3vw;
@@ -193,8 +193,8 @@ export default {
     margin-right: auto;
   }
   &.dark {
-    background: hsl(0, 0%, 13%);
-    box-shadow: 0px -30px 50px hsl(0, 0%, 16%);
+    background: $quite-deep-black;
+    box-shadow: 0px -30px 50px $dark-grey;
   }
 }
 

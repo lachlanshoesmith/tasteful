@@ -12,6 +12,7 @@
           :placeholder="'Search...'"
           type="text"
           name="search"
+          @keyup.enter="search"
         >
         <nuxt-link
           id="settings-button"
@@ -19,7 +20,6 @@
           class="icon-button"
           :class="colourMode"
           @click.native="$emit('close-search-modal')"
-          @click="search"
         >
           <settings-icon title="Settings" />
         </nuxt-link>
@@ -58,6 +58,7 @@
               :to="'/artist/' + result.id"
               :class="colourMode"
               class="artist-name"
+              @click.native="$emit('close-search-modal')"
             >
               {{ result.name }}
             </nuxt-link>

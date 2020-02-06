@@ -23,7 +23,7 @@ export default {
   },
   data () {
     return {
-      id: this.$route.params.release
+      id: this.$route.params.id
     }
   },
   computed: {
