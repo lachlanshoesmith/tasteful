@@ -7,10 +7,12 @@
       <slot name="icon" />
     </div>
     <input
+      v-model="value"
       :class="colourMode"
       v-bind="$attrs"
       class="text-input"
       :type="checkInputType()"
+      @input="reportValue"
     >
   </div>
 </template>
@@ -19,6 +21,11 @@
 export default {
   name: 'TextInput',
   props: { password: Boolean },
+  data () {
+    return {
+      value: ''
+    }
+  },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
@@ -31,6 +38,9 @@ export default {
       } else {
         return 'text'
       }
+    },
+    reportValue () {
+      this.$emit('input', this.value)
     }
   }
 }
@@ -45,6 +55,7 @@ export default {
   border: 1px hsl(252, 15%, 90%) solid;
   width: 60%;
   margin-bottom: 5px;
+  transition: all 0.2s linear;
   &.dark {
     border: 1px hsl(252, 10%, 15%) solid;
   }
@@ -60,6 +71,7 @@ export default {
   font-size: 1rem;
   width: 100%;
   border-left: 1px hsl(252, 15%, 90%) solid;
+  transition: all 0.2s linear;
   &.dark {
     color: hsl(252, 15%, 70%);
     border-left: 1px hsl(252, 10%, 15%) solid;

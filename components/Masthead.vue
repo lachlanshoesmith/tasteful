@@ -72,6 +72,8 @@ export default {
   }
 }
 .fitWidth {
+  margin-left: auto;
+  margin-right: auto;
   display: table;
   padding: 20px;
   min-width: 150px;

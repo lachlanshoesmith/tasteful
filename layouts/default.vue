@@ -375,7 +375,7 @@ a {
     cursor: pointer;
     color: $saturated-red;
   }
-  &.soft {
+  &.soft, &.dark {
     color: $soft-red;
     transition: all 0.2s linear;
     &:hover {

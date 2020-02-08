@@ -25,6 +25,7 @@
     "node-sass": "^4.13.0",
     "nuxt": "^2.0.0",
     "sass-loader": "^8.0.0",
+    "sjcl": "^1.0.8",
     "vue-material-design-icons": "^4.4.0",
     "vue-resize": "^0.4.5",
     "webpack": "^4.41.4"

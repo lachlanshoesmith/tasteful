@@ -1,24 +1,53 @@
 <template>
-  <div :fullWidth="isFullWidth" class="index">
-    <main>
-      <resize-observer @notify="handleResize" />
-      <masthead
-        :full-width="isFullWidth"
-      >
-        Check back on us soon; big changes are happening under the hood.
-      </masthead>
-    </main>
-  </div>
+  <main>
+    <hero no-padding inside-padding bottom-margin>
+      <template v-slot:left>
+        <subheading no-top-margin>
+          The best online music community is getting closer to launch by the day.
+        </subheading>
+        <a :class="colourMode" target="_blank" href="https://twitter.com/tastefulreviews">Follow our Twitter to stay updated!</a> 😊
+      </template>
+      <template v-slot:right>
+        <div>
+          <img id="screenshot" src="@/assets/screenshot-index.png" alt="Screenshot of tasteful code.">
+          <paragraph class="faded">
+            I can see myself from here!
+          </paragraph>
+        </div>
+      </template>
+    </hero>
+    <div class="index">
+      <article-content>
+        <subheading>When will tasteful open to the public?</subheading>
+        <paragraph>
+          I have <strong>no idea.</strong> tasteful is a very real product,
+          however, and is open source - you can view the code
+          <a target="_blank" href="https://github.com/lachlantula/tasteful">here</a>
+          and track my progress. The vast majority of the stuff that is not yet
+          available on the public website is still in development locally, and
+          will be committed to the repository once tasteful is closer to launch.
+          Contributions are greatly appreciated, however, and you will be
+          rewarded accordingly with a 'Contributor' badge.
+        </paragraph>
+      </article-content>
+    </div>
+  </main>
 </template>
 
 <script>
 // @ is an alias to /src
-import masthead from '~/components/Masthead.vue'
+import Subheading from '~/components/Subheading.vue'
+import Paragraph from '~/components/Paragraph.vue'
+import Hero from '~/components/Hero.vue'
+import ArticleContent from '~/components/ArticleContent.vue'
 
 export default {
   name: 'Index',
   components: {
-    masthead
+    Subheading,
+    Paragraph,
+    Hero,
+    ArticleContent
   },
   data () {
     return {
@@ -29,36 +58,16 @@ export default {
     colourMode () {
       return this.$store.state.theme.colourMode
     }
-  },
-  mounted () {
-    this.handleResize()
-  },
-  methods: {
-    handleResize () {
-      if (document.body.clientWidth < 1000) {
-        this.isFullWidth = true
-      } else {
-        this.isFullWidth = false
-      }
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .index {
-  position: fixed;
-  left: 0;
-  top: 0;
-  display: flex;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
   padding-left: 3vw;
   padding-right: 3vw;
-  background: none;
-}
-main {
-  width: 94vw;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 3vh;
 }
 </style>
