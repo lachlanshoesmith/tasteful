@@ -1,6 +1,6 @@
 <template>
   <main>
-    <hero no-padding inside-padding bottom-margin>
+    <hero no-padding inside-padding bottom-margin smaller-image no-definitive-height>
       <template v-slot:left>
         <subheading no-top-margin>
           The best online music community is getting closer to launch by the day.

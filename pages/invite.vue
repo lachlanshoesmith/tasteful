@@ -1,6 +1,6 @@
 <template>
   <main class="invite-container">
-    <hero no-padding inside-padding bottom-margin>
+    <hero no-padding inside-padding bottom-margin smaller-image no-definitive-height>
       <template v-slot:left>
         <subheading no-top-margin>
           tasteful is slowly starting to open up to the public. If you've got an invite seed and code, you can join in!

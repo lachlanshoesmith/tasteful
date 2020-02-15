@@ -227,8 +227,7 @@ export default {
 .search {
   transition: all 0.3s linear;
   &.displayingSearchResults {
-    width: fit-content;
-    height: 100%;
+    max-height: 50vh;
   }
 }
 
@@ -355,24 +354,7 @@ export default {
   }
 }
 
-.article-content {
-  margin-left: calc(50% - 15vw);
-  margin-right: calc(50% - 15vw);
-  transition: 0.3s all linear;
-  will-change: contents;
-  &.displayingSearchResults {
-    border-radius: 20px;
-    height: 100%;
-    margin-left: 3vw;
-    padding: 3vh 3vw 3vh 3vw;
-    margin-right: 7vw;
-    box-shadow: 0px 4px 30px hsla(252, 20%, 20%, 0.3);
-  }
-}
-
 .search-results {
-  width: 50%;
-  height: 80vh;
   overflow: auto;
 }
 
@@ -393,13 +375,6 @@ a {
     &.displayingSearchResults {
       padding-left: 3vw;
       padding-right: 3vw;
-    }
-  }
-  .article-content {
-    &.displayingSearchResults {
-      margin-left: auto;
-      margin-right: auto;
-      padding-top: 0;
     }
   }
 }
