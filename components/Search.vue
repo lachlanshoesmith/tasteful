@@ -29,17 +29,17 @@
       </div>
     </paragraph>
     <div v-show="displaySearchResults" class="search-results">
-      <p v-if="amountOfArtists >= 0">
+      <p v-if="amountOfArtists >= 0 && !loading" class="search-results-amount" :class="colourMode">
         {{ amountOfArtists }}
         <span v-if="amountOfArtists === 1">artist</span>
         <span v-else>artists</span>
         found.
       </p>
       <div id="loading-container" :class="{ loading }" />
-      <ul>
+      <ul class="search-results-list">
         <li v-for="result in searchResult" :key="result.id" class="search-item">
           <div v-if="searchType === 'artists'">
-            <span v-if="result.aliases">
+            <!-- <span v-if="result.aliases">
               AKA
               <span v-for="(alias, i) in result.aliases" :key="alias.id">
                 <span
@@ -53,7 +53,7 @@
                 <span v-if="alias !== result.name">{{ alias.name }}</span>
                 <span v-if="i !== result.aliases.length - 1">, </span>
               </span>
-            </span>
+            </span> -->
             <nuxt-link
               :to="'/artist/' + result.id"
               :class="colourMode"
@@ -99,7 +99,6 @@
 <script>
 // @ is an alias to /src
 import lottie from 'lottie-web'
-import countryList from 'country-list'
 import SettingsIcon from 'vue-material-design-icons/Settings.vue'
 import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import paragraph from '~/components/Paragraph.vue'
@@ -118,7 +117,6 @@ export default {
   data () {
     return {
       searchType: 'artists',
-      selectedRegion: 'All regions',
       specificSearch: true,
       lastSearchWasSpecific: false,
       searchResult: {},
@@ -126,8 +124,7 @@ export default {
       amountOfArtists: -1,
       loading: false,
       displaySearchResults: false,
-      showModal: false,
-      listOfCountries: countryList.getNames()
+      showModal: false
     }
   },
   computed: {
@@ -168,33 +165,17 @@ export default {
       }
 
       if (this.searchType === 'artists') {
-        if (this.selectedRegion === 'All regions') {
-          this.$axios
-            .get(
-              'https://musicbrainz.org/ws/2/artist/?query=artist:' +
+        this.$axios
+          .get(
+            'https://musicbrainz.org/ws/2/artist/?query=artist:' +
                 this.searchRequest +
-                '?inc=url-rels+genres&fmt=json'
-            )
-            .then((res) => {
-              this.processData(res, false)
-              this.loading = false
-              lottie.stop()
-            })
-        } else {
-          this.$axios
-            .get(
-              'https://musicbrainz.org/ws/2/artist/?query=artist:' +
-                this.searchRequest +
-                '+AND+country:' +
-                countryList.getCode(this.selectedRegion) +
-                '?inc=url-rels+genres&fmt=json'
-            )
-            .then((res) => {
-              this.processData(res, false)
-              this.loading = false
-              lottie.stop()
-            })
-        }
+                '?inc=genres&fmt=json'
+          )
+          .then((res) => {
+            this.processData(res, false)
+            this.loading = false
+            lottie.stop()
+          })
       } else {
         this.$axios
           .get(
@@ -225,6 +206,8 @@ export default {
 
 <style lang="scss" scoped>
 .search {
+  display: flex;
+  flex-direction: column;
   transition: all 0.3s linear;
   &.displayingSearchResults {
     max-height: 50vh;
@@ -264,6 +247,8 @@ export default {
   display: none;
   &.loading {
     display: block;
+    margin: auto;
+    padding-top: 20px;
   }
 }
 
@@ -274,7 +259,6 @@ export default {
   border-radius: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
-  margin-bottom: 10px;
   width: 100%;
   transition: all 0.1s linear;
   &.dark {
@@ -356,6 +340,17 @@ export default {
 
 .search-results {
   overflow: auto;
+  max-height: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.search-results-amount {
+  color: $soft-red;
+  font-size: 1rem;
+  &.dark {
+    color: $soft-red-dim;
+  }
 }
 
 .tags {
@@ -368,6 +363,10 @@ a {
     color: $soft-red-dim;
     cursor: pointer;
   }
+}
+
+.search-results-list {
+  padding-left: 20px;
 }
 
 @media (max-width: 1000px) {
