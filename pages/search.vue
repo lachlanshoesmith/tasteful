@@ -51,7 +51,7 @@
       >
       <footer>
         <paragraph>
-          Scroll down for options
+          Scroll for options
           <br>
           Press return to search
         </paragraph>
