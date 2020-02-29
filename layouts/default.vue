@@ -61,7 +61,13 @@
       <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
     </nav> -->
     <nav
-      id="navigation-bar"
+      class="maintenance display-only-if-on-mobile"
+    >
+      <strong>Hi!</strong> It looks like you're on mobile. tasteful is not fully optimised for mobile devices yet, so you may encounter some issues. Cheers!
+    </nav>
+    <nav
+      id="
+      navigation-bar"
       :class="[{
         'nav-unstuck': !showNavbar,
         'nav-beyond-point': showNavBackground,
@@ -403,6 +409,11 @@ a {
 #search-button-container {
   display: inline-block;
 }
+
+.display-only-if-on-mobile {
+  display: none;
+}
+
 @media (max-width: 600px) {
   nav {
     &:before {
@@ -415,6 +426,9 @@ a {
       margin-top: 10px;
       margin-bottom: 10px;
     }
+  }
+  .display-only-if-on-mobile {
+    display: block;
   }
 }
 .fade-enter-active, .fade-leave-active {
