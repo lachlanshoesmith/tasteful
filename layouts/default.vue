@@ -3,9 +3,13 @@
     <transition name="fade">
       <modal v-if="showModal" @closeModal="showModal = false">
         <template v-slot:left>
-          <subheading>Welcome back!</subheading>
+          <subheading>
+            <span v-if="showSignIn">Welcome back!</span>
+            <span v-else>Welcome aboard!</span>
+          </subheading>
           <paragraph>
-            It's always a pleasure to see you.
+            <span v-if="showSignIn">It's always a pleasure to see you.</span>
+            <span v-else>Well, this is awkward... I guess we've never met. Let's change that.</span>
             <br>
             <a @click="showSignIn = !showSignIn">
               <span v-if="showSignIn">Don't have an account yet?</span>
@@ -14,11 +18,12 @@
           </paragraph>
         </template>
         <template v-slot:right>
-          <div v-if="showSignIn">
-            <masthead centred smaller fit-width>
-              Sign in
+          <div>
+            <masthead centred smaller fit-width no-left-margin-on-large-screens>
+              <span v-if="showSignIn">Sign in</span>
+              <span v-else>Sign up</span>
             </masthead>
-            <form>
+            <form @submit.prevent="signIn">
               <text-input name="email-input" placeholder="Email">
                 <template v-slot:icon>
                   <email-icon title="Email" />
@@ -29,30 +34,17 @@
                   <key-icon title="Password" />
                 </template>
               </text-input>
+              <div id="sign-in-button-container">
+                <submit-button include-arrow-icon centre-on-small-screens>
+                  <span v-text="showSignIn ? 'Sign in' : 'Sign up'" />
+                </submit-button>
+                <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a>
+                <a class="soft modal-link display-only-if-on-mobile" @click="showSignIn = !showSignIn">
+                  <span v-if="showSignIn">Don't have an account yet?</span>
+                  <span v-else>Already got an account with us?</span>
+                </a>
+              </div>
             </form>
-          </div>
-          <div v-else>
-            <masthead centred smaller fit-width>
-              Sign up
-            </masthead>
-            <form>
-              <text-input name="email-input" placeholder="Email">
-                <template v-slot:icon>
-                  <email-icon title="Email" />
-                </template>
-              </text-input>
-              <text-input name="password-input" placeholder="Password" password>
-                <template v-slot:icon>
-                  <key-icon title="Password" />
-                </template>
-              </text-input>
-            </form>
-          </div>
-          <br>
-          <div id="sign-in-button-container">
-            <button>Sign in</button>
-            <div class="vertical-divider" />
-            <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a>
           </div>
         </template>
       </modal>
@@ -60,11 +52,6 @@
     <!-- <nav class="maintenance">
       <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
     </nav> -->
-    <nav
-      class="maintenance display-only-if-on-mobile"
-    >
-      <strong>Hi!</strong> It looks like you're on mobile. tasteful is not fully optimised for mobile devices yet, so you may encounter some issues. Cheers!
-    </nav>
     <nav
       id="
       navigation-bar"
@@ -127,6 +114,7 @@ import Subheading from '@/components/Subheading.vue'
 import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
 import Search from '@/components/Search.vue'
+import SubmitButton from '@/components/SubmitButton.vue'
 
 export default {
   components: {
@@ -144,7 +132,8 @@ export default {
     Subheading,
     Paragraph,
     TextInput,
-    Search
+    Search,
+    SubmitButton
   },
   data () {
     return {
@@ -201,6 +190,13 @@ export default {
         this.$store.commit('theme/setColourMode', 'light')
         this.colourMode = 'light'
       }
+    },
+    signIn () {
+      if (this.showSignIn) { // sign in
+        console.log('Sign in')
+      } else { // sign up
+        console.log('Sign up')
+      }
     }
   }
 }
@@ -233,11 +229,17 @@ html,
   width: 100%;
   box-sizing: border-box;
 }
-#app {
+body,
+html,
+#app,
+input,
+button {
   font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+#app {
   transition: background 0.2s linear;
   min-height: 100vh;
   &.dark {
@@ -254,6 +256,7 @@ input, textarea, select {
   font-family: inherit;
 }
 nav {
+  user-select: none;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
@@ -375,6 +378,7 @@ nav.nav-beyond-point {
   }
 }
 a {
+  outline: none;
   color: $saturated-red-dim;
   transition: all 0.2s linear;
   &:hover {
@@ -390,28 +394,27 @@ a {
   }
   &.modal-link {
     font-size: 0.8rem;
+    margin-left: 10px;
   }
 }
+
 #sign-in-button-container {
   display: flex;
   align-items: center;
 }
-.vertical-divider {
-  height: 100%;
-  width: 10px;
-  padding: 5px;
-  content: '';
-  background: hsl(252, 15%, 90%);
-  &.dark {
-    background: hsl(252, 10%, 15%);
-  }
-}
+
 #search-button-container {
   display: inline-block;
 }
 
 .display-only-if-on-mobile {
   display: none;
+}
+
+input, button, a {
+  &:focus {
+    outline: none;
+  }
 }
 
 @media (max-width: 600px) {
@@ -427,10 +430,25 @@ a {
       margin-bottom: 10px;
     }
   }
+}
+
+@media (max-width: 1000px) {
+  #sign-in-button-container {
+    margin-top: 5%;
+    display: block;
+    .submit-button {
+      margin-bottom: calc(5% - 5px); // -5px to account for links below
+    }
+    .modal-link {
+      margin-top: 5px;
+      margin-left: 0;
+    }
+  }
   .display-only-if-on-mobile {
     display: block;
   }
 }
+
 .fade-enter-active, .fade-leave-active {
   transition: all opacity 0.2s;
 }

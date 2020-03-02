@@ -1,6 +1,13 @@
 <template>
   <main class="invite-container">
-    <hero no-padding inside-padding bottom-margin smaller-image no-definitive-height>
+    <hero
+      no-padding
+      inside-padding
+      bottom-margin
+      no-definitive-height
+      dont-show-right-on-mobile
+      force-image-container-height
+    >
       <template v-slot:left>
         <subheading no-top-margin>
           tasteful is slowly starting to open up to the public. If you've got an invite seed and code, you can join in!
@@ -26,7 +33,7 @@
         </div>
       </template>
       <template v-slot:right>
-        <div>Hello</div>
+        <img id="invite-hero-image" :class="colourMode" src="@/assets/images/invite.svg">
       </template>
     </hero>
     <div class="invite">
@@ -146,5 +153,14 @@ export default {
   align-items: center;
   color: $soft-red;
   transition: all 0.2s linear;
+}
+
+#invite-hero-image {
+  transition: all 0.2s linear;
+  width: 50%;
+  filter: invert(6%) sepia(60%) saturate(4506%) hue-rotate(222deg) brightness(97%) contrast(99%);
+  &.dark {
+    filter: invert(56%) sepia(72%) saturate(295%) hue-rotate(185deg) brightness(74%) contrast(94%);
+  }
 }
 </style>

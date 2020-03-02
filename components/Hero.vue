@@ -1,11 +1,13 @@
 <template>
   <div class="hero-container" :class="[{bottomMargin, noPadding, insidePadding}, colourMode]">
     <div :class="[{insidePadding, noDefinitiveHeight}, colourMode]" class="hero">
-      <div class="hero-content">
-        <slot name="left" />
-      </div>
-      <div class="image-container hero-content" :class="[{smallerImage}]">
+      <div class="hero-content" :class="[(dontShowLeftOnMobile)]">
         <div>
+          <slot name="left" />
+        </div>
+      </div>
+      <div class="image-container hero-content" :class="[{smallerImage, dontShowRightOnMobile}]">
+        <div :class="[{forceImageContainerHeight}]">
           <slot name="right" />
         </div>
       </div>
@@ -21,7 +23,10 @@ export default {
     bottomMargin: Boolean,
     insidePadding: Boolean,
     smallerImage: Boolean,
-    noDefinitiveHeight: Boolean
+    noDefinitiveHeight: Boolean,
+    dontShowLeftOnMobile: Boolean,
+    dontShowRightOnMobile: Boolean,
+    forceImageContainerHeight: Boolean
   },
   computed: {
     colourMode () {
@@ -93,8 +98,23 @@ export default {
   width: 80%;
 }
 
-#screenshot {
-  width: 70%;
-  border-radius: 40px;
+.forceImageContainerHeight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1000px) {
+  .hero-content {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    &.dontShowLeftOnMobile, &.dontShowRightOnMobile {
+      display: none;
+      padding: 0;
+    }
+  }
 }
 </style>

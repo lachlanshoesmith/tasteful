@@ -18,7 +18,7 @@
             <paragraph>
               In November, tasteful focuses on <strong>mental health</strong>, and why wouldn't we?  It's an incredibly
               poignant issue that deeply influences many members of the music community - both consumers and creators alike.
-              <ul>
+              <list>
                 <li>
                   🦋 <a href="https://www.beyondblue.org.au/">Beyond Blue</a> - fantastic resource for seeking help for a wide variety of
                   mental illnesses.
@@ -27,7 +27,7 @@
                   🐕 <a href="https://www.blackdoginstitute.org.au/">Black Dog Institute</a> - pioneers research into mental health
                   and the treatment of such.
                 </li>
-              </ul>
+              </list>
               If you need help urgently, please don't hesitate to contact your
               <a href="https://en.wikipedia.org/wiki/List_of_suicide_crisis_lines">local crisis line</a>. 💜
             </paragraph>
@@ -57,10 +57,10 @@
             <subheading>$1<span :class="colourMode" class="money-amount">/mo</span> 🌙</subheading>
             <paragraph>
               The base tier has the following benefits...
-              <ul>
+              <list>
                 <li>❌ Advertisements will be hidden.</li>
                 <li>🌃 The infamous dark mode is available site-wide.</li>
-              </ul>
+              </list>
             </paragraph>
           </div>
         </div>
@@ -69,13 +69,13 @@
             <subheading>$3<span :class="colourMode" class="money-amount">/mo</span> 🥰</subheading>
             <paragraph>
               Receive all the benefits of the other tiers, and...
-              <ul>
+              <list>
                 <li>🎚️ Unlock every single customisation option for the website and make tasteful your own.</li>
                 <li>✍️ More nuanced profile customisation, especially for blogs.</li>
                 <li>🎤 Your posts are more likely to be promoted to other users.</li>
                 <li>⭐ Receive the very special and cool Golden Supporter badge!</li>
                 <li>😘 Know that you have my eternal gratitude.</li>
-              </ul>
+              </list>
             </paragraph>
             <subheading smaller>
               💸 One month free on annual plan
@@ -87,10 +87,10 @@
             <subheading>$2<span :class="colourMode" class="money-amount">/mo</span> 🔥</subheading>
             <paragraph>
               Get the same bonuses as the $1/mo folk, in addition to the following...
-              <ul>
+              <list>
                 <li>🎨 Even more colour themes, such as Sepia and Solarised.</li>
                 <li>📈 Unlock alternative rating schemes, such as rating out of 10.</li>
-              </ul>
+              </list>
             </paragraph>
           </div>
         </div>
@@ -114,11 +114,11 @@
           </paragraph>
           <paragraph>
             Donations will be split amongst the following <strong>every month</strong>:
-            <ul>
+            <list>
               <li>🙋‍♀️ The tasteful team.</li>
               <li>🧠 <a href="https://musicbrainz.org/">MusicBrainz</a></li>
               <li>👩‍💻 <a href="https://vuejs.org/">Vue.js</a></li>
-            </ul>
+            </list>
           </paragraph>
           <subheading smaller>
             💰 Starting from $5
@@ -126,7 +126,7 @@
         </div>
         <div id="care-package-image-container" class="tier-content">
           <div>
-            <img id="screenshot" src="@/assets/screenshot.png" alt="Screenshot of tasteful code.">
+            <img id="screenshot" src="@/assets/images/screenshot.png" alt="Screenshot of tasteful code.">
             <paragraph class="faded">
               I can see myself from here!
             </paragraph>
@@ -145,6 +145,7 @@ import articleContent from '~/components/ArticleContent.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
 import modal from '~/components/Modal.vue'
+import list from '~/components/List.vue'
 
 export default {
   name: 'Donate',
@@ -154,7 +155,8 @@ export default {
     articleContent,
     paragraph,
     paragraphContainer,
-    modal
+    modal,
+    list
   },
   data () {
     return {

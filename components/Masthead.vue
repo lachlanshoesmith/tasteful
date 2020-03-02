@@ -1,5 +1,5 @@
 <template>
-  <div :class="[{ smaller, fitWidth, fullWidth }, colourMode]" class="masthead">
+  <div :class="[{ smaller, fitWidth, noLeftMarginOnLargeScreens, fullWidth }, colourMode]" class="masthead">
     <h1 :class="[{ centred, fitWidth }]" class="masthead-content">
       <slot>Masthead content</slot>
     </h1>
@@ -13,7 +13,8 @@ export default {
     centred: Boolean,
     smaller: Boolean,
     fullWidth: Boolean,
-    fitWidth: Boolean
+    fitWidth: Boolean,
+    noLeftMarginOnLargeScreens: Boolean
   },
   computed: {
     colourMode () {
@@ -116,6 +117,13 @@ export default {
   }
   .fullWidth {
     max-width: 100vw;
+  }
+}
+@media (min-width: 1000px) {
+  .fitWidth {
+    &.noLeftMarginOnLargeScreens {
+      margin-left: 0;
+    }
   }
 }
 </style>

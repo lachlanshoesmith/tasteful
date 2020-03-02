@@ -1,6 +1,13 @@
 <template>
   <main>
-    <hero no-padding inside-padding bottom-margin smaller-image no-definitive-height>
+    <hero
+      no-padding
+      inside-padding
+      bottom-margin
+      smaller-image
+      no-definitive-height
+      dont-show-right-on-mobile
+    >
       <template v-slot:left>
         <subheading no-top-margin>
           The best online music community is getting closer to launch by the day.
@@ -9,7 +16,7 @@
       </template>
       <template v-slot:right>
         <div>
-          <img id="screenshot" src="@/assets/screenshot-index.png" alt="Screenshot of tasteful code.">
+          <img id="screenshot" src="@/assets/images/screenshot-index.png" alt="Screenshot of tasteful code.">
           <paragraph>
             I can see myself from here!
           </paragraph>
@@ -73,5 +80,9 @@ export default {
   display: flex;
   justify-content: center;
   padding-bottom: 3vh;
+}
+
+#screenshot {
+  width: 70%;
 }
 </style>

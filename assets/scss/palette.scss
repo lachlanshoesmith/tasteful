@@ -24,10 +24,18 @@ $soft-red-dim-dark: hsl(352, 45%, 20%);
 
 // ! Purples
 
-// - light
 //  * saturated
-$saturated-purple: rgb(96, 64, 221);
+$saturated-purple: hsl(252, 70%, 56%);
 $saturated-purple-dim: hsl(252, 70%, 16%);
+
+// * muted
+$muted-purple: hsl(252, 20%, 56%);
+$muted-purple-dim: hsl(252, 20%, 36%);
+
+// ! Blues
+
+$saturated-blue: hsl(222, 88%, 75%);
+$saturated-blue-dim: hsl(222, 88%, 15%);
 
 // ! Blacks
 

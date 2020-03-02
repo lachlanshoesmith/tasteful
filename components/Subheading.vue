@@ -35,10 +35,10 @@ export default {
   font-weight: 500;
   text-align: left;
   line-height: 2rem;
-  color: hsl(222, 88%, 15%);
+  color: $saturated-blue-dim;
   transition: all 0.2s linear;
   &.dark {
-    color: hsl(222, 88%, 75%);
+    color: $saturated-blue;
   }
   &.smaller {
     font-size: 1rem;
