@@ -1,7 +1,7 @@
 <template>
   <div id="app" :class="colourMode">
     <transition name="fade">
-      <modal v-if="showModal" @closeModal="showModal = false">
+      <modal v-if="showModal" scrollable @closeModal="showModal = false">
         <template v-slot:left>
           <subheading>
             <span v-if="showSignIn">Welcome back!</span>

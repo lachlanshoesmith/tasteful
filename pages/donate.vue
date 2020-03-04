@@ -52,6 +52,7 @@
         Tiers
       </masthead>
       <div id="tiers">
+        <!-- The order of the tiers changes on non-mobile screens. -->
         <div id="one-dollar-a-month" :class="colourMode" class="tier">
           <div class="tier-content">
             <subheading>$1<span :class="colourMode" class="money-amount">/mo</span> 🌙</subheading>
@@ -60,6 +61,17 @@
               <list>
                 <li>❌ Advertisements will be hidden.</li>
                 <li>🌃 The infamous dark mode is available site-wide.</li>
+              </list>
+            </paragraph>
+          </div>
+        </div>
+        <div id="two-dollars-a-month" :class="colourMode" class="tier">
+          <div class="tier-content">
+            <subheading>$2<span :class="colourMode" class="money-amount">/mo</span> 🔥</subheading>
+            <paragraph>
+              Get the same bonuses as the $1/mo folk, in addition to the following...
+              <list>
+                <li>🎨 Even more colour themes, such as Sepia and Solarised.</li>
               </list>
             </paragraph>
           </div>
@@ -82,58 +94,50 @@
             </subheading>
           </div>
         </div>
-        <div id="two-dollars-a-month" :class="colourMode" class="tier">
-          <div class="tier-content">
-            <subheading>$2<span :class="colourMode" class="money-amount">/mo</span> 🔥</subheading>
-            <paragraph>
-              Get the same bonuses as the $1/mo folk, in addition to the following...
-              <list>
-                <li>🎨 Even more colour themes, such as Sepia and Solarised.</li>
-                <li>📈 Unlock alternative rating schemes, such as rating out of 10.</li>
-              </list>
-            </paragraph>
-          </div>
-        </div>
       </div>
     </div>
-    <div id="care-package-container" :class="colourMode">
-      <div id="care-package" :class="colourMode" class="tier">
-        <div class="tier-content">
-          <subheading id="care-package-header">
-            The Care Package
-          </subheading>
-          <paragraph>
-            The Care Package is, essentially, just a donation to express your gratitude.
-            I know that it seems self-indulgent to put this as an option, but we really want to give the opportunity for our users to not
-            only keep the doors open here, but to also unlock even more doors for the awesome open-source projects that keep tasteful
-            working around-the-clock.
+    <hero
+      no-padding
+      inside-padding
+      smaller-image
+      no-definitive-height
+      dont-show-right-on-mobile
+    >
+      <template v-slot:left>
+        <subheading>
+          The Care Package
+        </subheading>
+        <paragraph>
+          The Care Package is, essentially, just a donation to express your gratitude.
+          I know that it seems self-indulgent to put this as an option, but we really want to give the opportunity for our users to not
+          only keep the doors open here, but to also unlock even more doors for the awesome open-source projects that keep tasteful
+          working around-the-clock.
+        </paragraph>
+        <paragraph>
+          In addition to those causes, every month a quarter of all Care Package donations goes to a specific cause.
+          <!-- You can view our current destination <a @click="showModal = !showModal">here</a>. -->
+        </paragraph>
+        <paragraph>
+          Donations will be split amongst the following <strong>every month</strong>:
+          <list>
+            <li>🙋‍♀️ The tasteful team.</li>
+            <li>🧠 <a href="https://musicbrainz.org/">MusicBrainz</a></li>
+            <li>👩‍💻 <a href="https://vuejs.org/">Vue.js</a></li>
+          </list>
+        </paragraph>
+        <subheading smaller>
+          💰 Starting from $5
+        </subheading>
+      </template>
+      <template v-slot:right>
+        <div>
+          <img id="screenshot" src="@/assets/images/screenshot.png" alt="Screenshot of tasteful code.">
+          <paragraph class="faded">
+            I can see myself from here!
           </paragraph>
-          <paragraph>
-            In addition to those causes, every month a quarter of all Care Package donations goes to a specific cause.
-            <!-- You can view our current destination <a @click="showModal = !showModal">here</a>. -->
-          </paragraph>
-          <paragraph>
-            Donations will be split amongst the following <strong>every month</strong>:
-            <list>
-              <li>🙋‍♀️ The tasteful team.</li>
-              <li>🧠 <a href="https://musicbrainz.org/">MusicBrainz</a></li>
-              <li>👩‍💻 <a href="https://vuejs.org/">Vue.js</a></li>
-            </list>
-          </paragraph>
-          <subheading smaller>
-            💰 Starting from $5
-          </subheading>
         </div>
-        <div id="care-package-image-container" class="tier-content">
-          <div>
-            <img id="screenshot" src="@/assets/images/screenshot.png" alt="Screenshot of tasteful code.">
-            <paragraph class="faded">
-              I can see myself from here!
-            </paragraph>
-          </div>
-        </div>
-      </div>
-    </div>
+      </template>
+    </hero>
   </main>
 </template>
 
@@ -146,6 +150,7 @@ import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
 import modal from '~/components/Modal.vue'
 import list from '~/components/List.vue'
+import hero from '~/components/Hero.vue'
 
 export default {
   name: 'Donate',
@@ -156,7 +161,8 @@ export default {
     paragraph,
     paragraphContainer,
     modal,
-    list
+    list,
+    hero
   },
   data () {
     return {
@@ -172,10 +178,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.about {
-  padding-bottom: 3vh;
-}
-
 .article-content {
   margin-left: auto;
   margin-right: auto;
@@ -202,6 +204,7 @@ export default {
 
 #tiers {
   display: flex;
+  flex-direction: row;
   align-items: center;
 }
 
@@ -297,5 +300,40 @@ export default {
 
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 1000px) {
+  #tiers {
+    display: block;
+  }
+  .tier, #three-dollars-a-month {
+    height: 100%;
+  }
+  #two-dollars-a-month {
+    background: $very-light-grey;
+    &.dark {
+      background: hsl(249, 22%, 30%);
+    }
+  }
+  #three-dollars-a-month {
+    box-shadow: none;
+    z-index: 0;
+    &.dark {
+      background: hsl(249, 22%, 20%);
+    }
+  }
+}
+
+@media (min-width: 1000px) {
+  // Whilst these could just be in the above, non-media-query CSS, I like doing this for clarity.
+  #one-dollar-a-month {
+    order: 1;
+  }
+  #two-dollars-a-month {
+    order: 3;
+  }
+  #three-dollars-a-month {
+    order: 2;
+  }
 }
 </style>

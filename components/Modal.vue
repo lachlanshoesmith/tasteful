@@ -3,9 +3,11 @@
     <div :class="colourMode" class="modal">
       <div id="modal-content-left" class="modal-content">
         <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
-        <slot name="left" />
+        <div :class="[{scrollable}]">
+          <slot name="left" />
+        </div>
       </div>
-      <div id="modal-content-right" class="modal-content">
+      <div id="modal-content-right" class="modal-content" :class="[{scrollable}]">
         <slot name="right" />
       </div>
     </div>
@@ -19,6 +21,9 @@ export default {
   name: 'Modal',
   components: {
     CloseIcon
+  },
+  props: {
+    scrollable: Boolean
   },
   computed: {
     colourMode () {
@@ -119,6 +124,10 @@ export default {
   }
 }
 
+.scrollable {
+  overflow-y: auto;
+}
+
 @media (max-width: 1000px) {
   .modal {
     width: 90vw;
@@ -138,6 +147,9 @@ export default {
     .subheading, .paragraph {
       display: none;
     }
+    &.scrollable {
+      overflow-y: auto;
+    }
   }
   #modal-content-right {
     overflow: none;
@@ -149,6 +161,9 @@ export default {
       width: 90%;
       margin-left: auto;
       margin-right: auto;
+    }
+    &.scrollable {
+      overflow-y: auto;
     }
   }
 }
