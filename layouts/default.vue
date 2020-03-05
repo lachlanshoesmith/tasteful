@@ -24,12 +24,12 @@
               <span v-else>Sign up</span>
             </masthead>
             <form @submit.prevent="signIn">
-              <text-input name="email-input" placeholder="Email">
+              <text-input v-model="email" name="email-input" placeholder="Email">
                 <template v-slot:icon>
                   <email-icon title="Email" />
                 </template>
               </text-input>
-              <text-input name="password-input" placeholder="Password" password>
+              <text-input v-model="password" name="password-input" placeholder="Password" password>
                 <template v-slot:icon>
                   <key-icon title="Password" />
                 </template>
@@ -143,7 +143,14 @@ export default {
       colourMode: 'light',
       showModal: false,
       showSignIn: true,
-      showSearchModal: false
+      showSearchModal: false,
+      email: '',
+      password: ''
+    }
+  },
+  computed: {
+    getUser () {
+      return this.$store.getters.user
     }
   },
   watch: {
@@ -153,6 +160,11 @@ export default {
         document.title = 'tasteful'
       } else {
         document.title = 'tasteful | ' + routeName
+      }
+    },
+    getUser (user) {
+      if (user !== null && user !== undefined) {
+        // ACTION FOR WHEN SIGN IN IS COMPLETE
       }
     }
   },
@@ -193,9 +205,10 @@ export default {
     },
     signIn () {
       if (this.showSignIn) { // sign in
-        console.log('Sign in')
+        this.$store.dispatch('login/signInUser', { email: this.email, password: this.password })
       } else { // sign up
-        console.log('Sign up')
+        alert('Sign ups are currently disabled. If you have an invite code and seed, visit https://tasteful.reviews/invite.')
+        // this.$store.dispatch('login/signUpUser', { email: this.email, password: this.password })
       }
     }
   }

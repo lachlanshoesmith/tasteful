@@ -11,6 +11,25 @@ export const mutations = {
 }
 
 export const actions = {
+  signInUser ({ commit }, payload) {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(payload.email, payload.password)
+      .then(
+        (user) => {
+          const newUser = {
+            id: user.uid,
+            username: 'TODO'
+          }
+          console.log(newUser)
+        }
+      )
+      .catch(
+        (error) => {
+          console.log(error)
+        }
+      )
+  },
   signUpUser ({ commit }, payload) {
     firebase
       .auth()

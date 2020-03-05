@@ -93,6 +93,7 @@ sw.*
 # Firebase
 .firebase
 firebase-debug.log
+.firebase/hosting*
 
 # VS Code
 .vscode

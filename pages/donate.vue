@@ -309,8 +309,12 @@ export default {
   .tier, #three-dollars-a-month {
     height: 100%;
   }
+  #one-dollar-a-month {
+    border-radius: 10px 10px 0px 0px;
+  }
   #two-dollars-a-month {
     background: $very-light-grey;
+    border-radius: 0;
     &.dark {
       background: hsl(249, 22%, 30%);
     }
@@ -318,6 +322,7 @@ export default {
   #three-dollars-a-month {
     box-shadow: none;
     z-index: 0;
+    border-radius: 0px 0px 10px 10px;
     &.dark {
       background: hsl(249, 22%, 20%);
     }
