@@ -1,5 +1,5 @@
 <template>
-  <p :class="colourMode" class="paragraph">
+  <p :class="[{error}, colourMode]" class="paragraph">
     <slot>Paragraph content</slot>
   </p>
 </template>
@@ -7,6 +7,9 @@
 <script>
 export default {
   name: 'Paragraph',
+  props: {
+    error: Boolean
+  },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
@@ -35,12 +38,22 @@ export default {
       }
     }
   }
+  &.error {
+    max-width: 30ch;
+    color: $saturated-red-dim;
+    &.dark {
+      color: $saturated-red;
+    }
+  }
 }
 @media (max-width: 1000px) {
   .paragraph {
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
+    &.error {
+      text-align: center;
+    }
   }
 }
 </style>

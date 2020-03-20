@@ -52,7 +52,7 @@
                 </a>
               </div>
             </form>
-            <paragraph v-if="error.display">
+            <paragraph v-if="error.display" error>
               {{ error.message }}
             </paragraph>
           </div>
