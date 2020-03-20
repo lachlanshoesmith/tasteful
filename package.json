@@ -23,6 +23,7 @@
     "express": "^4.16.4",
     "firebase": "^7.6.1",
     "lottie-web": "^5.5.10",
+    "minimist": "^1.2.5",
     "node-sass": "^4.13.0",
     "nuxt": "^2.0.0",
     "sass-loader": "^8.0.0",
