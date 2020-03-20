@@ -13,6 +13,7 @@
       class="text-input"
       :type="checkInputType()"
       @input="reportValue"
+      @animationend="reportAnimationEnd"
     >
   </div>
 </template>
@@ -41,6 +42,9 @@ export default {
     },
     reportValue () {
       this.$emit('input', this.value)
+    },
+    reportAnimationEnd () {
+      this.$emit('animation-over')
     }
   }
 }
@@ -55,9 +59,20 @@ export default {
   border: 1px hsl(252, 15%, 90%) solid;
   width: 60%;
   margin-bottom: 5px;
-  transition: all 0.2s linear;
   &.dark {
     border: 1px hsl(252, 10%, 15%) solid;
+  }
+  &.flashRed {
+    animation: backgroundFlashRed 1s 1;
+    .icon-container {
+      animation: iconFlashRed 1s 1;
+    }
+    .text-input {
+      animation: textInputFlashRedLight 1s 1;
+      &.dark {
+        animation: textInputFlashRedDark 1s 1;
+      }
+    }
   }
 }
 
@@ -70,8 +85,8 @@ export default {
   padding-right: 10px;
   font-size: 1rem;
   width: 100%;
+  overflow: auto;
   border-left: 1px hsl(252, 15%, 90%) solid;
-  transition: all 0.2s linear;
   &.dark {
     color: hsl(252, 15%, 70%);
     border-left: 1px hsl(252, 10%, 15%) solid;
@@ -85,5 +100,59 @@ export default {
   padding-top: 2.5px;
   padding-bottom: 2.5px;
   color: hsl(252, 5%, 40%);
+}
+
+@keyframes backgroundFlashRed {
+  0% {
+    background: none;
+  }
+  50% {
+    background: $saturated-red;
+  }
+  100% {
+    background: none;
+  }
+}
+
+@keyframes iconFlashRed {
+  0% {
+    color: hsl(252, 5%, 40%)
+  }
+  50% {
+    color: $saturated-red-dim;
+  }
+  100% {
+    color: hsl(252, 5%, 40%)
+  }
+}
+
+@keyframes textInputFlashRedLight {
+  0% {
+    color: hsl(252, 15%, 10%);
+    border-left: 1px hsl(252, 15%, 90%) solid;
+  }
+  50% {
+    color: $saturated-red-dim;
+    border-left: 1px $saturated-red-dim solid;
+  }
+  100% {
+    color: hsl(252, 15%, 10%);
+    border-left: 1px hsl(252, 15%, 90%) solid;
+  }
+}
+
+@keyframes textInputFlashRedDark {
+  0% {
+    color: hsl(252, 15%, 70%);
+    border-left: 1px hsl(252, 10%, 15%) solid;
+  }
+  50% {
+    color: $saturated-red-dim;
+    border-left: 1px $saturated-red-dim solid;
+  }
+  100% {
+    color: hsl(252, 15%, 70%);
+    border-left: 1px hsl(252, 10%, 15%) solid;
+  }
 }
 </style>

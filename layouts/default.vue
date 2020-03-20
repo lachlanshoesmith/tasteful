@@ -19,23 +19,30 @@
         </template>
         <template v-slot:right>
           <div>
-            <masthead centred smaller fit-width no-left-margin-on-large-screens>
+            <masthead centred smaller fit-width no-left-margin-on-large-screens small-bottom-margin>
               <span v-if="showSignIn">Sign in</span>
               <span v-else>Sign up</span>
             </masthead>
             <form @submit.prevent="signIn">
-              <text-input v-model="email" name="email-input" placeholder="Email">
+              <text-input v-model="email" name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @animation-over="emailFlashRed = false">
                 <template v-slot:icon>
                   <email-icon title="Email" />
                 </template>
               </text-input>
-              <text-input v-model="password" name="password-input" placeholder="Password" password>
+              <text-input
+                v-model="password"
+                name="password-input"
+                placeholder="Password"
+                :class="{'flashRed' : passwordFlashRed}"
+                password
+                @animation-over="passwordFlashRed = false"
+              >
                 <template v-slot:icon>
                   <key-icon title="Password" />
                 </template>
               </text-input>
               <div id="sign-in-button-container">
-                <submit-button include-arrow-icon centre-on-small-screens>
+                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed">
                   <span v-text="showSignIn ? 'Sign in' : 'Sign up'" />
                 </submit-button>
                 <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a>
@@ -45,6 +52,9 @@
                 </a>
               </div>
             </form>
+            <paragraph v-if="error.display">
+              {{ error.message }}
+            </paragraph>
           </div>
         </template>
       </modal>
@@ -107,6 +117,7 @@ import CashIcon from 'vue-material-design-icons/Cash.vue'
 import WhiteBalanceSunnyIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue'
 import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import KeyIcon from 'vue-material-design-icons/Key.vue'
+import { mapGetters } from 'vuex'
 import Modal from '@/components/Modal.vue'
 import MiniModal from '@/components/MiniModal.vue'
 import Masthead from '@/components/Masthead.vue'
@@ -145,14 +156,15 @@ export default {
       showSignIn: true,
       showSearchModal: false,
       email: '',
-      password: ''
+      password: '',
+      emailFlashRed: false,
+      passwordFlashRed: false
     }
   },
-  computed: {
-    getUser () {
-      return this.$store.getters.user
-    }
-  },
+  computed: mapGetters({
+    error: 'login/error',
+    user: 'login/user'
+  }),
   watch: {
     $route (to, from) {
       const routeName = this.$route.name
@@ -162,7 +174,39 @@ export default {
         document.title = 'tasteful | ' + routeName
       }
     },
-    getUser (user) {
+    error (error) {
+      switch (error.code) {
+        case 'auth/invalid-email':
+          error.message = 'Please type your email address in the format person@email.com.'
+          this.emailFlashRed = true
+          break
+        case 'auth/too-many-requests':
+          error.message = 'Slow down; your network seems to be showing some weird activity. Try again after a reload.'
+          this.emailFlashRed = true
+          this.passwordFlashRed = true
+          break
+        case 'auth/wrong-password':
+          error.message = 'Please retype your password - it\'s incorrect.'
+          this.passwordFlashRed = true
+          break
+        case 'auth/user-not-found':
+          error.message = 'Couldn\'t find that user, I\'m afraid. Please double-check that you typed your email right.'
+          this.emailFlashRed = true
+          break
+        case 'auth/app-deleted':
+        case 'auth/app-not-authorized':
+        case 'auth/invalid-api-key':
+          this.emailFlashRed = true
+          this.passwordFlashRed = true
+          error.message = 'There seemed to be a serious error connecting to Firebase. I assume you know what you\'re doing, so the error code is ' + error.code + '.'
+          break
+        default:
+          this.emailFlashRed = true
+          this.passwordFlashRed = true
+          error.message = 'Not too sure how to handle this one. Code: ' + error.code
+      }
+    },
+    user (user) {
       if (user !== null && user !== undefined) {
         // ACTION FOR WHEN SIGN IN IS COMPLETE
       }

@@ -1,42 +1,49 @@
-import * as firebase from 'firebase'
-
 export const state = () => ({
-  user: null
+  user: null,
+  error: {
+    display: false,
+    message: ''
+  }
 })
 
 export const mutations = {
   setUser (state, payload) {
     state.user = payload
+  },
+  setError (state, payload) {
+    state.error = payload
   }
 }
 
 export const actions = {
   signInUser ({ commit }, payload) {
-    firebase
-      .auth()
+    this.$fireAuth
       .signInWithEmailAndPassword(payload.email, payload.password)
       .then(
         (user) => {
-          const newUser = {
-            id: user.uid,
-            username: 'TODO'
-          }
-          console.log(newUser)
+          console.log(user)
+          // const newUser = {
+          //   id: user.uid,
+          //   username: 'TODO'
+          // }
+          // console.log(newUser)
         }
       )
       .catch(
         (error) => {
-          console.log(error)
+          const errorPayload = {
+            display: true,
+            code: error.code
+          }
+          commit('setError', errorPayload)
         }
       )
   },
   signUpUser ({ commit }, payload) {
-    firebase
-      .auth()
+    this.$fireAuth
       .createUserWithEmailAndPassword(payload.email, payload.password)
       .then((user) => {
-        firebase
-          .auth()
+        this.$fireAuth
           .currentUser.updateProfile({
             username: payload.username
           })
@@ -57,7 +64,6 @@ export const actions = {
 }
 
 export const getters = {
-  user (state) {
-    return state.user
-  }
+  user: state => state.user,
+  error: state => state.error
 }

@@ -1,29 +1,48 @@
 <template>
-  <button :class="[{centreOnSmallScreens}, colourMode]" class="submit-button">
+  <button :class="[{centreOnSmallScreens}, colourMode]" class="submit-button" @click="loading = true">
     <slot />
-    <arrow-right-icon v-if="includeArrowIcon" class="icon" title="Submit" />
+    <arrow-right-icon v-if="includeArrowIcon && !loading" class="icon" title="Submit" />
+    <autorenew-icon v-if="includeArrowIcon && loading" class="icon loading-icon" title="Loading" />
   </button>
 </template>
 
 <script>
 import ArrowRightIcon from 'vue-material-design-icons/ArrowRight.vue'
+import AutorenewIcon from 'vue-material-design-icons/Autorenew.vue'
 
 export default {
   name: 'SubmitButton',
   components: {
-    ArrowRightIcon
+    ArrowRightIcon,
+    AutorenewIcon
   },
   props: {
     value: {
       default: 'Submit',
       type: String
     },
+    stopLoading: {
+      type: Boolean,
+      default: false
+    },
     includeArrowIcon: Boolean,
     centreOnSmallScreens: Boolean
+  },
+  data () {
+    return {
+      loading: false
+    }
   },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
+    }
+  },
+  watch: {
+    stopLoading (previousValue, currentValue) {
+      if (currentValue === true) {
+        this.loading = false
+      }
     }
   }
 }
@@ -88,6 +107,12 @@ export default {
       margin-left: 10px;
     }
   }
+  &:focus {
+    outline: none;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
 }
 
 .icon {
@@ -97,6 +122,10 @@ export default {
   vertical-align: middle;
 }
 
+.loading-icon {
+  animation: rotation 1s infinite linear;
+}
+
 @media (max-width: 1000px) {
   .submit-button {
     &.centreOnSmallScreens {
@@ -104,6 +133,15 @@ export default {
       margin-right: auto;
       margin-top: 10px;
     }
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
   }
 }
 </style>
