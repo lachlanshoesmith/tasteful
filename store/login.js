@@ -21,12 +21,11 @@ export const actions = {
       .signInWithEmailAndPassword(payload.email, payload.password)
       .then(
         (user) => {
-          console.log(user)
-          // const newUser = {
-          //   id: user.uid,
-          //   username: 'TODO'
-          // }
-          // console.log(newUser)
+          const userObject = user.user
+          const newUser = {
+            id: userObject.uid
+          }
+          commit('setUser', newUser)
         }
       )
       .catch(
@@ -47,7 +46,6 @@ export const actions = {
           .currentUser.updateProfile({
             username: payload.username
           })
-          .then(console.log('Successfully set username to profile.'))
           .catch((error) => {
             console.log(error)
           })

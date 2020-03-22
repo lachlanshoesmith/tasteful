@@ -1,7 +1,7 @@
 <template>
   <div
     class="text-input-container"
-    :class="colourMode"
+    :class="[{ noBottomMargin }, colourMode]"
   >
     <div class="icon-container" :class="colourMode">
       <slot name="icon" />
@@ -21,7 +21,10 @@
 <script>
 export default {
   name: 'TextInput',
-  props: { password: Boolean },
+  props: {
+    password: Boolean,
+    noBottomMargin: Boolean
+  },
   data () {
     return {
       value: ''
@@ -59,6 +62,7 @@ export default {
   border: 1px hsl(252, 15%, 90%) solid;
   width: 60%;
   margin-bottom: 5px;
+  transition: all 0.2s linear;
   &.dark {
     border: 1px hsl(252, 10%, 15%) solid;
   }
@@ -74,6 +78,9 @@ export default {
       }
     }
   }
+  &.noBottomMargin {
+    margin-bottom: 0;
+  }
 }
 
 .text-input {
@@ -86,6 +93,7 @@ export default {
   font-size: 1rem;
   width: 100%;
   overflow: auto;
+  transition: all 0.2s linear;
   border-left: 1px hsl(252, 15%, 90%) solid;
   &.dark {
     color: hsl(252, 15%, 70%);

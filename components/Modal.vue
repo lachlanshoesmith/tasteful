@@ -1,6 +1,6 @@
 <template>
   <div :class="colourMode" class="modal-container">
-    <div :class="colourMode" class="modal">
+    <div :class="[{greenBackground}, colourMode]" class="modal">
       <div id="modal-content-left" class="modal-content">
         <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
         <div :class="[{scrollable}]">
@@ -23,7 +23,8 @@ export default {
     CloseIcon
   },
   props: {
-    scrollable: Boolean
+    scrollable: Boolean,
+    greenBackground: Boolean
   },
   computed: {
     colourMode () {
@@ -81,6 +82,11 @@ export default {
   &.dark {
     background: hsl(0, 0%, 10%);
     box-shadow: 0px 0px 20px hsl(0, 0%, 12%);
+  }
+  &.greenBackground {
+    background: $green-gradient;
+    background-size: 400% 400%;
+    animation: GradientAnimation 2s ease infinite;
   }
 }
 
@@ -166,6 +172,12 @@ export default {
       overflow-y: auto;
     }
   }
+}
+
+@keyframes GradientAnimation {
+  0%{background-position:82% 0%}
+  50%{background-position:19% 100%}
+  100%{background-position:82% 0%}
 }
 
 </style>

@@ -61,7 +61,7 @@ module.exports = {
         },
         services: {
           auth: true,
-          db: true
+          firestore: true
         }
       }
     ]

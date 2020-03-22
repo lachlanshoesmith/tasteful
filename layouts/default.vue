@@ -19,7 +19,14 @@
         </template>
         <template v-slot:right>
           <div>
-            <masthead centred smaller fit-width no-left-margin-on-large-screens small-bottom-margin>
+            <masthead
+              no-shadow
+              centred
+              smaller
+              fit-width
+              no-left-margin-on-large-screens
+              small-bottom-margin
+            >
               <span v-if="showSignIn">Sign in</span>
               <span v-else>Sign up</span>
             </masthead>
@@ -42,10 +49,11 @@
                 </template>
               </text-input>
               <div id="sign-in-button-container">
-                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed">
-                  <span v-text="showSignIn ? 'Sign in' : 'Sign up'" />
+                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed" :success="user !== null">
+                  <span v-if="user === null" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
+                  <span v-else v-text="showSignIn ? 'Signed in' : 'Signed up'" />
                 </submit-button>
-                <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a>
+                <!-- <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a> -->
                 <a class="soft modal-link display-only-if-on-mobile" @click="showSignIn = !showSignIn">
                   <span v-if="showSignIn">Don't have an account yet?</span>
                   <span v-else>Already got an account with us?</span>
@@ -54,6 +62,9 @@
             </form>
             <paragraph v-if="error.display" error>
               {{ error.message }}
+            </paragraph>
+            <paragraph v-if="!showSignIn" smaller>
+              By signing up for tasteful you agree to our Terms of Service and Privacy Policy, as well as the license the Software follows.
             </paragraph>
           </div>
         </template>
@@ -98,7 +109,7 @@
               </mini-modal>
             </transition>
           </a>
-          <a @click="showModal = !showModal">
+          <a v-if="user === null" @click="showModal = !showModal">
             <key-icon title="Log in" />
           </a>
         </div>
@@ -208,7 +219,29 @@ export default {
     },
     user (user) {
       if (user !== null && user !== undefined) {
-        // ACTION FOR WHEN SIGN IN IS COMPLETE
+        // when sign in is completed...
+        // check to see if the user has a username
+        const usersDatabase = this.$fireStore.collection('users')
+        usersDatabase.doc(this.user.id).get()
+          .then((user) => {
+            const userData = user.data()
+            let username
+            if (userData === undefined || userData.username === undefined) {
+              // if the user has no username
+              username = null
+            } else {
+              // if the user has a username
+              username = userData.username
+            }
+            setTimeout(() => {
+              this.showModal = false
+              if (username !== null) {
+                this.$router.push({ path: '/user/' + username })
+              } else {
+                this.$router.push({ path: '/user/settings' })
+              }
+            }, 1000)
+          })
       }
     }
   },
@@ -503,6 +536,12 @@ input, button, a {
   }
   .display-only-if-on-mobile {
     display: block;
+  }
+}
+
+@media (min-width: 1000px) {
+  #sign-in-button-container {
+    height: 55px;
   }
 }
 

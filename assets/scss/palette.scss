@@ -37,6 +37,16 @@ $muted-purple-dim: hsl(252, 20%, 36%);
 $saturated-blue: hsl(222, 88%, 75%);
 $saturated-blue-dim: hsl(222, 88%, 15%);
 
+// ! Greens
+
+// * saturated
+$saturated-green: hsl(132, 70%, 56%);
+$saturated-green-dim: hsl(132, 70%, 15%);
+
+// * muted
+$muted-green: hsl(132, 88%, 75%);
+$muted-green-dim: hsl(132, 52%, 68%);
+
 // ! Blacks
 
 $deep-black: hsl(0, 0%, 7%);
@@ -71,3 +81,4 @@ $sepia-dark: hsl(16, 10%, 15%);
 $tasteful-gradient: -webkit-linear-gradient(45deg, $saturated-red, $saturated-purple);
 // Note: The rgba() function applies opacity to an existing variable.
 $nav-background: linear-gradient(270deg, rgba($saturated-red, 0.2), rgba($saturated-purple, 0.2));
+$green-gradient: linear-gradient(45deg, $saturated-green, $muted-green, $muted-green-dim);

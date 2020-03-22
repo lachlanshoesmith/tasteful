@@ -1,20 +1,23 @@
 <template>
-  <button :class="[{centreOnSmallScreens}, colourMode]" class="submit-button" @click="loading = true">
+  <button :class="[{centreOnSmallScreens, success}, colourMode]" class="submit-button" @click="loading = true">
     <slot />
     <arrow-right-icon v-if="includeArrowIcon && !loading" class="icon" title="Submit" />
-    <autorenew-icon v-if="includeArrowIcon && loading" class="icon loading-icon" title="Loading" />
+    <autorenew-icon v-if="includeArrowIcon && loading && !success" class="icon loading-icon" title="Loading" />
+    <check-icon v-if="includeArrowIcon && success" class="icon" title="Success" />
   </button>
 </template>
 
 <script>
 import ArrowRightIcon from 'vue-material-design-icons/ArrowRight.vue'
 import AutorenewIcon from 'vue-material-design-icons/Autorenew.vue'
+import CheckIcon from 'vue-material-design-icons/Check.vue'
 
 export default {
   name: 'SubmitButton',
   components: {
     ArrowRightIcon,
-    AutorenewIcon
+    AutorenewIcon,
+    CheckIcon
   },
   props: {
     value: {
@@ -22,6 +25,10 @@ export default {
       type: String
     },
     stopLoading: {
+      type: Boolean,
+      default: false
+    },
+    success: {
       type: Boolean,
       default: false
     },
@@ -95,13 +102,23 @@ export default {
       color: hsl(35, 20%, 94%);
     }
   }
+  &.success {
+    background: $green-gradient;
+    background-size: 400% 400%;
+    color: $saturated-green-dim;
+    box-shadow: 0px 4px 20px rgba($saturated-green, 0.5);
+    animation: GradientAnimation 2s ease infinite;
+  }
   &:hover {
     cursor: pointer;
+    color: hsl(253, 100%, 94%);
     &.light {
       background: $muted-purple-dim;
+      box-shadow: 0px 0px 10px hsla(252, 67%, 45%, 0.5);
     }
     &.dark {
       background: $muted-purple;
+      box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.2);
     }
     .icon {
       margin-left: 10px;
@@ -143,5 +160,11 @@ export default {
   to {
     transform: rotate(359deg);
   }
+}
+
+@keyframes GradientAnimation {
+  0%{background-position:82% 0%}
+  50%{background-position:19% 100%}
+  100%{background-position:82% 0%}
 }
 </style>

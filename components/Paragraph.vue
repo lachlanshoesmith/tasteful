@@ -1,5 +1,5 @@
 <template>
-  <p :class="[{error}, colourMode]" class="paragraph">
+  <p :class="[{error, smaller, noLeftMarginOnMobile}, colourMode]" class="paragraph">
     <slot>Paragraph content</slot>
   </p>
 </template>
@@ -8,7 +8,9 @@
 export default {
   name: 'Paragraph',
   props: {
-    error: Boolean
+    error: Boolean,
+    noLeftMarginOnMobile: Boolean,
+    smaller: Boolean
   },
   computed: {
     colourMode () {
@@ -45,6 +47,9 @@ export default {
       color: $saturated-red;
     }
   }
+  &.smaller {
+    font-size: 0.8rem;
+  }
 }
 @media (max-width: 1000px) {
   .paragraph {
@@ -52,6 +57,13 @@ export default {
     margin-right: auto;
     text-align: justify;
     &.error {
+      text-align: center;
+    }
+    &.noLeftMarginOnMobile {
+      margin-left: 0;
+      text-align: left;
+    }
+    &.smaller {
       text-align: center;
     }
   }
