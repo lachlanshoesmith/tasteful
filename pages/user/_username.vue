@@ -48,19 +48,35 @@ export default {
   },
   mounted () {
     const usernamesDatabase = this.$fireStore.collection('usernames')
-    const username = this.$route.params.username
-    usernamesDatabase.doc(username).get()
-      .then((user) => {
-        if (user.exists) {
-          const userData = user.data()
-          if (userData.uid !== undefined) {
-            // ready to load
-            this.id = userData.uid
-            this.username = this.$route.params.username
-          } else {
-            this.error.display = true
-            this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
-          }
+    let username = this.$route.params.username.toLowerCase()
+    usernamesDatabase.get()
+      .then((users) => {
+        const arrayOfLowercaseUsernames = users.docs.map(doc => doc.id.toLowerCase())
+        const arrayOfUsernames = users.docs.map(doc => doc.id)
+        const usernameIndex = arrayOfLowercaseUsernames.indexOf(username)
+        username = arrayOfUsernames[usernameIndex] // The correctly-capitalised username
+        this.username = username
+        if (usernameIndex !== -1) { // if the username is valid...
+          usernamesDatabase.doc(username).get()
+            .then((user) => {
+              if (user.exists) {
+                const userData = user.data()
+                if (userData.uid !== undefined) {
+                  // ready to load
+                  this.id = userData.uid
+                } else {
+                  this.error.display = true
+                  this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
+                }
+              } else {
+                this.error.display = true
+                this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
+              }
+            })
+            .catch((error) => {
+              this.error.display = true
+              this.error.message = 'We ran into a problem: ' + error + '.'
+            })
         } else {
           this.error.display = true
           this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
