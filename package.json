@@ -1,6 +1,6 @@
 {
   "name": "tasteful",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "The best online music community.",
   "author": "Lachlan Shoesmith",
   "private": true,
@@ -30,6 +30,7 @@
     "sjcl": "^1.0.8",
     "vue-material-design-icons": "^4.4.0",
     "vue-resize": "^0.4.5",
+    "vuex-persist": "^2.2.0",
     "webpack": "^4.41.4"
   },
   "devDependencies": {

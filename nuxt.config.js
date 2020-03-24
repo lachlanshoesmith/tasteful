@@ -29,7 +29,11 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/vue-resize'
+    '~/plugins/vue-resize',
+    {
+      src: '~/plugins/vuex-persist',
+      ssr: false
+    }
   ],
   /*
   ** Nuxt.js dev-modules

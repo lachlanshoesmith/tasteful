@@ -162,7 +162,6 @@ export default {
       showNavbar: true,
       showNavBackground: false,
       lastScrollPosition: 0,
-      colourMode: 'light',
       showModal: false,
       showSignIn: true,
       showSearchModal: false,
@@ -174,7 +173,8 @@ export default {
   },
   computed: mapGetters({
     error: 'login/error',
-    user: 'login/user'
+    user: 'login/user',
+    colourMode: 'theme/colourMode'
   }),
   watch: {
     $route (to, from) {
@@ -212,14 +212,14 @@ export default {
           error.message = 'There seemed to be a serious error connecting to Firebase. I assume you know what you\'re doing, so the error code is ' + error.code + '.'
           break
         default:
-          this.emailFlashRed = true
-          this.passwordFlashRed = true
+          this.emailFlashRed = false
+          this.passwordFlashRed = false
           error.message = 'Not too sure how to handle this one. Code: ' + error.code
       }
     },
     user (user) {
-      if (user !== null && user !== undefined) {
-        // when sign in is completed...
+      if (user !== null && user !== undefined && this.email !== '') {
+        // when sign in is completed (and not from persisted state)...
         // check to see if the user has a username
         const usersDatabase = this.$fireStore.collection('users')
         usersDatabase.doc(this.user.id).get()
@@ -247,7 +247,6 @@ export default {
   },
   mounted () {
     window.addEventListener('scroll', this.onScroll)
-    this.colourMode = this.$store.state.theme.colourMode
   },
   beforeDestroy () {
     window.removeEventListener('scroll', this.onScroll)
@@ -279,6 +278,7 @@ export default {
         this.$store.commit('theme/setColourMode', 'light')
         this.colourMode = 'light'
       }
+      localStorage.setItem('theme', this.colourMode)
     },
     signIn () {
       if (this.showSignIn) { // sign in
