@@ -112,6 +112,9 @@
           <a v-if="user === null" @click="showModal = !showModal">
             <key-icon title="Log in" />
           </a>
+          <router-link v-if="user !== null" :to="'/user/' + user.username">
+            <face-icon title="Profile" />
+          </router-link>
         </div>
       </div>
     </nav>
@@ -125,6 +128,7 @@ import HomeIcon from 'vue-material-design-icons/Home.vue'
 import InfoIcon from 'vue-material-design-icons/Information.vue'
 import TimelapseIcon from 'vue-material-design-icons/Timelapse.vue'
 import CashIcon from 'vue-material-design-icons/Cash.vue'
+import FaceIcon from 'vue-material-design-icons/Face.vue'
 import WhiteBalanceSunnyIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue'
 import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import KeyIcon from 'vue-material-design-icons/Key.vue'
@@ -145,6 +149,7 @@ export default {
     InfoIcon,
     TimelapseIcon,
     CashIcon,
+    FaceIcon,
     WhiteBalanceSunnyIcon,
     MagnifyIcon,
     KeyIcon,
@@ -247,6 +252,12 @@ export default {
   },
   mounted () {
     window.addEventListener('scroll', this.onScroll)
+    // check if user is already logged in
+    this.$fireAuth.onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.dispatch('login/updateUser', user)
+      }
+    })
   },
   beforeDestroy () {
     window.removeEventListener('scroll', this.onScroll)

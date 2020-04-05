@@ -5,8 +5,7 @@ export default ({ store }) => {
     new VuexPersistence({
       storage: window.localStorage,
       reducer: state => ({
-        theme: state.theme,
-        login: state.login
+        theme: state.theme
       })
     }).plugin(store)
   })

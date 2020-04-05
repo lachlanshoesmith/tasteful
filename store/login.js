@@ -8,7 +8,19 @@ export const state = () => ({
 
 export const mutations = {
   setUser (state, payload) {
-    state.user = payload
+    const usernameDocument = this.$fireStore.collection('users').doc(payload.id)
+    usernameDocument.get()
+      .then((doc) => {
+        if (doc.exists) {
+          payload.username = doc.data().username
+          state.user = payload
+        } else {
+          state.user = payload
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   },
   setError (state, payload) {
     state.error = payload
@@ -23,8 +35,15 @@ export const actions = {
         (user) => {
           const userObject = user.user
           const newUser = {
-            id: userObject.uid
+            id: userObject.uid,
+            username: ''
           }
+          const errorPayload = {
+            display: false,
+            code: false,
+            message: ''
+          }
+          commit('setError', errorPayload)
           commit('setUser', newUser)
         }
       )
@@ -58,6 +77,13 @@ export const actions = {
       .catch((error) => {
         console.log(error)
       })
+  },
+  updateUser ({ commit }, payload) {
+    const user = {
+      id: payload.uid,
+      username: ''
+    }
+    commit('setUser', user)
   }
 }
 

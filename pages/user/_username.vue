@@ -64,6 +64,7 @@ export default {
                 if (userData.uid !== undefined) {
                   // ready to load
                   this.id = userData.uid
+                  document.title = 'tasteful | ' + username
                 } else {
                   this.error.display = true
                   this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
