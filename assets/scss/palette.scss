@@ -82,3 +82,4 @@ $tasteful-gradient: -webkit-linear-gradient(45deg, $saturated-red, $saturated-pu
 // Note: The rgba() function applies opacity to an existing variable.
 $nav-background: linear-gradient(270deg, rgba($saturated-red, 0.2), rgba($saturated-purple, 0.2));
 $green-gradient: linear-gradient(45deg, $saturated-green, $muted-green, $muted-green-dim);
+$red-gradient: linear-gradient(45deg, $saturated-red-dim, $saturated-red);

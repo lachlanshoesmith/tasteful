@@ -1,5 +1,5 @@
 <template>
-  <p :class="[{error, smaller, noLeftMarginOnMobile}, colourMode]" class="paragraph">
+  <p :class="[{error, soft, smaller, noLeftMarginOnMobile, noTopMargin, centred}, colourMode]" class="paragraph">
     <slot>Paragraph content</slot>
   </p>
 </template>
@@ -10,7 +10,10 @@ export default {
   props: {
     error: Boolean,
     noLeftMarginOnMobile: Boolean,
-    smaller: Boolean
+    noTopMargin: Boolean,
+    smaller: Boolean,
+    centred: Boolean,
+    soft: Boolean
   },
   computed: {
     colourMode () {
@@ -23,7 +26,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .paragraph {
-  color: hsl(253, 100%, 24%);
   font-size: 1rem;
   font-weight: 400;
   text-align: left;
@@ -31,6 +33,9 @@ export default {
   max-width: 50ch;
   color: hsl(222, 5%, 20%);
   transition: all 0.2s linear;
+  &.soft {
+    opacity: 0.7;
+  }
   &.dark {
     color: hsl(222, 10%, 55%);
     a {
@@ -50,20 +55,25 @@ export default {
   &.smaller {
     font-size: 0.8rem;
   }
+  &.noTopMargin {
+    margin-top: 0;
+  }
+  &.centred {
+    text-align: center;
+    width: auto;
+    min-width: 100%;
+  }
 }
 @media (max-width: 1000px) {
   .paragraph {
     margin-left: auto;
     margin-right: auto;
     text-align: justify;
-    &.error {
-      text-align: center;
-    }
     &.noLeftMarginOnMobile {
       margin-left: 0;
       text-align: left;
     }
-    &.smaller {
+    &.smaller, &.centred, &.error {
       text-align: center;
     }
   }

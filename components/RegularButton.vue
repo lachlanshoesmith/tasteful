@@ -1,5 +1,5 @@
 <template>
-  <button :class="[{centreOnSmallScreens, success, smaller}, colourMode]" class="submit-button" @click="loading = true">
+  <button :class="[{centreOnSmallScreens, success}, colourMode]" class="regular-button" @click="$emit('pressed')">
     <slot />
     <arrow-right-icon v-if="includeArrowIcon && !loading" class="icon" title="Submit" />
     <autorenew-icon v-if="includeArrowIcon && loading && !success" class="icon loading-icon" title="Loading" />
@@ -13,7 +13,7 @@ import AutorenewIcon from 'vue-material-design-icons/Autorenew.vue'
 import CheckIcon from 'vue-material-design-icons/Check.vue'
 
 export default {
-  name: 'SubmitButton',
+  name: 'RegularButton',
   components: {
     ArrowRightIcon,
     AutorenewIcon,
@@ -21,7 +21,7 @@ export default {
   },
   props: {
     value: {
-      default: 'Submit',
+      default: 'Do something',
       type: String
     },
     stopLoading: {
@@ -32,7 +32,6 @@ export default {
       type: Boolean,
       default: false
     },
-    smaller: Boolean,
     includeArrowIcon: Boolean,
     centreOnSmallScreens: Boolean
   },
@@ -47,7 +46,7 @@ export default {
     }
   },
   watch: {
-    stopLoading (currentValue, previousValue) {
+    stopLoading (previousValue, currentValue) {
       if (currentValue === true) {
         this.loading = false
       }
@@ -58,13 +57,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.submit-button {
+.regular-button {
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   padding: 10px;
-  border-radius: 100px;
+  border-radius: 10px;
   max-width: 40vw;
   transition: all 0.2s linear;
   color: hsl(253, 100%, 94%);
@@ -74,12 +73,13 @@ export default {
   line-height: 1.5rem;
 
   &.light {
-    background: $muted-purple;
-    box-shadow: 0px 0px 10px hsla(252, 67%, 45%, 0.5);
+    background: none;
+    border: 2px solid $muted-purple;
+    color: $muted-purple-dim;
   }
   &.dark {
-    background: $muted-purple-dim;
-    box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.2);
+    background: none;
+    border: 2px solid $muted-purple-dim;
   }
   &.sepia {
     background: linear-gradient(
@@ -87,7 +87,6 @@ export default {
       hsl(17, 47%, 76%) 0.09%,
       hsl(17, 67%, 75%) 97.38%
     );
-    box-shadow: 0px 4px 20px hsla(39, 68%, 15%, 0.5);
   }
   &.sepia-dark {
     background: linear-gradient(
@@ -103,13 +102,6 @@ export default {
     color: $saturated-green-dim;
     box-shadow: 0px 4px 20px rgba($saturated-green, 0.5);
     animation: GradientAnimation 2s ease infinite;
-  }
-  &.smaller {
-    font-size: 0.9rem;
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-top: 10px;
   }
   &:hover {
     cursor: pointer;
@@ -146,7 +138,7 @@ export default {
 }
 
 @media (max-width: 1000px) {
-  .submit-button {
+  .regular-button {
     &.centreOnSmallScreens {
       margin-left: auto;
       margin-right: auto;

@@ -1,5 +1,5 @@
 <template>
-  <div class="subheading">
+  <div :class="[{smaller}]" class="subheading">
     <h1 :class="[colourMode, { smaller, noTopMargin }]" class="subheading-content">
       <slot>Subheading content</slot>
     </h1>
@@ -42,10 +42,22 @@ export default {
   }
   &.smaller {
     font-size: 1rem;
+    line-height: 1.5rem;
     text-transform: uppercase;
   }
   &.noTopMargin {
     margin-top: 0;
+  }
+}
+@media (max-width: 1000px) {
+  .subheading {
+    &.smaller {
+      // to fill small screens
+      min-width: 100%;
+    }
+  }
+  .subheading-content {
+    text-align: center;
   }
 }
 </style>

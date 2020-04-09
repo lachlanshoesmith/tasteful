@@ -30,10 +30,25 @@
               <span v-if="showSignIn">Sign in</span>
               <span v-else>Sign up</span>
             </masthead>
+            <paragraph v-if="allowSignup && !showSignIn">
+              Your Invitation has been approved, so you're good to sign up.
+            </paragraph>
             <form @submit.prevent="signIn">
               <text-input v-model="email" name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @animation-over="emailFlashRed = false">
                 <template v-slot:icon>
                   <email-icon title="Email" />
+                </template>
+              </text-input>
+              <text-input
+                v-if="!showSignIn"
+                v-model="username"
+                name="username-input"
+                placeholder="Username"
+                :class="{'flashRed' : usernameFlashRed}"
+                @animation-over="usernameFlashRed = false"
+              >
+                <template v-slot:icon>
+                  <face-icon title="Username" />
                 </template>
               </text-input>
               <text-input
@@ -49,8 +64,8 @@
                 </template>
               </text-input>
               <div id="sign-in-button-container">
-                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed" :success="user !== null">
-                  <span v-if="user === null" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
+                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed || usernameFlashRed" :success="user !== null && user !== false">
+                  <span v-if="user === null || user === false" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
                   <span v-else v-text="showSignIn ? 'Signed in' : 'Signed up'" />
                 </submit-button>
                 <!-- <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a> -->
@@ -63,9 +78,9 @@
             <paragraph v-if="error.display" error>
               {{ error.message }}
             </paragraph>
-            <paragraph v-if="!showSignIn" smaller>
+            <!-- <paragraph v-if="!showSignIn" smaller>
               By signing up for tasteful you agree to our Terms of Service and Privacy Policy, as well as the license the Software follows.
-            </paragraph>
+            </paragraph> -->
           </div>
         </template>
       </modal>
@@ -109,10 +124,10 @@
               </mini-modal>
             </transition>
           </a>
-          <a v-if="user === null" @click="showModal = !showModal">
+          <a v-if="user === null || user === false" @click="showModal = !showModal">
             <key-icon title="Log in" />
           </a>
-          <router-link v-if="user !== null" :to="'/user/' + user.username">
+          <router-link v-if="user !== null && user !== false" :to="'/user/' + user.username">
             <face-icon title="Profile" />
           </router-link>
         </div>
@@ -170,16 +185,19 @@ export default {
       showModal: false,
       showSignIn: true,
       showSearchModal: false,
+      username: '',
       email: '',
       password: '',
       emailFlashRed: false,
+      usernameFlashRed: false,
       passwordFlashRed: false
     }
   },
   computed: mapGetters({
     error: 'login/error',
     user: 'login/user',
-    colourMode: 'theme/colourMode'
+    colourMode: 'theme/colourMode',
+    allowSignup: 'login/allowSignup'
   }),
   watch: {
     $route (to, from) {
@@ -216,14 +234,44 @@ export default {
           this.passwordFlashRed = true
           error.message = 'There seemed to be a serious error connecting to Firebase. I assume you know what you\'re doing, so the error code is ' + error.code + '.'
           break
+        // usernames
+        case 'username/symbols':
+          this.usernameFlashRed = true
+          error.message = 'Keep symbols out of your username, please.'
+          break
+        case 'username/spaces':
+          this.usernameFlashRed = true
+          error.message = 'No spaces in usernames, please.'
+          break
+        case 'username/numbers':
+          this.usernameFlashRed = true
+          error.message = 'Make sure you\'ve got some letters in your username.'
+          break
+        case 'username/impersonate':
+          this.usernameFlashRed = true
+          error.message = 'Please don\'t try to impersonate authority with a username like that. 1312.'
+          break
+        case 'username/too-short':
+          this.usernameFlashRed = true
+          error.message = 'Double-check that your username is over three characters long.'
+          break
+        case 'username/too-long':
+          this.usernameFlashRed = true
+          error.message = 'Keep your username under 16 characters, cheers.'
+          break
+        case 'username/taken':
+          this.usernameFlashRed = true
+          error.message = 'Someone\'s already got that username, unfortunately. Get those creative juices flowing!'
+          break
         default:
           this.emailFlashRed = false
           this.passwordFlashRed = false
+          this.usernameFlashRed = false
           error.message = 'Not too sure how to handle this one. Code: ' + error.code
       }
     },
     user (user) {
-      if (user !== null && user !== undefined && this.email !== '') {
+      if (user !== null && user !== false && this.email !== '') {
         // when sign in is completed (and not from persisted state)...
         // check to see if the user has a username
         const usersDatabase = this.$fireStore.collection('users')
@@ -284,16 +332,16 @@ export default {
     toggleColourScheme () {
       if (this.colourMode === 'light') {
         this.$store.commit('theme/setColourMode', 'dark')
-        this.colourMode = 'dark'
       } else if (this.colourMode === 'dark') {
         this.$store.commit('theme/setColourMode', 'light')
-        this.colourMode = 'light'
       }
       localStorage.setItem('theme', this.colourMode)
     },
     signIn () {
       if (this.showSignIn) { // sign in
         this.$store.dispatch('login/signInUser', { email: this.email, password: this.password })
+      } else if (!this.showSignIn && this.allowSignup) { // signup with invite
+        this.$store.dispatch('login/signUpUser', { email: this.email, username: this.username, password: this.password })
       } else { // sign up
         alert('Sign ups are currently disabled. If you have an invite code and seed, visit https://tasteful.reviews/invite.')
         // this.$store.dispatch('login/signUpUser', { email: this.email, password: this.password })

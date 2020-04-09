@@ -1,43 +1,52 @@
 <template>
   <div
-    class="text-input-container"
+    class="dropdown-input-container"
     :class="[{ noBottomMargin, fullWidth, rightMargin }, colourMode]"
   >
     <div class="icon-container" :class="[{noIcon}, colourMode]">
       <slot name="icon" />
     </div>
-    <input
+    <select
       v-model="value"
       :class="[{noIcon}, colourMode]"
       v-bind="$attrs"
-      class="text-input"
-      :type="checkInputType()"
-      :readonly="disabled"
+      class="dropdown-input"
       @input="reportValue"
+      @change="reportChange"
       @animationend="reportAnimationEnd"
     >
+      <option disabled value="">
+        {{ defaultValue }}
+      </option>
+      <option v-for="option in options" :key="option.id">
+        {{ option }}
+      </option>
+    </select>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'TextInput',
+  name: 'DropdownInput',
   props: {
-    password: Boolean,
     noBottomMargin: Boolean,
     rightMargin: Boolean,
     fullWidth: Boolean,
     noIcon: Boolean,
-    disabled: Boolean,
     defaultValue: {
       type: String,
       default: ''
+    },
+    options: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   data () {
     return {
-      value: this.defaultValue,
-      awaitingValueReport: false
+      value: ''
     }
   },
   computed: {
@@ -45,41 +54,22 @@ export default {
       return this.$store.state.theme.colourMode
     }
   },
-  watch: {
-    defaultValue (val) {
-      this.value = val
-    },
-    value (val) {
-      // debounce functionality
-      if (!this.awaitingValueReport) {
-        setTimeout(() => {
-          this.$emit('debounce')
-          this.awaitingValueReport = false
-        }, 3000)
-      }
-      this.awaitingValueReport = true
-    }
-  },
   methods: {
-    checkInputType () {
-      if (this.password) {
-        return 'password'
-      } else {
-        return 'text'
-      }
-    },
     reportValue () {
       this.$emit('input', this.value)
     },
     reportAnimationEnd () {
       this.$emit('animation-over')
+    },
+    reportChange () {
+      this.$emit('change')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.text-input-container {
+.dropdown-input-container {
   display: flex;
   height: 30px;
   border-radius: 5px;
@@ -96,7 +86,7 @@ export default {
     .icon-container {
       animation: iconFlashRed 1s 1;
     }
-    .text-input {
+    .dropdown-input {
       animation: textInputFlashRedLight 1s 1;
       &.dark {
         animation: textInputFlashRedDark 1s 1;
@@ -114,16 +104,14 @@ export default {
   }
 }
 
-.text-input {
+.dropdown-input {
   color: hsl(252, 15%, 10%);
   background: none;
   border: none;
   padding: 5px;
   padding-left: 10px;
-  padding-right: 10px;
-  font-size: 1rem;
   width: 100%;
-  overflow: auto;
+  font-size: 1rem;
   transition: all 0.2s linear;
   border-left: 1px hsl(252, 15%, 90%) solid;
   &.dark {
