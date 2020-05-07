@@ -71,7 +71,7 @@
             <paragraph>
               Get the same bonuses as the $1/mo folk, in addition to the following...
               <list>
-                <li>🎨 Even more colour themes, such as Sepia and Solarised.</li>
+                <li>🎨 Even more colour themes, such as Solarised.</li>
               </list>
             </paragraph>
           </div>
@@ -200,26 +200,24 @@ export default {
     background: $quite-deep-black;
     box-shadow: 0px -30px 50px $dark-grey;
   }
+  &.solarised-light {
+    background: $solarised-light-secondary-background;
+    box-shadow: 0px -30px 50px $solarised-light-main-background;
+  }
+  &.solarised-dark {
+    background: $solarised-dark-secondary-background;
+    box-shadow: 0px -30px 50px $solarised-dark-main-background;
+  }
+  &.black {
+    background: $black;
+    box-shadow: 0px -30px 50px $deep-black;
+  }
 }
 
 #tiers {
   display: flex;
   flex-direction: row;
   align-items: center;
-}
-
-#care-package-container {
-  transition: all 0.2s linear;
-  box-shadow: 0px -30px 50px hsl(0, 0%, 95%);
-  display: flex;
-  align-items: center;
-  padding-top: 10vh;
-  padding-bottom: 10vh;
-  padding-left: 3vw;
-  padding-right: 3vw;
-  &.dark {
-    box-shadow: 0px -30px 50px hsl(0, 0%, 10%);
-  }
 }
 
 .tier {
@@ -231,6 +229,15 @@ export default {
   transition: all 0.2s linear;
   &.dark {
     background: hsl(249, 22%, 20%);
+  }
+  &.solarised-light {
+    background: $solarised-light-main-background;
+  }
+  &.solarised-dark {
+    background: $solarised-dark-main-background;
+  }
+  &.black {
+    background: $deep-black;
   }
   .paragraph {
     &.dark {
@@ -269,6 +276,12 @@ export default {
   height: 70vh;
   &.dark {
     background: hsl(249, 22%, 30%);
+  }
+  &.solarised-dark,  &.solarised-light {
+    outline: 1px $solarised-violet solid;
+  }
+  &.black {
+    outline: 1px $quite-light-grey solid;
   }
 }
 
@@ -318,6 +331,15 @@ export default {
     &.dark {
       background: hsl(249, 22%, 30%);
     }
+    &.solarised-light {
+      background: $solarised-light-secondary-background;
+    }
+    &.solarised-dark {
+      background: $solarised-dark-secondary-background;
+    }
+    &.black {
+      background: $quite-deep-black;
+    }
   }
   #three-dollars-a-month {
     box-shadow: none;
@@ -325,6 +347,17 @@ export default {
     border-radius: 0px 0px 10px 10px;
     &.dark {
       background: hsl(249, 22%, 20%);
+    }
+    &.solarised-light {
+      background: $solarised-light-secondary-background;
+      outline: none;
+    }
+    &.solarised-dark {
+      background: $solarised-dark-secondary-background;
+      outline: none;
+    }
+    &.black {
+      outline: none;
     }
   }
 }

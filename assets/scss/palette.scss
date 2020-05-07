@@ -1,5 +1,12 @@
 // Colour palette for tasteful.
 
+// _____        __            _ _     _______ _
+// |  __ \      / _|          | | |   |__   __| |
+// | |  | | ___| |_ __ _ _   _| | |_     | |  | |__   ___ _ __ ___   ___ ___
+// | |  | |/ _ |  _/ _` | | | | | __|    | |  | '_ \ / _ | '_ ` _ \ / _ / __|
+// | |__| |  __| || (_| | |_| | | |_     | |  | | | |  __| | | | | |  __\__ \
+// |_____/ \___|_| \__,_|\__,_|_|\__|    |_|  |_| |_|\___|_| |_| |_|\___|___/
+
 /*
 -- SHADES --
 */
@@ -26,6 +33,7 @@ $soft-red-dim-dark: hsl(352, 45%, 20%);
 
 //  * saturated
 $saturated-purple: hsl(252, 70%, 56%);
+$saturated-purple-quite-dim: hsl(252, 67%, 35%);
 $saturated-purple-dim: hsl(252, 70%, 16%);
 
 // * muted
@@ -49,6 +57,7 @@ $muted-green-dim: hsl(132, 52%, 68%);
 
 // ! Blacks
 
+$black: hsl(0, 0%, 0%);
 $deep-black: hsl(0, 0%, 7%);
 $quite-deep-black: hsl(0, 0%, 9%);
 
@@ -62,24 +71,60 @@ $quite-white: hsl(0, 0%, 97%);
 // - light
 $very-light-grey: hsl(0, 0%, 95%);
 $light-grey: hsl(0, 0%, 80%);
+$quite-light-grey: hsl(0, 0%, 50%);
 
 // - dark
 $dark-grey: hsl(0, 0%, 10%);
-
-// ! Sepia
-
-// - light
-$sepia: hsl(16, 90%, 95%);
-
-// - dark
-$sepia-dark: hsl(16, 10%, 15%);
+$quite-dark-grey: hsl(0, 0%, 30%);
 
 /*
 -- GRADIENTS --
 */
 
 $tasteful-gradient: -webkit-linear-gradient(45deg, $saturated-red, $saturated-purple);
+$dim-tasteful-gradient: -webkit-linear-gradient(45deg, rgba($saturated-red, 0.5), rgba($saturated-purple, 0.5));
+$masthead-gradient: linear-gradient(103.68deg, $saturated-purple 0.09%, $saturated-purple-quite-dim 97.38%);
+$dim-masthead-gradient: linear-gradient(103.68deg, rgba($saturated-purple, 0.3) 0.09%, rgba($saturated-purple-quite-dim, 0.3) 97.38%);
 // Note: The rgba() function applies opacity to an existing variable.
 $nav-background: linear-gradient(270deg, rgba($saturated-red, 0.2), rgba($saturated-purple, 0.2));
 $green-gradient: linear-gradient(45deg, $saturated-green, $muted-green, $muted-green-dim);
 $red-gradient: linear-gradient(45deg, $saturated-red-dim, $saturated-red);
+
+//   ____  _   _                 _______ _
+//  / __ \| | | |               |__   __| |
+// | |  | | |_| |__   ___ _ __     | |  | |__   ___ _ __ ___   ___ ___
+// | |  | | __| '_ \ / _ | '__|    | |  | '_ \ / _ | '_ ` _ \ / _ / __|
+// | |__| | |_| | | |  __| |       | |  | | | |  __| | | | | |  __\__ \
+//  \____/ \__|_| |_|\___|_|       |_|  |_| |_|\___|_| |_| |_|\___|___/
+
+/*
+-- SOLARISED --
+*/
+
+// ! Light
+
+$solarised-light-main-background: hsl(44, 40%, 89%);
+$solarised-light-secondary-background: hsl(46, 42%, 88%);
+$solarised-light-strong-content: hsl(196, 14%, 38%);
+$solarised-light-main-content: hsl(196, 13%, 45%);
+$solarised-light-secondary-content: hsl(180, 7%, 60%);
+
+// ! Dark
+
+$solarised-dark-main-background: hsl(192, 100%, 11%);
+$solarised-dark-secondary-background: hsl(194, 78%, 14%);
+$solarised-dark-strong-content: hsl(180, 7%, 60%);
+$solarised-dark-main-content: hsl(191, 7%, 52%);
+$solarised-dark-secondary-content: hsl(194, 14%, 40%);
+
+// ! Common colours
+
+$solarised-orange: hsl(18, 80%, 44%);
+$solarised-red: hsl(1, 71%, 52%);
+$solarised-magenta: hsl(331, 64%, 52%);
+$solarised-violet: hsl(237, 43%, 60%);
+$solarised-blue: hsl(205, 69%, 49%);
+$solarised-cyan: hsl(175, 59%, 40%);
+$solarised-green: hsl(68, 100%, 30%);
+
+$solarised-tasteful-gradient: -webkit-linear-gradient(45deg, $solarised-red, $solarised-violet);

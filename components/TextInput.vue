@@ -14,12 +14,16 @@
       :type="checkInputType()"
       :readonly="disabled"
       @input="reportValue"
+      @focus="reportFocus(true)"
+      @blur="reportFocus(false)"
       @animationend="reportAnimationEnd"
     >
   </div>
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   name: 'TextInput',
   props: {
@@ -29,6 +33,8 @@ export default {
     fullWidth: Boolean,
     noIcon: Boolean,
     disabled: Boolean,
+    focusManualBlurHandling: Boolean,
+    debounce: Boolean,
     defaultValue: {
       type: String,
       default: ''
@@ -36,8 +42,7 @@ export default {
   },
   data () {
     return {
-      value: this.defaultValue,
-      awaitingValueReport: false
+      value: this.defaultValue
     }
   },
   computed: {
@@ -48,16 +53,6 @@ export default {
   watch: {
     defaultValue (val) {
       this.value = val
-    },
-    value (val) {
-      // debounce functionality
-      if (!this.awaitingValueReport) {
-        setTimeout(() => {
-          this.$emit('debounce')
-          this.awaitingValueReport = false
-        }, 3000)
-      }
-      this.awaitingValueReport = true
     }
   },
   methods: {
@@ -69,10 +64,25 @@ export default {
       }
     },
     reportValue () {
-      this.$emit('input', this.value)
+      if (this.debounce) {
+        // debounce
+        _.debounce(() => {
+          // TO FINISH
+        }, 1000)
+      } else {
+        this.$emit('input', this.value)
+      }
     },
     reportAnimationEnd () {
       this.$emit('animation-over')
+    },
+    reportFocus (focused) {
+      if (!this.focusManualBlurHandling) {
+        this.$emit('focus', focused)
+      } else if (this.focusManualBlurHandling && focused) {
+        this.$emit('focus', focused)
+      }
+      // If focusManualBlurHandling is enabled and the user unfocuses from the input, nothing happens automatically.
     }
   }
 }
@@ -90,6 +100,15 @@ export default {
   transition: all 0.2s linear;
   &.dark {
     border: 1px hsl(252, 10%, 15%) solid;
+  }
+  &.solarised-light {
+    border: 1px rgba($solarised-light-main-background, 1) solid;
+  }
+  &.solarised-dark {
+    border: 1px $solarised-dark-main-background solid;
+  }
+  &.black {
+    border: 1px $dark-grey solid;
   }
   &.flashRed {
     animation: backgroundFlashRed 1s 1;
@@ -130,6 +149,18 @@ export default {
     color: hsl(252, 15%, 70%);
     border-left: 1px hsl(252, 10%, 15%) solid;
   }
+  &.solarised-light {
+    color: $solarised-light-main-content;
+    border-left: 1px $solarised-light-main-background solid;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-main-content;
+    border-left: 1px $solarised-dark-main-background;
+  }
+  &.black {
+    color: $quite-light-grey;
+    border-left: 1px $dark-grey solid;
+  }
   &.noIcon {
     border-left: none;
   }
@@ -144,6 +175,15 @@ export default {
   color: hsl(252, 5%, 40%);
   &.noIcon {
     display: none;
+  }
+  &.solarised-light {
+    color: $solarised-light-strong-content;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-strong-content;
+  }
+  &.black {
+    color: $quite-light-grey;
   }
 }
 

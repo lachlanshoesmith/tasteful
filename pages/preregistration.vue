@@ -143,12 +143,6 @@ export default {
   &.dark {
     background: hsl(0, 0%, 7%);
   }
-  &.sepia {
-    background: hsl(16, 90%, 95%);
-  }
-  &.sepia-dark {
-    background: hsl(16, 10%, 15%);
-  }
 }
 main {
   display: flex;

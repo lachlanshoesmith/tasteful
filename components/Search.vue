@@ -1,6 +1,6 @@
 <template>
-  <main
-    :class="{ displayingSearchResults: displaySearchResults }"
+  <div
+    :class="{displayingSearchResults: displaySearchResults, desktop}"
     class="search"
   >
     <paragraph :class="{ displayingSearchResults: displaySearchResults }">
@@ -93,7 +93,8 @@
         @click="showModal = !showModal"
       >Can't find what you're looking for?</a>
     </div>
-  </main>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -113,6 +114,9 @@ export default {
     tag,
     SettingsIcon,
     MagnifyIcon
+  },
+  props: {
+    desktop: Boolean
   },
   data () {
     return {
@@ -212,6 +216,9 @@ export default {
   &.displayingSearchResults {
     max-height: 50vh;
   }
+  &.desktop {
+    display: none;
+  }
 }
 
 .album-art {
@@ -255,15 +262,16 @@ export default {
 #search-container {
   display: flex;
   background: hsl(252, 15%, 90%);
-  box-shadow: 0px 0px 10px hsl(252, 5%, 70%);
   border-radius: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
   width: 100%;
-  transition: all 0.1s linear;
+  transition: all 0.2s linear;
   &.dark {
     background: hsl(252, 15%, 10%);
-    box-shadow: 0px 0px 10px hsl(252, 5%, 10%);
+  }
+  &.black {
+    background: $deep-black;
   }
 }
 
@@ -279,6 +287,9 @@ export default {
   &.dark {
     color: hsl(252, 15%, 70%);
   }
+  &.black {
+    color: $quite-light-grey;
+  }
 }
 
 .icon-button {
@@ -286,7 +297,7 @@ export default {
   background: none;
   color: hsl(222, 46%, 36%);
   border: none;
-  transition: 0.1s all linear;
+  transition: 0.2s all linear;
   &:hover {
     color: hsl(222, 68%, 45%);
     cursor: pointer;
@@ -321,7 +332,7 @@ export default {
   border-radius: 5px;
   margin-right: 7px;
   outline: none;
-  transition: all 0.1s linear;
+  transition: all 0.2s linear;
   &:hover {
     cursor: pointer;
   }
@@ -374,6 +385,17 @@ a {
     &.displayingSearchResults {
       padding-left: 3vw;
       padding-right: 3vw;
+    }
+  }
+}
+
+@media (min-width: 1000px) {
+  .search {
+    &.desktop {
+      display: flex;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 }

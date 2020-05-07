@@ -48,9 +48,8 @@ module.exports = {
    ** Nuxt.js modules
    */
   modules: [
-    // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    '@nuxt/http',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/style-resources',
     [
@@ -74,11 +73,6 @@ module.exports = {
   styleResources: {
     scss: ['~/assets/scss/palette.scss']
   },
-  /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
-   */
-  axios: {},
   /*
    ** Build configuration
    */

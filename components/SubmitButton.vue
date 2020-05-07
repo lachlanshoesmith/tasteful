@@ -81,22 +81,6 @@ export default {
     background: $muted-purple-dim;
     box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.2);
   }
-  &.sepia {
-    background: linear-gradient(
-      103.68deg,
-      hsl(17, 47%, 76%) 0.09%,
-      hsl(17, 67%, 75%) 97.38%
-    );
-    box-shadow: 0px 4px 20px hsla(39, 68%, 15%, 0.5);
-  }
-  &.sepia-dark {
-    background: linear-gradient(
-      103.68deg,
-      hsl(17, 27%, 56%) 0.09%,
-      hsl(17, 47%, 55%) 97.38%
-    );
-    box-shadow: 0px 4px 20px hsla(39, 68%, 15%, 0.5);
-  }
   &.success {
     background: $green-gradient;
     background-size: 400% 400%;

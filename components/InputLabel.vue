@@ -34,6 +34,15 @@ export default {
   &.dark {
     color: hsl(222, 10%, 55%);
   }
+  &.solarised-light {
+    color: $solarised-light-strong-content;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-strong-content;
+  }
+  &.black {
+    color: $quite-dark-grey;
+  }
   &.error {
     max-width: 30ch;
     color: $saturated-red-dim;

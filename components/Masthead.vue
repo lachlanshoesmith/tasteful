@@ -1,6 +1,6 @@
 <template>
   <div :class="[{ smaller, noShadow, fitWidth, noLeftMarginOnLargeScreens, smallBottomMargin, fullWidth }, colourMode]" class="masthead">
-    <h1 :class="[{ centred, fitWidth }]" class="masthead-content">
+    <h1 :class="[{ centred, fitWidth }, colourMode]" class="masthead-content">
       <slot>Masthead content</slot>
     </h1>
   </div>
@@ -35,43 +35,17 @@ export default {
   max-width: 40vw;
   transition: all 0.2s linear;
 
-  &.light {
-    background: linear-gradient(
-      103.68deg,
-      hsl(252, 46%, 36%) 0.09%,
-      hsl(252, 67%, 45%) 97.38%
-    );
+  &.light, &.solarised-light {
+    background: $masthead-gradient;
     box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.5);
   }
-  &.dark {
-    background: linear-gradient(
-      103.68deg,
-      hsl(252, 46%, 26%) 0.09%,
-      hsl(252, 67%, 35%) 97.38%
-    );
+  &.dark, &.solarised-dark {
+    background: $dim-masthead-gradient;
     box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.2);
   }
-  &.sepia {
-    background: linear-gradient(
-      103.68deg,
-      hsl(17, 47%, 76%) 0.09%,
-      hsl(17, 67%, 75%) 97.38%
-    );
-    box-shadow: 0px 4px 20px hsla(39, 68%, 15%, 0.5);
-    .masthead-content {
-      color: hsl(35, 20%, 24%);
-    }
-  }
-  &.sepia-dark {
-    background: linear-gradient(
-      103.68deg,
-      hsl(17, 27%, 56%) 0.09%,
-      hsl(17, 47%, 55%) 97.38%
-    );
-    box-shadow: 0px 4px 20px hsla(39, 68%, 15%, 0.5);
-    .masthead-content {
-      color: hsl(35, 20%, 94%);
-    }
+  &.black {
+    background: $dim-masthead-gradient;
+    box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.2);
   }
   &.noShadow {
     box-shadow: none;

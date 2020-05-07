@@ -140,6 +140,9 @@
           </li>
         </list>
         <paragraph>
+          tasteful's database is powered by <a href="https://musicbrainz.org">MusicBrainz</a> as well as <a href="https://www.wikidata.org">Wikidata</a>.
+        </paragraph>
+        <paragraph>
           tasteful was developed on the land of the Darug people of modern-day Sydney, who are the traditional custodians and the Traditional Owners of the land on which we
           developed this software, who we acknowledge with great respect. We also pay our respects to Elders past and present, and acknowledge the Aboriginal people for their custodianship of this land,
           who have long before us lived, loved, and raised their children on this land.

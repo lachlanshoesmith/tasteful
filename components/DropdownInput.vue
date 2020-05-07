@@ -8,15 +8,14 @@
     </div>
     <select
       v-model="value"
-      :class="[{noIcon}, colourMode]"
+      :class="[{noIcon, capitalise}, colourMode]"
       v-bind="$attrs"
       class="dropdown-input"
-      @input="reportValue"
-      @change="reportChange"
+      @change="reportValue"
       @animationend="reportAnimationEnd"
     >
       <option disabled value="">
-        {{ defaultValue }}
+        {{ descriptionValue }}
       </option>
       <option v-for="option in options" :key="option.id">
         {{ option }}
@@ -33,7 +32,12 @@ export default {
     rightMargin: Boolean,
     fullWidth: Boolean,
     noIcon: Boolean,
+    capitalise: Boolean,
     defaultValue: {
+      type: String,
+      default: ''
+    },
+    descriptionValue: {
       type: String,
       default: ''
     },
@@ -46,23 +50,29 @@ export default {
   },
   data () {
     return {
-      value: ''
+      currentValue: ''
     }
   },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
+    },
+    value: {
+      get () {
+        return this.defaultValue
+      },
+      set (val) {
+        this.currentValue = val
+        return val
+      }
     }
   },
   methods: {
     reportValue () {
-      this.$emit('input', this.value)
+      this.$emit('change', this.currentValue)
     },
     reportAnimationEnd () {
       this.$emit('animation-over')
-    },
-    reportChange () {
-      this.$emit('change')
     }
   }
 }
@@ -80,6 +90,15 @@ export default {
   transition: all 0.2s linear;
   &.dark {
     border: 1px hsl(252, 10%, 15%) solid;
+  }
+  &.solarised-light {
+    border: 1px rgba($solarised-light-main-background, 1) solid;
+  }
+  &.solarised-dark {
+    border: 1px $solarised-dark-main-background solid;
+  }
+  &.black {
+    border: 1px $dark-grey solid;
   }
   &.flashRed {
     animation: backgroundFlashRed 1s 1;
@@ -118,9 +137,25 @@ export default {
     color: hsl(252, 15%, 70%);
     border-left: 1px hsl(252, 10%, 15%) solid;
   }
+  &.solarised-light {
+    color: $solarised-light-main-content;
+    border-left: 1px $solarised-light-main-background solid;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-main-content;
+    border-left: 1px $solarised-dark-main-background;
+  }
+  &.black {
+    color: $quite-light-grey;
+    border-left: 1px $quite-deep-black;
+  }
   &.noIcon {
     border-left: none;
   }
+}
+
+.capitalise {
+  text-transform: capitalize;
 }
 
 .icon-container {
@@ -130,6 +165,15 @@ export default {
   padding-top: 2.5px;
   padding-bottom: 2.5px;
   color: hsl(252, 5%, 40%);
+  &.solarised-light {
+    color: $solarised-light-strong-content;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-strong-content;
+  }
+  &.black {
+    color: $quite-light-grey;
+  }
   &.noIcon {
     display: none;
   }

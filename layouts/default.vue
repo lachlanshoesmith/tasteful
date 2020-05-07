@@ -34,17 +34,17 @@
               Your Invitation has been approved, so you're good to sign up.
             </paragraph>
             <form @submit.prevent="signIn">
-              <text-input v-model="email" name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @animation-over="emailFlashRed = false">
+              <text-input name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @input="email = $event" @animation-over="emailFlashRed = false">
                 <template v-slot:icon>
                   <email-icon title="Email" />
                 </template>
               </text-input>
               <text-input
                 v-if="!showSignIn"
-                v-model="username"
                 name="username-input"
                 placeholder="Username"
                 :class="{'flashRed' : usernameFlashRed}"
+                @input="username = $event"
                 @animation-over="usernameFlashRed = false"
               >
                 <template v-slot:icon>
@@ -52,11 +52,11 @@
                 </template>
               </text-input>
               <text-input
-                v-model="password"
                 name="password-input"
                 placeholder="Password"
                 :class="{'flashRed' : passwordFlashRed}"
                 password
+                @input="password = $event"
                 @animation-over="passwordFlashRed = false"
               >
                 <template v-slot:icon>
@@ -96,40 +96,34 @@
         'nav-beyond-point': showNavBackground,
       }, colourMode]"
     >
-      <div id="nav-content">
-        <h1 id="logo" @click="$router.push({ name: 'index' })">
+      <div id="nav-content" :class="colourMode">
+        <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
           tasteful
         </h1>
+        <nav-search />
         <div id="links" :class="colourMode">
-          <router-link to="/">
+          <nuxt-link to="/">
             <home-icon title="Home" />
-          </router-link>
-          <router-link to="/about">
+          </nuxt-link><nuxt-link to="/about">
             <info-icon title="About" />
-          </router-link>
-          <router-link to="/roadmap">
+          </nuxt-link><nuxt-link to="/roadmap">
             <timelapse-icon title="Roadmap" />
-          </router-link>
-          <router-link to="/donate">
+          </nuxt-link><nuxt-link to="/donate">
             <cash-icon title="Donate" />
-          </router-link>
-          <a @click="toggleColourScheme">
+          </nuxt-link><a @click="toggleColourScheme">
             <white-balance-sunny-icon title="Toggle colour scheme" />
-          </a>
-          <a id="search-button-container">
+          </a><a id="search-button-container" class="display-only-if-on-mobile">
             <magnify-icon title="Search" @click="showSearchModal = !showSearchModal" />
             <transition name="fade">
               <mini-modal v-if="showSearchModal">
                 <search @close-search-modal="showSearchModal = false" />
               </mini-modal>
             </transition>
-          </a>
-          <a v-if="user === null || user === false" @click="showModal = !showModal">
+          </a><a v-if="user === null || user === false" @click="showModal = !showModal">
             <key-icon title="Log in" />
-          </a>
-          <router-link v-if="user !== null && user !== false" :to="'/user/' + user.username">
+          </a><nuxt-link v-if="user !== null && user !== false" :to="'/user/' + user.username">
             <face-icon title="Profile" />
-          </router-link>
+          </nuxt-link>
         </div>
       </div>
     </nav>
@@ -156,6 +150,7 @@ import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
 import Search from '@/components/Search.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
+import NavSearch from '@/components/NavSearch.vue'
 
 export default {
   components: {
@@ -175,7 +170,8 @@ export default {
     Paragraph,
     TextInput,
     Search,
-    SubmitButton
+    SubmitButton,
+    NavSearch
   },
   data () {
     return {
@@ -197,6 +193,7 @@ export default {
     error: 'login/error',
     user: 'login/user',
     colourMode: 'theme/colourMode',
+    colourModeToggle: 'theme/colourModeToggle',
     allowSignup: 'login/allowSignup'
   }),
   watch: {
@@ -330,11 +327,18 @@ export default {
       }
     },
     toggleColourScheme () {
-      if (this.colourMode === 'light') {
-        this.$store.commit('theme/setColourMode', 'dark')
-      } else if (this.colourMode === 'dark') {
-        this.$store.commit('theme/setColourMode', 'light')
+      const indexOfTheme = this.colourModeToggle.indexOf(this.colourMode)
+      let indexOfThemeToCommit = 0
+      // if the currently selected theme is not in the toggle...
+      if (indexOfTheme === -1) {
+        // ...reset the theme to the first declared in the toggle.
+        indexOfThemeToCommit = 0
+      } else if (indexOfTheme === 0) {
+        indexOfThemeToCommit = 1
+      } else {
+        indexOfThemeToCommit = 0
       }
+      this.$store.commit('theme/setColourMode', this.colourModeToggle[indexOfThemeToCommit])
       localStorage.setItem('theme', this.colourMode)
     },
     signIn () {
@@ -394,11 +398,14 @@ button {
   &.dark {
     background: $deep-black;
   }
-  &.sepia {
-    background: $sepia;
+  &.solarised-light {
+    background: $solarised-light-main-background;
   }
-  &.sepia-dark {
-    background: $sepia-dark;
+  &.solarised-dark {
+    background: $solarised-dark-main-background;
+  }
+  &.black {
+    background: $black;
   }
 }
 input, textarea, select {
@@ -430,7 +437,7 @@ nav {
   a {
     padding: 5px;
   }
-  &.dark {
+  &.dark, &.solarised-dark {
     &:before {
       background: linear-gradient(
         270deg,
@@ -439,9 +446,15 @@ nav {
       );
     }
   }
+  &.black {
+    &:before {
+      background: $dark-grey;
+    }
+  }
 }
 nav.nav-unstuck {
   opacity: 0;
+  pointer-events: none; // click through div without using display: none
 }
 nav.nav-beyond-point {
   &:before {
@@ -510,22 +523,6 @@ nav.nav-beyond-point {
     }
   }
 }
-#links {
-  margin-left: auto;
-  font-size: 1.5rem;
-}
-#links.dark > a {
-  color: hsl(352, 52%, 75%);
-  &:hover {
-    color: hsl(352, 32%, 55%);
-  }
-}
-#links.sepia-dark > a {
-  color: hsl(352, 52%, 75%);
-  &:hover {
-    color: hsl(352, 32%, 55%);
-  }
-}
 a {
   outline: none;
   color: $saturated-red-dim;
@@ -534,7 +531,7 @@ a {
     cursor: pointer;
     color: $saturated-red;
   }
-  &.soft, &.dark {
+  &.soft, &.dark, &.solarised-dark {
     color: $soft-red;
     transition: all 0.2s linear;
     &:hover {
@@ -546,14 +543,28 @@ a {
     margin-left: 10px;
   }
 }
-
+#links {
+  margin-left: auto;
+  font-size: 1.5rem;
+  a {
+    text-decoration: none;
+  }
+}
+#links.dark > a, #links.solarised-dark > a {
+  color: hsl(352, 52%, 75%);
+  &:hover {
+    color: hsl(352, 32%, 55%);
+  }
+}
+#links.black > a {
+  color: $quite-dark-grey;
+  &:hover {
+    color: $light-grey;
+  }
+}
 #sign-in-button-container {
   display: flex;
   align-items: center;
-}
-
-#search-button-container {
-  display: inline-block;
 }
 
 .display-only-if-on-mobile {

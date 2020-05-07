@@ -51,6 +51,15 @@ export default {
   &.dark {
     box-shadow: 0px -30px 50px hsl(0, 0%, 10%);
   }
+  &.solarised-light {
+    box-shadow: 0px -30px 50px $solarised-light-main-background;
+  }
+  &.solarised-dark {
+    box-shadow: 0px -30px 50px $solarised-dark-main-background;
+  }
+  &.black {
+    box-shadow: none;
+  }
   &.noPadding {
     padding: 0;
   }

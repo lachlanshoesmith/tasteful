@@ -35,6 +35,18 @@ export default {
   transition: all 0.2s linear;
   &.soft {
     opacity: 0.7;
+    &.solarised-light, &.solarised-dark {
+      opacity: 1;
+    }
+    &.solarised-light {
+      color: $solarised-light-secondary-content;
+    }
+    &.solarised-dark {
+      color: $solarised-dark-secondary-content;
+    }
+    &.black {
+      color: $quite-dark-grey;
+    }
   }
   &.dark {
     color: hsl(222, 10%, 55%);
@@ -42,6 +54,29 @@ export default {
       color: hsl(352, 52%, 55%);
       &:hover {
         color: hsl(352, 52%, 75%);
+      }
+    }
+  }
+  &.solarised-light {
+    color: $solarised-light-main-content;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-main-content;
+  }
+  &.solarised-light, &.solarised-dark {
+    a {
+      color: $solarised-violet;
+      &:hover {
+        color: $solarised-magenta;
+      }
+    }
+  }
+  &.black {
+    color: $quite-dark-grey;
+    a {
+      color: $quite-light-grey;
+      &:hover {
+        color: $light-grey;
       }
     }
   }

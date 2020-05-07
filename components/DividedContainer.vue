@@ -51,6 +51,26 @@ export default {
     border-radius: 10px 10px 0px 0px;
     transition: all 0.2s linear;
   }
+  &.solarised-light, &.solarised-dark {
+    &:before {
+      background: $solarised-tasteful-gradient;
+    }
+  }
+  &.solarised-light {
+    background: $solarised-light-secondary-background;
+    &:before {
+      opacity: 0.5;
+    }
+  }
+  &.solarised-dark {
+    background: $solarised-dark-secondary-background;
+  }
+  &.black {
+    background: $deep-black;
+    &:before {
+      background: $quite-deep-black;
+    }
+  }
   &.redBorder {
     &:before {
       background: $red-gradient;
@@ -71,8 +91,14 @@ export default {
   margin-right: 15px;
   background: $very-light-grey;
   transition: all 0.2s linear;
-  &.dark {
+  &.dark, &.black {
     background: $dark-grey;
+  }
+  &.solarised-light {
+    background: $solarised-light-main-background;
+  }
+  &.solarised-dark {
+    background: $solarised-dark-main-background;
   }
 }
 

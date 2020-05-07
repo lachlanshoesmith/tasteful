@@ -63,7 +63,7 @@
       <masthead centred smaller>
         Settings
       </masthead>
-      <!-- <divided-container>
+      <divided-container id="public-profile">
         <template v-slot:left>
           <subheading smaller no-top-margin>
             Public profile
@@ -80,8 +80,9 @@
           <text-input
             name="display-name-input"
             placeholder="This is what people see on your profile."
+            default-value="Hello"
             full-width
-            @debounce="update('display name')"
+            @input="update('display name', $event)"
           >
             <template v-slot:icon>
               <face-icon title="Display name" />
@@ -95,7 +96,7 @@
             placeholder="This is how people get to your profile."
             :default-value="!loading ? user.username : ''"
             full-width
-            @debounce="update('username')"
+            @input="update('username')"
           >
             <template v-slot:icon>
               <link-icon title="Username" />
@@ -107,11 +108,11 @@
           <div class="flex-container">
             <dropdown-input
               name="pronouns-input-one"
-              default-value="A pronoun."
-              :options="['he', 'she', 'they', 'ze', 'xey']"
+              description-value="A pronoun."
+              :options="['he', 'she', 'they', 'ze', 'xey', 'any']"
               full-width
               right-margin
-              @change="update('pronouns')"
+              @change="update('pronouns', $event)"
             >
               <template v-slot:icon>
                 <gender-male-female-icon title="Pronouns" />
@@ -120,14 +121,69 @@
             <dropdown-input
               no-icon
               name="pronouns-input-two"
-              default-value="Another pronoun!"
-              :options="['him', 'her', 'them', 'hir', 'zir', 'xem', 'xyr']"
+              description-value="Another pronoun!"
+              :options="['him', 'her', 'them', 'hir', 'zir', 'xem', 'xyr', 'all']"
               full-width
-              @change="update('pronouns')"
+              @change="update('pronouns', $event)"
             />
           </div>
         </template>
-      </divided-container> -->
+      </divided-container>
+      <divided-container>
+        <template v-slot:left>
+          <subheading smaller no-top-margin>
+            Theming
+          </subheading>
+          <paragraph soft>
+            Your changes will persist across sessions, but not different browsers and devices at this stage.
+          </paragraph>
+        </template>
+        <template v-slot:right>
+          <input-label no-top-margin>
+            Currently selected theme
+          </input-label>
+          <dropdown-input
+            name="selected-theme-input"
+            description-value="Which lovely theme will you choose?"
+            :default-value="colourMode"
+            :options="['light', 'dark', 'solarised-light', 'solarised-dark', 'black']"
+            full-width
+            @change="update('theme', $event)"
+          >
+            <template v-slot:icon>
+              <palette-icon title="Selected theme" />
+            </template>
+          </dropdown-input>
+          <input-label>
+            Navbar theme toggle options
+          </input-label>
+          <div class="flex-container">
+            <dropdown-input
+              name="navbar-theme-toggle-input-one"
+              description-value="A nice theme."
+              :default-value="colourModeToggle[0]"
+              :options="['light', 'solarised-light']"
+              full-width
+              right-margin
+              @change="update('theme-toggle', [0, $event])"
+            >
+              <template v-slot:icon>
+                <invert-colours-icon title="Navbar theme toggle" />
+              </template>
+            </dropdown-input>
+            <dropdown-input
+              no-icon
+              name="navbar-theme-toggle-input-two"
+              description-value="Another theme that you like (we hope)."
+              :default-value="colourModeToggle[1]"
+              :options="['dark', 'solarised-dark', 'black']"
+              full-width
+              @change="update('theme-toggle', [1, $event])"
+            />
+          </div>
+        </template>
+      </divided-container>
+
       <divided-container>
         <template v-slot:left>
           <subheading smaller no-top-margin>
@@ -205,16 +261,19 @@
 // @ is an alias to /src
 import crypto from 'crypto'
 import faceIcon from 'vue-material-design-icons/Face.vue'
-// import linkIcon from 'vue-material-design-icons/Link.vue'
+import linkIcon from 'vue-material-design-icons/Link.vue'
 import keyIcon from 'vue-material-design-icons/Key.vue'
 import fingerprintIcon from 'vue-material-design-icons/Fingerprint.vue'
-// import genderMaleFemaleIcon from 'vue-material-design-icons/GenderMaleFemale.vue'
+import genderMaleFemaleIcon from 'vue-material-design-icons/GenderMaleFemale.vue'
+import invertColoursIcon from 'vue-material-design-icons/InvertColors.vue'
+import paletteIcon from 'vue-material-design-icons/Palette.vue'
+import { mapGetters } from 'vuex'
 import masthead from '~/components/Masthead.vue'
 import subheading from '~/components/Subheading.vue'
 import paragraph from '~/components/Paragraph.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import textInput from '~/components/TextInput.vue'
-// import dropdownInput from '~/components/DropdownInput.vue'
+import dropdownInput from '~/components/DropdownInput.vue'
 import submitButton from '~/components/SubmitButton.vue'
 import regularButton from '~/components/RegularButton.vue'
 import articleContent from '~/components/ArticleContent.vue'
@@ -231,15 +290,17 @@ export default {
     paragraph,
     paragraphContainer,
     textInput,
-    // dropdownInput,
+    dropdownInput,
     submitButton,
     regularButton,
     articleContent,
     faceIcon,
-    // linkIcon,
+    linkIcon,
     keyIcon,
     fingerprintIcon,
-    // genderMaleFemaleIcon,
+    genderMaleFemaleIcon,
+    paletteIcon,
+    invertColoursIcon,
     dividedContainer,
     blur,
     inputLabel
@@ -259,19 +320,11 @@ export default {
       }
     }
   },
-  computed: {
-    colourMode () {
-      return this.$store.state.theme.colourMode
-    },
-    user () {
-      return this.$store.state.login.user
-    }
-  },
-  // watch: {
-  //   user (newValue, oldValue) {
-  //     this.loading = false
-  //   }
-  // },
+  computed: mapGetters({
+    colourMode: 'theme/colourMode',
+    colourModeToggle: 'theme/colourModeToggle',
+    user: 'login/user'
+  }),
   mounted () {
     setTimeout(() => {
       if (this.user === null || this.user === false) {
@@ -386,10 +439,20 @@ export default {
         })
       }
     },
-    update (toUpdate) {
-      // if (toUpdate === 'display name') {
-      //   this.user.
-      // }
+    update (toUpdate, value) {
+      if (toUpdate === 'display name') {
+        console.log(value)
+      } else if (toUpdate === 'theme') {
+        this.$store.commit('theme/setColourMode', value)
+      } else if (toUpdate === 'theme-toggle') {
+        const themeToggle = this.colourModeToggle
+        if (value[0] === 0) {
+          themeToggle[0] = value[1]
+        } else {
+          themeToggle[1] = value[1]
+        }
+        this.$store.commit('theme/setColourModeToggle', themeToggle)
+      }
     },
     signOut () {
       this.$store.commit('login/setUser', 'logout')

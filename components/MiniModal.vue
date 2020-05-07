@@ -26,7 +26,7 @@ export default {
     border-radius: 20px;
     background: $snow-white;
     box-shadow: 0px 4px 10px $light-grey;
-    transition: all 0.1s linear;
+    transition: all 0.2s linear;
     &.dark {
       background: $deep-black;
       box-shadow: -2px 4px 10px $dark-grey;

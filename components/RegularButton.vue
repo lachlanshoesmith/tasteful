@@ -71,30 +71,22 @@ export default {
   font-weight: 500;
   text-align: center;
   line-height: 1.5rem;
+  background: none;
 
-  &.light {
-    background: none;
+  &.light, &.solarised-light {
     border: 2px solid $muted-purple;
     color: $muted-purple-dim;
   }
   &.dark {
-    background: none;
     border: 2px solid $muted-purple-dim;
   }
-  &.sepia {
-    background: linear-gradient(
-      103.68deg,
-      hsl(17, 47%, 76%) 0.09%,
-      hsl(17, 67%, 75%) 97.38%
-    );
+  &.solarised-dark {
+    border: 2px solid $solarised-dark-main-background;
+    color: $solarised-dark-strong-content;
   }
-  &.sepia-dark {
-    background: linear-gradient(
-      103.68deg,
-      hsl(17, 27%, 56%) 0.09%,
-      hsl(17, 47%, 55%) 97.38%
-    );
-    box-shadow: 0px 4px 20px hsla(39, 68%, 15%, 0.5);
+  &.black {
+    border: 2px solid $dark-grey;
+    color: $quite-light-grey;
   }
   &.success {
     background: $green-gradient;
@@ -106,11 +98,11 @@ export default {
   &:hover {
     cursor: pointer;
     color: hsl(253, 100%, 94%);
-    &.light {
+    &.light, &.solarised-light {
       background: $muted-purple-dim;
       box-shadow: 0px 0px 10px hsla(252, 67%, 45%, 0.5);
     }
-    &.dark {
+    &.dark, &.solarised-dark {
       background: $muted-purple;
       box-shadow: 0px 4px 20px hsla(252, 67%, 45%, 0.2);
     }

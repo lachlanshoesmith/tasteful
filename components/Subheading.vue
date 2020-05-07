@@ -40,6 +40,15 @@ export default {
   &.dark {
     color: $saturated-blue;
   }
+  &.solarised-light {
+    color: $solarised-light-strong-content;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-strong-content;
+  }
+  &.black {
+    color: $quite-light-grey;
+  }
   &.smaller {
     font-size: 1rem;
     line-height: 1.5rem;

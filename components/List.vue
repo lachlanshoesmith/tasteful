@@ -37,6 +37,29 @@ export default {
       }
     }
   }
+  &.solarised-light {
+    color: $solarised-light-main-content;
+  }
+  &.solarised-dark {
+    color: $solarised-dark-main-content;
+  }
+  &.solarised-light, &.solarised-dark {
+    a {
+      color: $solarised-violet;
+      &:hover {
+        color: $solarised-magenta;
+      }
+    }
+  }
+  &.black {
+    color: $quite-dark-grey;
+    a {
+      color: $quite-light-grey;
+      &:hover {
+        color: $light-grey;
+      }
+    }
+  }
 }
 
 @media (max-width: 1000px) {

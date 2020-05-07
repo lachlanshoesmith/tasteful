@@ -12,7 +12,6 @@
         <subheading no-top-margin>
           The best online music community is getting closer to launch by the day.
         </subheading>
-        <a :class="colourMode" target="_blank" href="https://twitter.com/tastefulreviews">Follow our Twitter to stay updated!</a> 😊
       </template>
       <template v-slot:right>
         <div>
