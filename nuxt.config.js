@@ -49,8 +49,8 @@ module.exports = {
    */
   modules: [
     '@nuxtjs/pwa',
-    '@nuxt/http',
-    // Doc: https://github.com/nuxt-community/dotenv-module
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
     '@nuxtjs/style-resources',
     [
       '@nuxtjs/firebase',
@@ -70,6 +70,18 @@ module.exports = {
       }
     ]
   ],
+  axios: {
+    proxy: true
+  },
+  proxy: {
+    '/wikidataAPI': {
+      target: 'https://wikidata.org/w/api.php',
+      pathRewrite: {
+        '^/wikidataAPI': ''
+      },
+      changeOrigin: true
+    }
+  },
   styleResources: {
     scss: ['~/assets/scss/palette.scss']
   },

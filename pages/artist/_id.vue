@@ -106,16 +106,16 @@ export default {
     }
   },
   mounted () {
-    this.$axios.get('https://musicbrainz.org/ws/2/artist/?query=arid:' + this.id + '&fmt=json')
-      .then((res) => {
-        this.artist = res.data.artists[0]
-        document.title = 'tasteful | ' + this.artist.name
-      })
-    this.$axios.get('https://musicbrainz.org/ws/2/release-group/?query=arid:' + this.id + '+AND+status:official&limit=100&fmt=json')
-      .then((res) => {
-        this.releases = res.data['release-groups']
-        this.sortReleasesByType()
-      })
+    // this.$axios.get('https://musicbrainz.org/ws/2/artist/?query=arid:' + this.id + '&fmt=json')
+    //   .then((res) => {
+    //     this.artist = res.data.artists[0]
+    //     document.title = 'tasteful | ' + this.artist.name
+    //   })
+    // this.$axios.get('https://musicbrainz.org/ws/2/release-group/?query=arid:' + this.id + '+AND+status:official&limit=100&fmt=json')
+    //   .then((res) => {
+    //     this.releases = res.data['release-groups']
+    //     this.sortReleasesByType()
+    //   })
   },
   methods: {
     sortReleasesByType () {

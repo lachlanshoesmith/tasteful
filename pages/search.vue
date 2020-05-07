@@ -249,47 +249,47 @@ export default {
         this.lastSearchWasSpecific = false
       }
 
-      if (this.searchType === 'artists') {
-        if (this.selectedRegion === 'All regions') {
-          this.$axios
-            .get(
-              'https://musicbrainz.org/ws/2/artist/?query=artist:' +
-                this.searchRequest +
-                '?inc=url-rels+genres&fmt=json'
-            )
-            .then((res) => {
-              this.processData(res, false)
-              this.loading = false
-              lottie.stop()
-            })
-        } else {
-          this.$axios
-            .get(
-              'https://musicbrainz.org/ws/2/artist/?query=artist:' +
-                this.searchRequest +
-                '+AND+country:' +
-                countryList.getCode(this.selectedRegion) +
-                '?inc=url-rels+genres&fmt=json'
-            )
-            .then((res) => {
-              this.processData(res, false)
-              this.loading = false
-              lottie.stop()
-            })
-        }
-      } else {
-        this.$axios
-          .get(
-            'https://musicbrainz.org/ws/2/release-group/?query=release:' +
-              this.searchRequest +
-              '?inc=genres&inc=recordings&fmt=json'
-          )
-          .then((res) => {
-            this.processData(res, true)
-            this.loading = false
-            lottie.stop()
-          })
-      }
+      // if (this.searchType === 'artists') {
+      //   if (this.selectedRegion === 'All regions') {
+      //     this.$axios
+      //       .get(
+      //         'https://musicbrainz.org/ws/2/artist/?query=artist:' +
+      //           this.searchRequest +
+      //           '?inc=url-rels+genres&fmt=json'
+      //       )
+      //       .then((res) => {
+      //         this.processData(res, false)
+      //         this.loading = false
+      //         lottie.stop()
+      //       })
+      //   } else {
+      //     this.$axios
+      //       .get(
+      //         'https://musicbrainz.org/ws/2/artist/?query=artist:' +
+      //           this.searchRequest +
+      //           '+AND+country:' +
+      //           countryList.getCode(this.selectedRegion) +
+      //           '?inc=url-rels+genres&fmt=json'
+      //       )
+      //       .then((res) => {
+      //         this.processData(res, false)
+      //         this.loading = false
+      //         lottie.stop()
+      //       })
+      //   }
+      // } else {
+      //   this.$axios
+      //     .get(
+      //       'https://musicbrainz.org/ws/2/release-group/?query=release:' +
+      //         this.searchRequest +
+      //         '?inc=genres&inc=recordings&fmt=json'
+      //     )
+      //     .then((res) => {
+      //       this.processData(res, true)
+      //       this.loading = false
+      //       lottie.stop()
+      //     })
+      // }
     },
     processData (res, isRelease) {
       if (isRelease) {
