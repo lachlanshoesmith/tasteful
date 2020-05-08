@@ -12,13 +12,13 @@
         <magnify-icon title="Search" />
       </template>
     </text-input>
-    <div v-if="searching" class="search-content-container" :class="[{loadingSearchResults}]" @click="clickedWithinSearch = true">
+    <div v-if="searching" class="search-content-container" :class="{loadingSearchResults}" @click="clickedWithinSearch = true">
       <masthead centred fit-width no-left-margin-on-large-screens>
         Search results
       </masthead>
-      <img :src="imageURL" :alt="imageURL">
       <div class="results">
         <div v-for="artist in artists" :key="artist.id" class="artist">
+          <div v-if="imageURLLowRes" class="artist-image" :style="{ 'background-image': 'url(' + imageURL + '), url(' + imageURLLowRes + ')' }" />
           {{ artist.name }}
         </div>
       </div>
@@ -49,12 +49,9 @@ export default {
       searchQuery: '',
       searchResult: [],
       imageURL: '',
+      imageURLLowRes: '',
       loadingSearchResults: false,
-      artists: [
-        'Drake',
-        'Jay-Z',
-        'Kendrick Lamar'
-      ]
+      artists: []
     }
   },
   methods: {
@@ -90,15 +87,17 @@ export default {
           })
       }
       const artistRelations = (relations) => {
-        relations.forEach((relation) => {
+        for (let relationIndex = 0; relationIndex < relations.length; relationIndex++) {
+          const relation = relations[relationIndex]
           // get wikidata link
           if (relation.type === 'wikidata') {
             // get wikidata ID
             const wikidataID = relation.url.resource.slice(30) // https://www.wikidata.org/wiki/ = 30 chars
             // lookup image
             getImage(wikidataID)
+            break
           }
-        })
+        }
       }
       const getImage = (wikidataID) => {
         this.$axios
@@ -109,10 +108,18 @@ export default {
             // get filename and location
             // (this process is a serious pain)
             const imageInfo = res.data.claims.P18[0].mainsnak
-            const imageName = imageInfo.datavalue.value.replace(/ /g, '_')
+            // remove invalid characters before hash
+            let imageName = imageInfo.datavalue.value.replace(/ /g, '_')
             const hashedImageName = crypto.createHash('md5').update(imageName).digest('hex')
             const firstCharacterInHash = hashedImageName.charAt(0)
             const secondCharacterInHash = hashedImageName.charAt(1)
+            // remove other invalid characters after hash (generates incorrect md5 otherwise)
+            imageName = imageName.replace('(', '%28') // no regex here as these should only occur once.
+            imageName = imageName.replace(')', '%29')
+            // download very low res image first
+            const lowResolutionImageURL = 'https://commons.wikimedia.org/w/thumb.php?width=10&f=' + imageName // only 10px wide; stretched and blurred while loading the main image.
+            this.imageURLLowRes = lowResolutionImageURL
+            // Note: may replace full resolution URL with a good-enough alternative (eg. 400px) in the future
             const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/' + firstCharacterInHash + '/' + firstCharacterInHash + secondCharacterInHash + '/' + imageName
             this.imageURL = imageURL
           })
@@ -144,6 +151,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100vh;
+  backdrop-filter: blur(15px);
   background: rgba($deep-black, 0.8);
   color: $saturated-blue;
   &.loadingSearchResults {
@@ -155,5 +163,11 @@ export default {
 }
 .artist {
   margin-right: 20px;
+}
+.artist-image {
+  width: 150px;
+  height: 150px;
+  background-size: cover, cover;
+  border-radius: 50px;
 }
 </style>
