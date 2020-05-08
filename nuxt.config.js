@@ -80,6 +80,18 @@ module.exports = {
         '^/wikidataAPI': ''
       },
       changeOrigin: true
+    },
+    '/wikimediaCommons': {
+      target: 'https://commons.wikimedia.org/w/thumb.php',
+      pathRewrite: {
+        '^/wikimediaCommons': ''
+      }
+    },
+    '/musicBrainzAPI': {
+      target: 'https://musicbrainz.org/ws/2',
+      pathRewrite: {
+        '^/musicBrainzAPI': ''
+      }
     }
   },
   styleResources: {

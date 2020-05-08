@@ -18,7 +18,7 @@
       </masthead>
       <div class="results">
         <div v-for="artist in artists" :key="artist.id" class="artist">
-          <div v-if="imageURLLowRes" class="artist-image" :style="{ 'background-image': 'url(' + imageURL + '), url(' + imageURLLowRes + ')' }" />
+          <div v-if="artist.imageURLLowRes" id="artist-image" class="artist-image" :style="{ 'background-image': 'url(' + artist.imageURL + '), url(' + artist.imageURLLowRes + ')' }" />
           {{ artist.name }}
         </div>
       </div>
@@ -34,6 +34,7 @@ import crypto from 'crypto'
 import textInput from '@/components/TextInput.vue'
 import magnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import masthead from '@/components/Masthead.vue'
+import Vibrant from 'node-vibrant'
 
 export default {
   name: 'NavSearch',
@@ -68,25 +69,25 @@ export default {
       const searchResult = () => {
         this.$axios
           .get(
-            'https://musicbrainz.org/ws/2/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json'
+            '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json'
           )
           .then((res) => {
             const artists = res.data.artists
-            artists.forEach((artist) => {
-              artistInfo(artist)
+            artists.forEach((artist, i) => {
+              artistInfo(artist, i)
               this.artists.push(artist)
             })
           })
       }
-      const artistInfo = (artist) => {
+      const artistInfo = (artist, index) => {
         this.$axios.get(
-          'https://musicbrainz.org/ws/2/artist/' + artist.id + '?inc=url-rels&fmt=json'
+          '/musicBrainzAPI/artist/' + artist.id + '?inc=url-rels&fmt=json'
         )
           .then((res) => {
-            artistRelations(res.data.relations)
+            artistRelations(res.data.relations, index)
           })
       }
-      const artistRelations = (relations) => {
+      const artistRelations = (relations, index) => {
         for (let relationIndex = 0; relationIndex < relations.length; relationIndex++) {
           const relation = relations[relationIndex]
           // get wikidata link
@@ -94,12 +95,12 @@ export default {
             // get wikidata ID
             const wikidataID = relation.url.resource.slice(30) // https://www.wikidata.org/wiki/ = 30 chars
             // lookup image
-            getImage(wikidataID)
+            getImage(wikidataID, index)
             break
           }
         }
       }
-      const getImage = (wikidataID) => {
+      const getImage = (wikidataID, index) => {
         this.$axios
           .get(
             '/wikidataAPI?action=wbgetclaims&format=json&origin=*&property=P18&entity=' + wikidataID
@@ -118,13 +119,31 @@ export default {
             imageName = imageName.replace(')', '%29')
             // download very low res image first
             const lowResolutionImageURL = 'https://commons.wikimedia.org/w/thumb.php?width=10&f=' + imageName // only 10px wide; stretched and blurred while loading the main image.
-            this.imageURLLowRes = lowResolutionImageURL
+            this.artists[index].imageURLLowRes = lowResolutionImageURL
             // Note: may replace full resolution URL with a good-enough alternative (eg. 400px) in the future
             const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/' + firstCharacterInHash + '/' + firstCharacterInHash + secondCharacterInHash + '/' + imageName
-            this.imageURL = imageURL
+            this.artists[index].imageURL = imageURL
+            // get colours
+            getColours(imageName, index)
           })
           .finally(() => {
             this.loadingSearchResults = false
+          })
+      }
+      const getColours = (imageName, index) => {
+        const proxyLowResolutionImageURL = '/wikimediaCommons?width=10&f=' + imageName
+        const imagePalette = {}
+        const v = new Vibrant(proxyLowResolutionImageURL)
+        v.getPalette()
+          .then((palette) => {
+            Object.keys(palette).forEach((colour) => {
+              const r = palette[colour]._rgb[0]
+              const g = palette[colour]._rgb[1]
+              const b = palette[colour]._rgb[2]
+              const formattedRGB = `rgb(${r}, ${g}, ${b})`
+              imagePalette[colour] = formattedRGB
+            })
+            this.artists[index].imagePalette = imagePalette
           })
       }
       searchResult() // begins the search
