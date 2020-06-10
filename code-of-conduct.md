@@ -23,7 +23,7 @@
 3. Avoid having an overwhelming positive or negative bias in your ratings. This will not be a concern for most people, but rating the vast majority of the albums you score extremely high may result in your ratings not being considered in the average score for any particular release. 
 4. Do not engage with a discussion with the intent of ruining it.
 
-# For developers
+## For developers
 
 1. It is expected that all participants in this repository will not be disrespectful to any particular group or individual. This is not a political issue and is not up for debate.
 2. Forks of this repository are expected to abide by at least rule zero. tasteful or its deviations are not to be used as platforms for hate, bigotry, or malicious activity.
