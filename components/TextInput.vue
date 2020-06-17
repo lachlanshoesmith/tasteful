@@ -1,7 +1,7 @@
 <template>
   <div
     class="text-input-container"
-    :class="[{ noBottomMargin, fullWidth, rightMargin }, colourMode]"
+    :class="[{ noBottomMargin, fullWidth, rightMargin, focusHighlight }, colourMode]"
   >
     <div class="icon-container" :class="[{noIcon}, colourMode]">
       <slot name="icon" />
@@ -13,7 +13,7 @@
       class="text-input"
       :type="checkInputType()"
       :readonly="disabled"
-      @input="reportValue"
+      @input="isTyping = true"
       @focus="reportFocus(true)"
       @blur="reportFocus(false)"
       @animationend="reportAnimationEnd"
@@ -34,15 +34,16 @@ export default {
     noIcon: Boolean,
     disabled: Boolean,
     focusManualBlurHandling: Boolean,
-    debounce: Boolean,
     defaultValue: {
       type: String,
       default: ''
-    }
+    },
+    focusHighlight: Boolean
   },
   data () {
     return {
-      value: this.defaultValue
+      value: this.defaultValue,
+      isTyping: false
     }
   },
   computed: {
@@ -53,6 +54,15 @@ export default {
   watch: {
     defaultValue (val) {
       this.value = val
+    },
+    value: _.debounce(function () {
+      this.isTyping = false
+    }, 500),
+    isTyping (val) {
+      if (!val) {
+        // if not typing
+        this.$emit('input', this.value)
+      }
     }
   },
   methods: {
@@ -61,16 +71,6 @@ export default {
         return 'password'
       } else {
         return 'text'
-      }
-    },
-    reportValue () {
-      if (this.debounce) {
-        // debounce
-        _.debounce(() => {
-          // TO FINISH
-        }, 1000)
-      } else {
-        this.$emit('input', this.value)
       }
     },
     reportAnimationEnd () {
@@ -130,6 +130,9 @@ export default {
   }
   &.fullWidth {
     width: 100%;
+  }
+  &.focusHighlight {
+    border: 1px $saturated-purple-quite-dim solid;
   }
 }
 

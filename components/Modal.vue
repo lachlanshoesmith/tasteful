@@ -1,6 +1,7 @@
 <template>
   <div :class="colourMode" class="modal-container">
-    <div :class="[{greenBackground}, colourMode]" class="modal">
+    <!-- The old modal design. Nice, but too curvy. Not to body shame or anything.
+      <div :class="[colourMode]" class="modal">
       <div id="modal-content-left" class="modal-content">
         <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
         <div :class="[{scrollable}]">
@@ -8,6 +9,21 @@
         </div>
       </div>
       <div id="modal-content-right" class="modal-content" :class="[{scrollable}]">
+        <slot name="right" />
+      </div>
+    </div> -->
+
+    <!-- The new modal design is a slightly modified DividedContainer, essentially. -->
+    <div :class="[{redBorder, shadow}, colourMode]" class="modal">
+      <div class="modal-content-left">
+        <div class="flex-container">
+          <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
+          <slot name="heading" />
+        </div>
+        <slot name="left" />
+      </div>
+      <div class="divider" :class="[colourMode]" />
+      <div class="modal-content-right">
         <slot name="right" />
       </div>
     </div>
@@ -42,7 +58,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .modal-container {
-  background: hsla(0, 0%, 80%, 0.9);
+  backdrop-filter: blur(5px);
   width: 100vw;
   height: 100vh;
   transition: all 0.2s linear;
@@ -53,40 +69,115 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  &.dark {
-    background: hsla(0, 0%, 10%, 0.9);
+  &.dark, &.black, &.solarised-dark {
+    background: rgba($deep-black, 0.8);
+  }
+  &.light, &.solarised-light {
+    background: rgba($light-grey, 0.8);
   }
 }
 
+// OLD MODAL
+// .modal {
+//   background: hsl(0, 0%, 100%);
+//   box-shadow: 0px 0px 50px hsl(0, 0%, 95%);
+//   width: 50vw;
+//   min-height: 50vh;
+//   max-height: 80vh;
+//   border-radius: 50px;
+//   transition: all 0.2s linear;
+//   display: flex;
+//   padding-bottom: 20px;
+//   &:before {
+//     position: absolute;
+//     transform: translateY(-10px);
+//     z-index: -1;
+//     content: " ";
+//     background: linear-gradient(270deg, #f14f4f, #5f40dd);
+//     width: 50vw;
+//     height: 50vh;
+//     border-radius: 50px;
+//     transition: all 0.2s linear;
+//   }
+//   &.dark {
+//     background: hsl(0, 0%, 10%);
+//     box-shadow: 0px 0px 20px hsl(0, 0%, 12%);
+//   }
+//   &.greenBackground {
+//     background: $green-gradient;
+//     background-size: 400% 400%;
+//     animation: GradientAnimation 2s ease infinite;
+//   }
+// }
+
 .modal {
-  background: hsl(0, 0%, 100%);
-  box-shadow: 0px 0px 50px hsl(0, 0%, 95%);
-  width: 50vw;
-  min-height: 50vh;
-  max-height: 80vh;
-  border-radius: 50px;
-  transition: all 0.2s linear;
+  background: $quite-white;
   display: flex;
-  padding-bottom: 20px;
+  width: 40vw;
+  min-height: 30vh;
+  padding: 30px;
+  padding-left: 40px;
+  padding-right: 40px;
+  margin-bottom: 40px;
+  border-radius: 0px 0px 10px 10px;
+  transition: all 0.2s linear;
+  z-index: 1;
+  position: relative;
+  &.dark {
+    background: $quite-deep-black;
+  }
   &:before {
-    position: absolute;
-    transform: translateY(-10px);
-    z-index: -1;
+    transform: translateX(-40px) translateY(-35px);
     content: " ";
-    background: linear-gradient(270deg, #f14f4f, #5f40dd);
-    width: 50vw;
-    height: 50vh;
-    border-radius: 50px;
+    position: absolute;
+    background: $tasteful-gradient;
+    width: 100%;
+    height: 5px;
+    border-radius: 10px 10px 0px 0px;
     transition: all 0.2s linear;
   }
-  &.dark {
-    background: hsl(0, 0%, 10%);
-    box-shadow: 0px 0px 20px hsl(0, 0%, 12%);
+  &.solarised-light, &.solarised-dark {
+    &:before {
+      background: $solarised-tasteful-gradient;
+    }
   }
-  &.greenBackground {
-    background: $green-gradient;
-    background-size: 400% 400%;
-    animation: GradientAnimation 2s ease infinite;
+  &.solarised-light {
+    background: $solarised-light-secondary-background;
+    &:before {
+      opacity: 0.5;
+    }
+  }
+  &.solarised-dark {
+    background: $solarised-dark-secondary-background;
+  }
+  &.black {
+    background: $deep-black;
+    &:before {
+      background: $quite-deep-black;
+    }
+  }
+  &.redBorder {
+    &:before {
+      background: $red-gradient;
+    }
+  }
+  &.shadow {
+    box-shadow: 0px 0px 50px;
+    &.light {
+      color: $quite-light-grey;
+    }
+    &.dark {
+      color: $dark-grey;
+    }
+    &.black {
+      color: $black;
+    }
+    &.solarised-light {
+      color: $solarised-light-main-background;
+    }
+    &.solarised-dark {
+      color: $solarised-dark-main-background;
+    }
   }
 }
 
@@ -96,16 +187,14 @@ export default {
   padding-top: 5%;
 }
 
-#modal-content-left {
-  width: 40%;
-  padding-top: calc(5% - 12px);
+.modal-content-left {
+  margin-right: 15px;
+  text-align: left;
+  width: 35%;
 }
 
-#modal-content-right {
-  width: 60%;
-  overflow: auto;
-  max-height: 60%;
-  margin-right: 30px;
+.modal-content-right {
+  width: 65%;
 }
 
 .subheading-content {
@@ -132,6 +221,10 @@ export default {
 
 .scrollable {
   overflow-y: auto;
+}
+
+.flex-container {
+  display: flex;
 }
 
 @media (max-width: 1000px) {

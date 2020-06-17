@@ -92,6 +92,13 @@ module.exports = {
       pathRewrite: {
         '^/musicBrainzAPI': ''
       }
+    },
+    '/archive': {
+      target: 'https://archive.org/',
+      pathRewrite: {
+        '^/archive': ''
+      },
+      followRedirects: true
     }
   },
   styleResources: {

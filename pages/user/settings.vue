@@ -154,6 +154,7 @@
               <palette-icon title="Selected theme" />
             </template>
           </dropdown-input>
+          <checkbox>Enable dynamic colouring</checkbox>
           <input-label>
             Navbar theme toggle options
           </input-label>
@@ -245,6 +246,7 @@
           </paragraph>
         </template>
         <template v-slot:right>
+          <checkbox>Enable experimental features</checkbox>
           <regular-button include-arrow-icon @pressed="signOut">
             <span>Sign out</span>
           </regular-button>
@@ -280,6 +282,7 @@ import articleContent from '~/components/ArticleContent.vue'
 import dividedContainer from '~/components/DividedContainer.vue'
 import inputLabel from '~/components/InputLabel.vue'
 import blur from '~/components/Blur.vue'
+import checkbox from '~/components/Checkbox.vue'
 import { adjectives, nouns } from '~/assets/js/words.js'
 
 export default {
@@ -303,6 +306,7 @@ export default {
     invertColoursIcon,
     dividedContainer,
     blur,
+    checkbox,
     inputLabel
   },
   data () {

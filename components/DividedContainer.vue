@@ -1,5 +1,5 @@
 <template>
-  <div :class="[{redBorder}, colourMode]" class="divided-container">
+  <div :class="[{redBorder, shadow}, colourMode]" class="divided-container">
     <div class="container-content-left">
       <slot name="left" />
     </div>
@@ -14,7 +14,8 @@
 export default {
   name: 'DividedContainer',
   props: {
-    redBorder: Boolean
+    redBorder: Boolean,
+    shadow: Boolean
   },
   computed: {
     colourMode () {
@@ -74,6 +75,24 @@ export default {
   &.redBorder {
     &:before {
       background: $red-gradient;
+    }
+  }
+  &.shadow {
+    box-shadow: 0px 0px 50px;
+    &.light {
+      color: $quite-light-grey;
+    }
+    &.dark {
+      color: $dark-grey;
+    }
+    &.black {
+      color: $black;
+    }
+    &.solarised-light {
+      color: $solarised-light-main-background;
+    }
+    &.solarised-dark {
+      color: $solarised-dark-main-background;
     }
   }
 }

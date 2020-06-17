@@ -1,15 +1,12 @@
 <template>
-  <span :class="[{ muted }]" class="tag">
+  <span class="tag">
     <slot />
   </span>
 </template>
 
 <script>
 export default {
-  name: 'Tag',
-  props: {
-    muted: Boolean
-  }
+  name: 'Tag'
 }
 </script>
 
@@ -23,20 +20,7 @@ export default {
     margin-right: 10px;
     display: inline-flex;
     align-items: center;
-    background: linear-gradient(
-      103.68deg,
-      hsl(2, 46%, 40%) 0.09%,
-      hsl(0, 68%, 45%) 97.38%
-    );
-    box-shadow: 0px 4px 20px hsla(0, 68%, 45%, 0.5);
-    color: hsl(0, 100%, 94%);
     font-weight: 900;
     border-radius: 100px;
-
-    &.muted {
-      color: hsl(0, 10%, 64%);
-      background: none;
-      box-shadow: none;
-    }
   }
 </style>

@@ -2,11 +2,13 @@
   <div id="app" :class="colourMode">
     <transition name="fade">
       <modal v-if="showModal" scrollable @closeModal="showModal = false">
-        <template v-slot:left>
-          <subheading>
+        <template v-slot:heading>
+          <subheading subheading smaller no-top-margin>
             <span v-if="showSignIn">Welcome back!</span>
             <span v-else>Welcome aboard!</span>
           </subheading>
+        </template>
+        <template v-slot:left>
           <paragraph>
             <span v-if="showSignIn">It's always a pleasure to see you.</span>
             <span v-else>Well, this is awkward... I guess we've never met. Let's change that.</span>
@@ -19,17 +21,10 @@
         </template>
         <template v-slot:right>
           <div>
-            <masthead
-              no-shadow
-              centred
-              smaller
-              fit-width
-              no-left-margin-on-large-screens
-              small-bottom-margin
-            >
+            <!-- <input-label no-top-margin>
               <span v-if="showSignIn">Sign in</span>
               <span v-else>Sign up</span>
-            </masthead>
+            </input-label> -->
             <paragraph v-if="allowSignup && !showSignIn">
               Your Invitation has been approved, so you're good to sign up.
             </paragraph>
@@ -100,7 +95,7 @@
         <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
           tasteful
         </h1>
-        <nav-search />
+        <nav-search :visible="showNavbar" />
         <div id="links" :class="colourMode">
           <nuxt-link to="/">
             <home-icon title="Home" />
@@ -144,7 +139,6 @@ import KeyIcon from 'vue-material-design-icons/Key.vue'
 import { mapGetters } from 'vuex'
 import Modal from '@/components/Modal.vue'
 import MiniModal from '@/components/MiniModal.vue'
-import Masthead from '@/components/Masthead.vue'
 import Subheading from '@/components/Subheading.vue'
 import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
@@ -165,7 +159,6 @@ export default {
     KeyIcon,
     Modal,
     MiniModal,
-    Masthead,
     Subheading,
     Paragraph,
     TextInput,
@@ -381,6 +374,7 @@ html,
   min-height: 100%;
   width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 body,
 html,

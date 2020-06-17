@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="{displayingSearchResults: displaySearchResults, desktop}"
-    class="search"
-  >
+  <div :class="{ displayingSearchResults: displaySearchResults, desktop }" class="search">
     <paragraph :class="{ displayingSearchResults: displaySearchResults }">
       <div id="search-container" :class="colourMode">
         <input
@@ -53,7 +50,7 @@
                 <span v-if="alias !== result.name">{{ alias.name }}</span>
                 <span v-if="i !== result.aliases.length - 1">, </span>
               </span>
-            </span> -->
+            </span>-->
             <nuxt-link
               :to="'/artist/' + result.id"
               :class="colourMode"
@@ -79,7 +76,7 @@
             >
             <article>
               <p :class="colourMode">
-                {{ result['artist-credit'][0].artist.name }}
+                {{ result["artist-credit"][0].artist.name }}
               </p>
               <p :class="colourMode" class="artist-name">
                 {{ result.title }}
@@ -88,12 +85,8 @@
           </div>
         </li>
       </ul>
-      <a
-        v-show="!loading"
-        @click="showModal = !showModal"
-      >Can't find what you're looking for?</a>
+      <a v-show="!loading" @click="showModal = !showModal">Can't find what you're looking for?</a>
     </div>
-    </main>
   </div>
 </template>
 
@@ -213,9 +206,11 @@ export default {
   display: flex;
   flex-direction: column;
   transition: all 0.3s linear;
+
   &.displayingSearchResults {
     max-height: 50vh;
   }
+
   &.desktop {
     display: none;
   }
@@ -231,6 +226,7 @@ export default {
 .search-item {
   display: flex;
   margin-bottom: 1rem;
+
   .album-item {
     display: flex;
   }
@@ -243,6 +239,7 @@ export default {
   font-size: 1rem;
   font-weight: 500;
   width: 50%;
+
   &.dark {
     color: hsl(222, 88%, 75%);
   }
@@ -252,6 +249,7 @@ export default {
   width: 64px;
   height: 64px;
   display: none;
+
   &.loading {
     display: block;
     margin: auto;
@@ -267,9 +265,11 @@ export default {
   padding-bottom: 10px;
   width: 100%;
   transition: all 0.2s linear;
+
   &.dark {
     background: hsl(252, 15%, 10%);
   }
+
   &.black {
     background: $deep-black;
   }
@@ -284,9 +284,11 @@ export default {
   padding-right: 10px;
   font-size: 1rem;
   width: 100%;
+
   &.dark {
     color: hsl(252, 15%, 70%);
   }
+
   &.black {
     color: $quite-light-grey;
   }
@@ -298,10 +300,12 @@ export default {
   color: hsl(222, 46%, 36%);
   border: none;
   transition: 0.2s all linear;
+
   &:hover {
     color: hsl(222, 68%, 45%);
     cursor: pointer;
   }
+
   padding-left: 10px;
   padding-right: 20px;
 }
@@ -309,11 +313,14 @@ export default {
 #settings-button {
   color: hsl(222, 30%, 65%);
   padding-right: 0px;
+
   &:hover {
     color: hsl(222, 46%, 36%);
   }
+
   &.dark {
     color: hsl(222, 46%, 26%);
+
     &:hover {
       color: hsl(222, 68%, 45%);
     }
@@ -333,9 +340,11 @@ export default {
   margin-right: 7px;
   outline: none;
   transition: all 0.2s linear;
+
   &:hover {
     cursor: pointer;
   }
+
   &:checked {
     background: hsl(352, 72%, 35%);
   }
@@ -343,6 +352,7 @@ export default {
 
 #refine-radios-container {
   display: flex;
+
   label {
     margin-left: 5px;
     margin-right: 10px;
@@ -359,6 +369,7 @@ export default {
 .search-results-amount {
   color: $soft-red;
   font-size: 1rem;
+
   &.dark {
     color: $soft-red-dim;
   }
@@ -370,6 +381,7 @@ export default {
 
 a {
   color: $soft-red;
+
   &:hover {
     color: $soft-red-dim;
     cursor: pointer;
