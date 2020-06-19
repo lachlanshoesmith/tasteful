@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="colourMode">
+  <div id="app" :class="[colourMode]">
     <transition name="fade">
       <modal v-if="showModal" scrollable @closeModal="showModal = false">
         <template v-slot:heading>
@@ -179,7 +179,8 @@ export default {
       password: '',
       emailFlashRed: false,
       usernameFlashRed: false,
-      passwordFlashRed: false
+      passwordFlashRed: false,
+      noOverflowX: false
     }
   },
   computed: mapGetters({
@@ -343,6 +344,14 @@ export default {
         alert('Sign ups are currently disabled. If you have an invite code and seed, visit https://tasteful.reviews/invite.')
         // this.$store.dispatch('login/signUpUser', { email: this.email, password: this.password })
       }
+    },
+    updateDisplayOnSearch (searching) {
+      if (searching) {
+        // If the search menu is up, disable overflow.
+        this.noOverflowX = true
+      } else {
+        this.noOverflowX = false
+      }
     }
   }
 }
@@ -374,7 +383,9 @@ html,
   min-height: 100%;
   width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden;
+  &.noOverflowX {
+    overflow-x: hidden;
+  }
 }
 body,
 html,

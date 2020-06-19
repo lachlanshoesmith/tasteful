@@ -33,43 +33,48 @@
                   Include in search
                 </input-label>
                 <div class="flex-container">
-                  <input type="checkbox" name="include-in-search-artists">
-                  <box-label include-right-margin for="include-in-search-artists">
+                  <checkbox checked @change="updateSearchQuery('artists', $event)">
                     Artists
-                  </box-label>
-                  <input type="checkbox" name="include-in-search-albums">
-                  <box-label for="include-in-search-albums">
+                  </checkbox>
+                  <checkbox checked @change="updateSearchQuery('releases', $event)">
                     Releases
-                  </box-label>
+                  </checkbox>
                 </div>
-                <input-label>
-                  Type of release
-                </input-label>
-                <dropdown-input
-                  name="include-in-search-release-type"
-                  description-value="Choose which releases are displayed."
-                  default-value="All release types"
-                  full-width
-                  :options="['All release types', 'Singles', 'LPs', 'EPs', 'Mixtapes', 'Broadcasts', 'Live', 'Miscellaneous']"
-                >
-                  <template v-slot:icon>
-                    <disc-icon title="Release types" />
-                  </template>
-                </dropdown-input>
-                <input-label>
-                  Country
-                </input-label>
-                <dropdown-input
-                  name="include-in-search-country"
-                  description-value="Where are the results from?"
-                  default-value="All countries"
-                  full-width
-                  :options="listOfCountries"
-                >
-                  <template v-slot:icon>
-                    <map-icon title="Country" />
-                  </template>
-                </dropdown-input>
+                <div v-if="includeInSearch['releases']">
+                  <input-label>
+                    Type of release
+                  </input-label>
+                  <dropdown-input
+                    name="include-in-search-release-type"
+                    description-value="Choose which releases are displayed."
+                    default-value="All release types"
+                    full-width
+                    :options="['All release types', 'Singles', 'LPs', 'EPs', 'Mixtapes', 'Broadcasts', 'Live', 'Miscellaneous']"
+                  >
+                    <template v-slot:icon>
+                      <disc-icon title="Release types" />
+                    </template>
+                  </dropdown-input>
+                </div>
+                <div v-if="includeInSearch['artists'] || includeInSearch['releases']">
+                  <input-label>
+                    Country
+                  </input-label>
+                  <dropdown-input
+                    name="include-in-search-country"
+                    description-value="Where are the results from?"
+                    default-value="All countries"
+                    full-width
+                    :options="listOfCountries"
+                  >
+                    <template v-slot:icon>
+                      <map-icon title="Country" />
+                    </template>
+                  </dropdown-input>
+                </div>
+                <div v-if="!includeInSearch['artists'] && !includeInSearch['releases']">
+                  <paragraph>Don't feel like searching anything? I get it. We all have those days. I hope you're okay, though. Feel free to click outside of this little window to return to the rest of tasteful.</paragraph>
+                </div>
               </template>
             </divided-container>
           </div>
@@ -87,10 +92,10 @@
           Search results
         </masthead>
         <div class="results">
-          <div v-for="artist in artists" :key="artist.id" class="artist" :style="{ backgroundColor: artist.imagePalette.DarkMuted }">
+          <div v-for="artist in artists" :key="artist.id" class="artist" :style="calculateDynamicColours('artist', artist)">
             <div v-if="artist.imageURLLowRes" id="artist-image" class="artist-image" :style="{ 'background-image': 'url(' + artist.imageURL + '), url(' + artist.imageURLLowRes + ')' }" />
             <div>
-              <span class="artist-name" :style="{ color: artist.imagePalette.LightVibrant }">{{ artist.name }}</span>
+              <span class="artist-name" :style="calculateDynamicColours('artist-name', artist)">{{ artist.name }}</span>
               <div class="tags">
                 <tag v-for="tag in artist.tags" :key="tag.id" :style="{ backgroundColor: artist.imagePalette.DarkVibrant, color: artist.imagePalette.Vibrant }">
                   {{ tag.name }}
@@ -119,9 +124,9 @@ import dividedContainer from '@/components/DividedContainer.vue'
 import subheading from '@/components/Subheading.vue'
 import paragraph from '@/components/Paragraph.vue'
 import inputLabel from '@/components/InputLabel.vue'
-import boxLabel from '@/components/BoxLabel.vue'
 import dropdownInput from '@/components/DropdownInput.vue'
 import tag from '@/components/Tag.vue'
+import checkbox from '@/components/Checkbox.vue'
 
 export default {
   name: 'NavSearch',
@@ -135,9 +140,9 @@ export default {
     subheading,
     paragraph,
     inputLabel,
-    boxLabel,
     dropdownInput,
-    tag
+    tag,
+    checkbox
   },
   props: {
     visible: Boolean
@@ -151,7 +156,11 @@ export default {
       imageURLLowRes: '',
       loadingSearchResults: false,
       resultsLoaded: false,
-      artists: []
+      artists: [],
+      includeInSearch: {
+        artists: true,
+        releases: true
+      }
     }
   },
   computed: {
@@ -195,10 +204,21 @@ export default {
         this.searching = false
       }
     },
+    updateSearchQuery (query, value) {
+      this.includeInSearch[query] = value
+    },
     hideSearch (e) {
       if (e.target === e.currentTarget) {
         // if the parent div is clicked (what we want)
         this.searching = false
+      }
+    },
+    calculateDynamicColours (target, data) {
+      switch (target) {
+        case 'artist':
+          return { backgroundColor: data.imagePalette.DarkMuted }
+        case 'artist-name':
+          return { color: data.imagePalette.LightVibrant }
       }
     },
     search () {
@@ -374,8 +394,7 @@ export default {
   margin-right: auto;
 }
 .search-content-container {
-  display: block;
-  opacity: 0;
+  display: none;
   position: absolute;
   // border-top: solid 5px green;
   left: 0;
@@ -383,7 +402,6 @@ export default {
   height: 0%;
   backdrop-filter: blur(15px);
   color: $saturated-blue;
-  transition: opacity 0.2s linear;
   pointer-events: none; // allow clicks through element while not visible
   &.dark, &.black, &.solarised-dark {
     background: rgba($deep-black, 0.8);
@@ -392,13 +410,15 @@ export default {
     background: rgba($light-grey, 0.8);
   }
   &.searching {
-    opacity: 1;
+    display: block;
     pointer-events: auto;
+    overflow-x: hidden;
     &.visible {
       height: 100vh;
     }
   }
 }
+
 .results {
   display: flex;
 }

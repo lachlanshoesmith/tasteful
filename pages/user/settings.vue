@@ -154,7 +154,10 @@
               <palette-icon title="Selected theme" />
             </template>
           </dropdown-input>
-          <checkbox>Enable dynamic colouring</checkbox>
+          <input-label>
+            Dynamic colouring
+          </input-label>
+          <checkbox>It's enabled. This may impact performance.</checkbox>
           <input-label>
             Navbar theme toggle options
           </input-label>
@@ -235,6 +238,34 @@
           </div>
         </template>
       </divided-container>
+      <divided-container>
+        <template v-slot:left>
+          <subheading smaller no-top-margin>
+            Search
+          </subheading>
+          <paragraph soft>
+            For settings related to the tasteful search engine, I suppose.
+          </paragraph>
+        </template>
+        <template v-slot:right>
+          <input-label no-top-margin>
+            Display album art where no artist image is available
+          </input-label>
+          <checkbox>Beware: this will seriously hit performance.</checkbox>
+          <input-label>
+            Display artist image when available
+          </input-label>
+          <checkbox>This will impact tasteful's data usage.</checkbox>
+          <input-label>
+            Display album art when available
+          </input-label>
+          <checkbox>This will also impact tasteful's data usage.</checkbox>
+          <input-label>
+            Display pretty floating circles
+          </input-label>
+          <checkbox>Aren't they nice?</checkbox>
+        </template>
+      </divided-container>
       <divided-container red-border>
         <template v-slot:left>
           <subheading smaller no-top-margin>
@@ -246,7 +277,10 @@
           </paragraph>
         </template>
         <template v-slot:right>
-          <checkbox>Enable experimental features</checkbox>
+          <input-label no-top-margin>
+            Experimental features
+          </input-label>
+          <checkbox>They're available now. Proceed with caution!</checkbox>
           <regular-button include-arrow-icon @pressed="signOut">
             <span>Sign out</span>
           </regular-button>

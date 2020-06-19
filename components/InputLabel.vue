@@ -27,12 +27,12 @@ export default {
   text-align: left;
   line-height: 2rem;
   max-width: 50ch;
-  color: hsl(222, 5%, 20%);
+  color: $greyish-blue-dim;
   margin-top: 20px;
   margin-bottom: 5px;
   transition: all 0.2s linear;
   &.dark {
-    color: hsl(222, 10%, 55%);
+    color: $greyish-blue;
   }
   &.solarised-light {
     color: $solarised-light-strong-content;
