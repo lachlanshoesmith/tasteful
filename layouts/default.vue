@@ -549,7 +549,6 @@ a {
   }
 }
 #links {
-  margin-left: auto;
   font-size: 1.5rem;
   a {
     text-decoration: none;

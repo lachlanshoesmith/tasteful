@@ -15,70 +15,84 @@
       </template>
     </text-input>
     <div class="search-content-container" :class="{loadingSearchResults, searching, visible}">
-      <div v-if="!resultsLoaded" class="search-content-before-search">
+      <div class="search-settings" :class="{ 'search-position': resultsLoaded }">
+        <divided-container shadow>
+          <template v-slot:left>
+            <subheading smaller no-top-margin>
+              Search configuration
+            </subheading>
+            <paragraph soft>
+              Adjust these search parameters to hone in on what you want to find<span v-if="!includeInSearch['artists'] && !includeInSearch['releases']"> (or not, I guess)</span>.
+            </paragraph>
+          </template>
+          <template v-slot:right>
+            <input-label no-top-margin>
+              Include in search
+            </input-label>
+            <div class="flex-container">
+              <checkbox checked @change="updateSearchQuery('artists', $event)">
+                Artists
+              </checkbox>
+              <checkbox checked @change="updateSearchQuery('releases', $event)">
+                Releases
+              </checkbox>
+            </div>
+            <div v-if="includeInSearch['releases']">
+              <input-label>
+                Type of release
+              </input-label>
+              <dropdown-input
+                name="include-in-search-release-type"
+                description-value="Choose which releases are displayed."
+                :default-value="releaseTypeName"
+                full-width
+                :options="['All release types', 'Singles', 'LPs', 'EPs']"
+                @change="findReleaseType($event)"
+              >
+                <template v-slot:icon>
+                  <disc-icon title="Release types" />
+                </template>
+              </dropdown-input>
+            </div>
+            <div v-if="includeInSearch['artists'] || includeInSearch['releases']">
+              <input-label>
+                Country
+              </input-label>
+              <dropdown-input
+                name="include-in-search-country"
+                description-value="Where are the results from?"
+                default-value="All countries"
+                full-width
+                :options="listOfCountries"
+              >
+                <template v-slot:icon>
+                  <map-icon title="Country" />
+                </template>
+              </dropdown-input>
+              <input-label>
+                Amount of results displayed
+              </input-label>
+              <dropdown-input
+                name="amount-of-results"
+                description-value=">5 results requires a premium subscription."
+                :default-value="amountOfResults"
+                full-width
+                :options="[1, 2, 3, 4, 5]"
+                @change="amountOfResults = $event"
+              >
+                <template v-slot:icon>
+                  <view-list-icon title="Amount of results" />
+                </template>
+              </dropdown-input>
+            </div>
+            <div v-if="!includeInSearch['artists'] && !includeInSearch['releases']">
+              <paragraph>Don't feel like searching anything? I get it. We all have those days. I hope you're okay, though. Feel free to click outside of this little window to return to the rest of tasteful.</paragraph>
+            </div>
+          </template>
+        </divided-container>
+      </div>
+      <div v-if="!resultsLoaded" class="search-content-before-search" @click="hideSearch">
         <!-- only show if search hasnt been made -->
-        <div class="search-settings-container" @click="hideSearch">
-          <div class="search-settings">
-            <divided-container shadow>
-              <template v-slot:left>
-                <subheading smaller no-top-margin>
-                  Search configuration
-                </subheading>
-                <paragraph soft>
-                  Adjust these search parameters to hone in on what you want to find.
-                </paragraph>
-              </template>
-              <template v-slot:right>
-                <input-label no-top-margin>
-                  Include in search
-                </input-label>
-                <div class="flex-container">
-                  <checkbox checked @change="updateSearchQuery('artists', $event)">
-                    Artists
-                  </checkbox>
-                  <checkbox checked @change="updateSearchQuery('releases', $event)">
-                    Releases
-                  </checkbox>
-                </div>
-                <div v-if="includeInSearch['releases']">
-                  <input-label>
-                    Type of release
-                  </input-label>
-                  <dropdown-input
-                    name="include-in-search-release-type"
-                    description-value="Choose which releases are displayed."
-                    default-value="All release types"
-                    full-width
-                    :options="['All release types', 'Singles', 'LPs', 'EPs', 'Mixtapes', 'Broadcasts', 'Live', 'Miscellaneous']"
-                  >
-                    <template v-slot:icon>
-                      <disc-icon title="Release types" />
-                    </template>
-                  </dropdown-input>
-                </div>
-                <div v-if="includeInSearch['artists'] || includeInSearch['releases']">
-                  <input-label>
-                    Country
-                  </input-label>
-                  <dropdown-input
-                    name="include-in-search-country"
-                    description-value="Where are the results from?"
-                    default-value="All countries"
-                    full-width
-                    :options="listOfCountries"
-                  >
-                    <template v-slot:icon>
-                      <map-icon title="Country" />
-                    </template>
-                  </dropdown-input>
-                </div>
-                <div v-if="!includeInSearch['artists'] && !includeInSearch['releases']">
-                  <paragraph>Don't feel like searching anything? I get it. We all have those days. I hope you're okay, though. Feel free to click outside of this little window to return to the rest of tasteful.</paragraph>
-                </div>
-              </template>
-            </divided-container>
-          </div>
-        </div>
         <div
           v-for="circle in circlesToRender"
           :key="circle.id"
@@ -92,12 +106,30 @@
           Search results
         </masthead>
         <div class="results">
-          <div v-for="artist in artists" :key="artist.id" class="artist" :style="calculateDynamicColours('artist', artist)">
+          <subheading>Artists</subheading>
+          <!-- <div v-for="artist in artists" :key="artist.id" class="artist" :style="calculateDynamicColours('artist', artist)"> -->
+          <div v-for="artist in artists" :key="artist.id" class="artist">
             <div v-if="artist.imageURLLowRes" id="artist-image" class="artist-image" :style="{ 'background-image': 'url(' + artist.imageURL + '), url(' + artist.imageURLLowRes + ')' }" />
             <div>
-              <span class="artist-name" :style="calculateDynamicColours('artist-name', artist)">{{ artist.name }}</span>
+              <!-- <span class="artist-name" :style="calculateDynamicColours('artist-name', artist)">{{ artist.name }}</span> -->
+              <span class="artist-name">{{ artist.name }}</span>
               <div class="tags">
-                <tag v-for="tag in artist.tags" :key="tag.id" :style="{ backgroundColor: artist.imagePalette.DarkVibrant, color: artist.imagePalette.Vibrant }">
+                <!-- <tag v-for="tag in artist.tags" :key="tag.id" :style="{ backgroundColor: artist.imagePalette.DarkVibrant, color: artist.imagePalette.Vibrant }"> -->
+                <tag v-for="tag in artist.tags" :key="tag.id">
+                  {{ tag.name }}
+                </tag>
+              </div>
+            </div>
+          </div>
+          <!-- <div v-for="release in releases" :key="release.id" class="artist" :style="calculateDynamicColours('artist', artist)"> -->
+          <div v-for="release in releases" :key="release.id" class="artist">
+            <div v-if="release.imageURLLowRes" id="artist-image" class="artist-image" :style="{ 'background-image': 'url(' + artist.imageURL + '), url(' + artist.imageURLLowRes + ')' }" />
+            <div>
+              <!-- <span class="artist-name" :style="calculateDynamicColours('artist-name', artist)">{{ artist.name }}</span> -->
+              <span class="artist-name">{{ artist.name }}</span>
+              <div class="tags">
+                <!-- <tag v-for="tag in artist.tags" :key="tag.id" :style="{ backgroundColor: artist.imagePalette.DarkVibrant, color: artist.imagePalette.Vibrant }"> -->
+                <tag v-for="tag in artist.tags" :key="tag.id">
                   {{ tag.name }}
                 </tag>
               </div>
@@ -106,6 +138,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -116,6 +149,7 @@ import Vibrant from 'node-vibrant'
 import anime from 'animejs/lib/anime.es.js'
 import mapIcon from 'vue-material-design-icons/Map.vue'
 import discIcon from 'vue-material-design-icons/Disc.vue'
+import viewListIcon from 'vue-material-design-icons/ViewList.vue'
 import countryList from 'country-list'
 import _ from 'lodash'
 import textInput from '@/components/TextInput.vue'
@@ -135,6 +169,7 @@ export default {
     magnifyIcon,
     mapIcon,
     discIcon,
+    viewListIcon,
     masthead,
     dividedContainer,
     subheading,
@@ -156,7 +191,11 @@ export default {
       imageURLLowRes: '',
       loadingSearchResults: false,
       resultsLoaded: false,
+      releaseType: false,
+      releaseTypeName: 'All release types',
       artists: [],
+      releases: [],
+      amountOfResults: '3',
       includeInSearch: {
         artists: true,
         releases: true
@@ -204,6 +243,22 @@ export default {
         this.searching = false
       }
     },
+    findReleaseType (value) {
+      this.releaseTypeName = value
+      switch (value) {
+        case 'All release types':
+          this.releaseType = false
+          break
+        case 'Singles':
+          this.releaseType = 'single'
+          break
+        case 'LPs':
+          this.releaseType = 'album'
+          break
+        case 'EPs':
+          this.releaseType = 'ep'
+      }
+    },
     updateSearchQuery (query, value) {
       this.includeInSearch[query] = value
     },
@@ -224,18 +279,39 @@ export default {
     search () {
       this.loadingSearchResults = true
       this.artists = []
-      const searchResult = () => {
-        this.$axios
-          .get(
-            '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=3'
-          )
-          .then((res) => {
-            const artists = res.data.artists
-            artists.forEach((artist, i) => {
-              artistInfo(artist, i)
-              this.artists.push(artist)
+      this.releases = []
+      const searchResult = (type) => {
+        if (type === 'artist') {
+          this.$axios
+            .get(
+              '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
+            )
+            .then((res) => {
+              const artists = res.data.artists
+              artists.forEach((artist, i) => {
+                artistInfo(artist, i)
+                this.artists.push(artist)
+              })
             })
-          })
+        } else if (type === 'release') {
+          if (this.releaseType) {
+            this.$axios
+              .get(
+                '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '" AND primarytype:"' + this.releaseType + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
+              )
+              .then((res) => {
+                console.log(res)
+              })
+          } else {
+            this.$axios
+              .get(
+                '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=3'
+              )
+              .then((res) => {
+                console.log(res)
+              })
+          }
+        }
       }
       const artistInfo = (artist, index) => {
         this.$axios.get(
@@ -287,8 +363,13 @@ export default {
               // Note: may replace full resolution URL with a good-enough alternative (eg. 400px) in the future
               const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/' + firstCharacterInHash + '/' + firstCharacterInHash + secondCharacterInHash + '/' + imageName
               this.artists[index].imageURL = imageURL
-              // get colours
-              getColours(imageName, index, 'artist')
+              // get colours (TEMPORARILY DISABLED)
+              // getColours(imageName, index, 'artist')
+
+              // this would normally be handled by getColours()
+              anime.remove('.circle')
+              this.loadingSearchResults = false
+              this.resultsLoaded = true
             } catch (e) {
               if (e === 'TypeError: "res.data.claims.P18 is undefined"') {
                 // If the artist has no image supplied, get an album artwork instead.
@@ -359,6 +440,7 @@ export default {
               this.artists[index].imagePalette = imagePalette
             })
             .finally(() => {
+              anime.remove('.circle')
               this.loadingSearchResults = false
               this.resultsLoaded = true
             })
@@ -375,8 +457,13 @@ export default {
           palette(v, imagePalette)
         }
       }
-      searchResult() // begins the search
       this.loadingSearchResults = true
+      if (this.includeInSearch.artists) {
+        searchResult('artist') // begin the artist search
+      }
+      if (this.includeInSearch.releases) {
+        searchResult('release') // begin the release search
+      }
     }
   }
 }
@@ -456,18 +543,13 @@ export default {
   align-items: flex-end;
   height: 100%;
 }
-.search-settings-container {
-  display: flex;
-  position: absolute;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-}
 .search-settings {
-  padding: 20px;
   width: 40%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
 }
 .flex-container {
   display: flex;
