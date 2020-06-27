@@ -70,6 +70,7 @@ $quite-deep-black: hsl(0, 0%, 9%);
 
 $snow-white: hsl(0, 0%, 100%);
 $quite-white: hsl(0, 0%, 97%);
+$light-background: hsl(283, 95%, 98%);
 
 // ! Greys
 
@@ -81,6 +82,7 @@ $quite-light-grey: hsl(0, 0%, 50%);
 // - dark
 $dark-grey: hsl(0, 0%, 10%);
 $quite-dark-grey: hsl(0, 0%, 30%);
+$dark-background: hsl(283, 15%, 10%);
 
 /*
 -- GRADIENTS --
@@ -94,6 +96,7 @@ $dim-masthead-gradient: linear-gradient(103.68deg, rgba($saturated-purple, 0.3) 
 $nav-background: linear-gradient(270deg, rgba($saturated-red, 0.2), rgba($saturated-purple, 0.2));
 $green-gradient: linear-gradient(45deg, $saturated-green, $muted-green, $muted-green-dim);
 $red-gradient: linear-gradient(45deg, $saturated-red-dim, $saturated-red);
+$grey-gradient: linear-gradient(45deg, $very-light-grey, $light-grey);
 
 //   ____  _   _                 _______ _
 //  / __ \| | | |               |__   __| |

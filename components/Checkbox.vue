@@ -2,7 +2,7 @@
   <div :class="{noRightMargin}" class="checkbox-container-container-container-container-container">
     <label :class="[colourMode]" class="checkbox-container">
       <input :checked="checked" class="checkbox" type="checkbox" @change="emitCheckboxValue">
-      <span class="checkmark" />
+      <span :class="[colourMode]" class="checkmark" />
       <div class="content"><slot /></div>
     </label>
   </div>
@@ -29,6 +29,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.checkbox-container, .checkmark {
+  transition: all 0.2s linear;
+}
 .checkbox-container-container-container-container-container {
   padding-left: 5px;
   margin-right: 15px;
@@ -81,23 +84,43 @@ export default {
   left: 0;
   height: 25px;
   width: 25px;
-  background: $greyish-blue-dim;
   border-radius: 50%;
   transition: all 0.1s linear;
+  &.light {
+    background: $greyish-blue;
+  }
+  &.dark {
+    background: $greyish-blue-dim;
+  }
 }
 /* On mouse-over, add a grey background color */
 .checkbox-container:hover input ~ .checkmark {
-  background: $greyish-blue;
+  &.light {
+    background: $greyish-blue-dim;
+  }
+  &.dark {
+    background: $greyish-blue;
+  }
 }
 
 /* When the checkbox is checked, add a blue background */
 .checkbox-container input:checked ~ .checkmark {
-  background: $muted-green-dim;
+  &.light {
+    background: $muted-green-dim;
+  }
+  &.dark {
+    background: $saturated-green-dim;
+  }
 }
 
 /* On mouse-over, add a grey background color */
 .checkbox-container:hover input:checked ~ .checkmark {
-  background: $muted-green;
+  &.light {
+    background: $muted-green;
+  }
+  &.dark {
+    background: $saturated-green;
+  }
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */

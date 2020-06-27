@@ -45,6 +45,9 @@
           It truly means the world, and your donations will go to directly to the tasteful team,
           unless stated otherwise on the tier. Let's talk about how to unlock the full buffet of features tasteful has been cooking up over the last year or two.
         </paragraph>
+        <paragraph smaller>
+          All prices are in $USD.
+        </paragraph>
       </paragraph-container>
     </article-content>
     <div id="tiers-container" :class="colourMode">
@@ -52,46 +55,43 @@
         Tiers
       </masthead>
       <div id="tiers">
-        <!-- The order of the tiers changes on non-mobile screens. -->
-        <div id="one-dollar-a-month" :class="colourMode" class="tier">
+        <div id="lowest-tier" :class="colourMode" class="tier">
           <div class="tier-content">
-            <subheading>$1<span :class="colourMode" class="money-amount">/mo</span> 🌙</subheading>
+            <subheading>$3<span :class="colourMode" class="money-amount">/mo</span> 🥞</subheading>
             <paragraph>
               The base tier has the following benefits...
               <list>
-                <li>❌ Advertisements will be hidden.</li>
-                <li>🌃 The infamous dark mode is available site-wide.</li>
+                <li>❌ No advertisements.</li>
+                <li>Early access to major tasteful updates (ie 0.x.0 versions).</li>
+                <li>Receive the kinda nice and neat Silver Supporter badge! It's pretty cool.</li>
               </list>
             </paragraph>
           </div>
         </div>
-        <div id="two-dollars-a-month" :class="colourMode" class="tier">
+        <div id="middle-tier" :class="colourMode" class="tier">
           <div class="tier-content">
-            <subheading>$2<span :class="colourMode" class="money-amount">/mo</span> 🔥</subheading>
+            <subheading>$5<span :class="colourMode" class="money-amount">/mo</span> 🍨</subheading>
             <paragraph>
-              Get the same bonuses as the $1/mo folk, in addition to the following...
+              Get the same bonuses as the $3/mo folk, in addition to the following...
               <list>
-                <li>🎨 Even more colour themes, such as Solarised.</li>
+                <li>More nuanced profile customisation.</li>
+                <li>Unlock every single customisation option for the website and make tasteful your own.</li>
+                <li>Receive the very special and cool Golden Supporter badge! How pretty.</li>
               </list>
             </paragraph>
           </div>
         </div>
-        <div id="three-dollars-a-month" :class="colourMode" class="tier">
+        <div id="highest-tier" :class="colourMode" class="tier">
           <div class="tier-content">
-            <subheading>$3<span :class="colourMode" class="money-amount">/mo</span> 🥰</subheading>
+            <subheading>$10<span :class="colourMode" class="money-amount">/mo</span> 🌟</subheading>
             <paragraph>
               Receive all the benefits of the other tiers, and...
               <list>
-                <li>🎚️ Unlock every single customisation option for the website and make tasteful your own.</li>
-                <li>✍️ More nuanced profile customisation, especially for blogs.</li>
-                <li>🎤 Your posts are more likely to be promoted to other users.</li>
-                <li>⭐ Receive the very special and cool Golden Supporter badge!</li>
-                <li>😘 Know that you have my eternal gratitude.</li>
+                <li>Use minor updates (ie 0.x.x rather than 0.x.0 'major' updates) early, live on the official tasteful website.</li>
+                <li>Get deeper insight into what I'm working on and what's coming next.</li>
+                <li>Receive the Platinum Titanium Cool Mineral Supporter badge. Very impressive stuff. You deserve it.</li>
               </list>
             </paragraph>
-            <subheading smaller>
-              💸 One month free on annual plan
-            </subheading>
           </div>
         </div>
       </div>
@@ -261,15 +261,15 @@ export default {
   }
 }
 
-#one-dollar-a-month {
+#lowest-tier {
   border-radius: 10px 0px 0px 10px;
 }
 
-#two-dollars-a-month {
+#middle-tier {
   border-radius: 0px 10px 10px 0px;
 }
 
-#three-dollars-a-month {
+#middle-tier {
   box-shadow: 3px 4px 50px hsla(252, 20%, 20%, 0.3);
   z-index: 1;
   border-radius: 20px;
@@ -319,13 +319,13 @@ export default {
   #tiers {
     display: block;
   }
-  .tier, #three-dollars-a-month {
+  .tier, #middle-tier {
     height: 100%;
   }
-  #one-dollar-a-month {
+  #lowest-tier {
     border-radius: 10px 10px 0px 0px;
   }
-  #two-dollars-a-month {
+  #middle-tier {
     background: $very-light-grey;
     border-radius: 0;
     &.dark {
@@ -341,7 +341,7 @@ export default {
       background: $quite-deep-black;
     }
   }
-  #three-dollars-a-month {
+  #middle-tier {
     box-shadow: none;
     z-index: 0;
     border-radius: 0px 0px 10px 10px;
@@ -359,19 +359,6 @@ export default {
     &.black {
       outline: none;
     }
-  }
-}
-
-@media (min-width: 1000px) {
-  // Whilst these could just be in the above, non-media-query CSS, I like doing this for clarity.
-  #one-dollar-a-month {
-    order: 1;
-  }
-  #two-dollars-a-month {
-    order: 3;
-  }
-  #three-dollars-a-month {
-    order: 2;
   }
 }
 </style>

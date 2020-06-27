@@ -11,12 +11,13 @@
       @focus="updateDisplay"
     >
       <template v-slot:icon>
-        <magnify-icon title="Search" />
+        <magnify-icon v-if="!loadingSearchResults" title="Search" />
+        <spinner v-else />
       </template>
     </text-input>
-    <div class="search-content-container" :class="{loadingSearchResults, searching, visible}">
-      <div class="search-settings" :class="{ 'search-position': resultsLoaded }">
-        <divided-container shadow>
+    <div class="search-content-container" :class="{loadingSearchResults, 'results-layout': resultsLoaded, searching, visible}">
+      <div class="search-settings" :class="{ 'results-position': resultsLoaded }">
+        <divided-container shadow :hide-left-column="resultsLoaded">
           <template v-slot:left>
             <subheading smaller no-top-margin>
               Search configuration
@@ -101,44 +102,28 @@
           class="circle"
         />
       </div>
-      <div v-else @click="hideSearch">
-        <masthead centred fit-width no-left-margin-on-large-screens>
-          Search results
-        </masthead>
+      <div v-else class="results-container" @click="hideSearch">
         <div class="results">
-          <subheading>Artists</subheading>
-          <!-- <div v-for="artist in artists" :key="artist.id" class="artist" :style="calculateDynamicColours('artist', artist)"> -->
-          <div v-for="artist in artists" :key="artist.id" class="artist">
-            <div v-if="artist.imageURLLowRes" id="artist-image" class="artist-image" :style="{ 'background-image': 'url(' + artist.imageURL + '), url(' + artist.imageURLLowRes + ')' }" />
-            <div>
-              <!-- <span class="artist-name" :style="calculateDynamicColours('artist-name', artist)">{{ artist.name }}</span> -->
-              <span class="artist-name">{{ artist.name }}</span>
-              <div class="tags">
-                <!-- <tag v-for="tag in artist.tags" :key="tag.id" :style="{ backgroundColor: artist.imagePalette.DarkVibrant, color: artist.imagePalette.Vibrant }"> -->
-                <tag v-for="tag in artist.tags" :key="tag.id">
-                  {{ tag.name }}
-                </tag>
-              </div>
-            </div>
+          <div>
+            <!-- <div v-for="artist in artists" :key="artist.id" class="artist" :style="calculateDynamicColours('artist', artist)"> -->
+            <search-artist v-for="artist in artists" :key="artist.id" :artist="artist" @changeSearching="searching = $event" />
           </div>
           <!-- <div v-for="release in releases" :key="release.id" class="artist" :style="calculateDynamicColours('artist', artist)"> -->
-          <div v-for="release in releases" :key="release.id" class="artist">
-            <div v-if="release.imageURLLowRes" id="artist-image" class="artist-image" :style="{ 'background-image': 'url(' + artist.imageURL + '), url(' + artist.imageURLLowRes + ')' }" />
-            <div>
-              <!-- <span class="artist-name" :style="calculateDynamicColours('artist-name', artist)">{{ artist.name }}</span> -->
-              <span class="artist-name">{{ artist.name }}</span>
-              <div class="tags">
-                <!-- <tag v-for="tag in artist.tags" :key="tag.id" :style="{ backgroundColor: artist.imagePalette.DarkVibrant, color: artist.imagePalette.Vibrant }"> -->
-                <tag v-for="tag in artist.tags" :key="tag.id">
-                  {{ tag.name }}
-                </tag>
-              </div>
-            </div>
+          <div class="release-results">
+            <search-release v-for="release in releases" :key="release.id" :release="release" @changeSearching="searching = $event" />
+          </div>
+          <div v-if="!showingResults.artists && !showingResults.releases && !loadingSearchResults">
+            <subheading>No results found.</subheading>
+            <paragraph>
+              I'm sorry I couldn't be better for you.
+              Consider using less specific search criteria or ensuring you spelled correctly what you searched for.
+              If you're searching for a release, by the way, you only need to search for the release's name.
+              For example, search for 'fetch the bolt cutters' instead of 'fiona apple fetch the bolt cutters'.
+            </paragraph>
           </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -153,14 +138,15 @@ import viewListIcon from 'vue-material-design-icons/ViewList.vue'
 import countryList from 'country-list'
 import _ from 'lodash'
 import textInput from '@/components/TextInput.vue'
-import masthead from '@/components/Masthead.vue'
 import dividedContainer from '@/components/DividedContainer.vue'
 import subheading from '@/components/Subheading.vue'
 import paragraph from '@/components/Paragraph.vue'
 import inputLabel from '@/components/InputLabel.vue'
 import dropdownInput from '@/components/DropdownInput.vue'
-import tag from '@/components/Tag.vue'
 import checkbox from '@/components/Checkbox.vue'
+import spinner from '@/components/Spinner.vue'
+import searchArtist from '@/components/SearchArtist.vue'
+import searchRelease from '@/components/SearchRelease.vue'
 
 export default {
   name: 'NavSearch',
@@ -170,14 +156,15 @@ export default {
     mapIcon,
     discIcon,
     viewListIcon,
-    masthead,
     dividedContainer,
     subheading,
     paragraph,
     inputLabel,
     dropdownInput,
-    tag,
-    checkbox
+    checkbox,
+    spinner,
+    searchArtist,
+    searchRelease
   },
   props: {
     visible: Boolean
@@ -186,7 +173,6 @@ export default {
     return {
       searching: false,
       searchQuery: '',
-      searchResult: [],
       imageURL: '',
       imageURLLowRes: '',
       loadingSearchResults: false,
@@ -195,6 +181,10 @@ export default {
       releaseTypeName: 'All release types',
       artists: [],
       releases: [],
+      showingResults: {
+        artists: false,
+        releases: false
+      },
       amountOfResults: '3',
       includeInSearch: {
         artists: true,
@@ -237,6 +227,7 @@ export default {
           translateX: '70vw',
           translateY: '-50vh',
           easing: 'easeOutExpo',
+          loop: true,
           duration: 400000
         })
       } else if (!focused) {
@@ -276,8 +267,32 @@ export default {
           return { color: data.imagePalette.LightVibrant }
       }
     },
+    showSearchResults (toShow, result = true) {
+      anime.remove('.circle')
+      this.loadingSearchResults = false
+      this.resultsLoaded = true
+      this.$set(this.showingResults, toShow, result)
+    },
+    processReleases (releases) {
+      this.releases = releases.data['release-groups']
+      this.releases.forEach((releasegroup, i) => {
+        // get album art first
+        this.$axios
+          .get(
+            '/coverArtArchive/release-group/' + releasegroup.id
+          )
+          .then((res) => {
+            const imageURL = res.data.images[0].thumbnails.small
+            this.$set(this.releases[i], 'image', imageURL)
+          })
+          .catch((err) => {
+            console.log('No album cover found.\n' + err)
+          })
+      })
+    },
     search () {
       this.loadingSearchResults = true
+      this.showingResults = { artists: false, releases: false }
       this.artists = []
       this.releases = []
       const searchResult = (type) => {
@@ -293,22 +308,37 @@ export default {
                 this.artists.push(artist)
               })
             })
-        } else if (type === 'release') {
+        }
+        if (type === 'release') {
           if (this.releaseType) {
             this.$axios
               .get(
                 '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '" AND primarytype:"' + this.releaseType + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
               )
               .then((res) => {
-                console.log(res)
+                this.processReleases(res)
+              })
+              .finally(() => {
+                if (this.releases.length) {
+                  this.showSearchResults('releases', true)
+                } else {
+                  this.showSearchResults('releases', false)
+                }
               })
           } else {
             this.$axios
               .get(
-                '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=3'
+                '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
               )
               .then((res) => {
-                console.log(res)
+                this.processReleases(res)
+              })
+              .finally(() => {
+                if (this.releases.length) {
+                  this.showSearchResults('releases', true)
+                } else {
+                  this.showSearchResults('releases', false)
+                }
               })
           }
         }
@@ -319,6 +349,9 @@ export default {
         )
           .then((res) => {
             artistRelations(res.data.relations, index)
+          })
+          .catch((err) => {
+            console.log('ERROR WITH artistInfo: ' + err)
           })
       }
       const artistRelations = (relations, index) => {
@@ -339,6 +372,40 @@ export default {
           getAlbumArtCandidate(index)
         }
       }
+      const findArtistReleases = (index) => {
+        const artistID = this.artists[index].id
+        this.$set(this.artists[index], 'releases', {})
+        // find releases
+        this.$axios.get('/musicBrainzAPI/release-group/?query=arid:' + artistID + ' AND status:"official" AND primarytype:"album"&limit=30&fmt=json')
+          .then((res) => {
+            // get album artworks
+            const releases = res.data['release-groups']
+            releases.forEach((releasegroup) => {
+              this.$set(this.artists[index].releases, releasegroup.id, {})
+              // TODO: merge [with getAlbumArtLocation(.image) function
+              const releaseTitle = releasegroup.title
+              this.$axios
+                .get(
+                  '/coverArtArchive/release-group/' + releasegroup.id
+                )
+                .then((res) => {
+                  const imageURL = res.data.images[0].thumbnails.small
+                  this.$set(this.artists[index].releases[releasegroup.id], 'image', imageURL)
+                  this.$set(this.artists[index].releases[releasegroup.id], 'title', releaseTitle)
+                })
+                .catch((err) => {
+                  console.log('No album cover found.\n' + err)
+                })
+                .finally(() => {
+                  // once the results start loading..
+                  this.showSearchResults('artists')
+                })
+            })
+          })
+          .catch((err) => {
+            console.log('ERROR WITH ' + artistID + ': ' + err)
+          })
+      }
       const getImage = (wikidataID, index) => {
         this.$axios
           .get(
@@ -357,9 +424,11 @@ export default {
               // remove other invalid characters after hash (generates incorrect md5 otherwise)
               imageName = imageName.replace('(', '%28') // no regex here as these should only occur once.
               imageName = imageName.replace(')', '%29')
+              imageName = imageName.replace(',', '%2C')
               // download very low res image first
               const lowResolutionImageURL = 'https://commons.wikimedia.org/w/thumb.php?width=10&f=' + imageName // only 10px wide; stretched and blurred while loading the main image.
               this.artists[index].imageURLLowRes = lowResolutionImageURL
+              console.log(lowResolutionImageURL)
               // Note: may replace full resolution URL with a good-enough alternative (eg. 400px) in the future
               const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/' + firstCharacterInHash + '/' + firstCharacterInHash + secondCharacterInHash + '/' + imageName
               this.artists[index].imageURL = imageURL
@@ -367,9 +436,12 @@ export default {
               // getColours(imageName, index, 'artist')
 
               // this would normally be handled by getColours()
-              anime.remove('.circle')
-              this.loadingSearchResults = false
-              this.resultsLoaded = true
+              if (this.includeInSearch.releases) {
+                // find releases for that artist
+                findArtistReleases(index)
+              } else {
+                this.showSearchResults('artists')
+              }
             } catch (e) {
               if (e === 'TypeError: "res.data.claims.P18 is undefined"') {
                 // If the artist has no image supplied, get an album artwork instead.
@@ -383,26 +455,36 @@ export default {
       }
       const getAlbumArtCandidate = (index) => {
         const artist = this.artists[index]
-        this.$axios
-          .get(
-            '/musicBrainzAPI/release-group/?query=arid:' + artist.id + '&limit=1&fmt=json'
-          )
-          .then((res) => {
+        if (artist === undefined) {
+          // if all artists have had their album arts found (ie index > this.artists.length)...
+          // ...finish the search.
+          this.showSearchResults('artists')
+        } else {
+          // otherwise, keep going
+          this.$axios
+            .get(
+              '/musicBrainzAPI/release-group/?query=arid:' + artist.id + '&limit=1&fmt=json'
+            )
+            .then((res) => {
             // At this stage tasteful will the first album art from the artist (ie debut, probably).
             // In the future the highest-rating release will be shown, instead.
-            const releases = res.data['release-groups']
-            // Some artists have no releases and fill basically no purpose on MusicBrainz, lol.
-            if (!releases.length) {
-              console.log(artist.name + ' has no releases.')
+              const releases = res.data['release-groups']
+              // Some artists have no releases and fill basically no purpose on MusicBrainz, lol.
+              if (!releases.length) {
+                console.log(artist.name + ' has no releases.')
               // Will need to find alternative.
-            } else {
+              } else {
               // choose a release from the group (to get specific MBID)
               // normally I would just use group's MBID but i'm having CORS issues at the minute.
               // will probably revisit this one day.
-              const release = releases[0].releases[0]
-              getAlbumArtLocation(release, index)
-            }
-          })
+                const release = releases[0].releases[0]
+                getAlbumArtLocation(release, index)
+              }
+            })
+            .catch((err) => {
+              console.log('ERROR WITH getAlbumArtCandidate: ' + err)
+            })
+        }
       }
       const getAlbumArtLocation = (release, index) => {
         this.$axios
@@ -414,8 +496,8 @@ export default {
             getAlbumArt(imageURL, index)
           })
           .catch((err) => {
-            // Try get another album artwork.
-            console.error(err)
+            // No album art found, keep it moving.
+            console.log('ERROR for ' + release.title + ': ' + err)
             index += 1
             getAlbumArtCandidate(index)
           })
@@ -440,9 +522,7 @@ export default {
               this.artists[index].imagePalette = imagePalette
             })
             .finally(() => {
-              anime.remove('.circle')
-              this.loadingSearchResults = false
-              this.resultsLoaded = true
+              this.showSearchResults('artists')
             })
         }
         if (type === 'artist') {
@@ -457,7 +537,6 @@ export default {
           palette(v, imagePalette)
         }
       }
-      this.loadingSearchResults = true
       if (this.includeInSearch.artists) {
         searchResult('artist') // begin the artist search
       }
@@ -475,6 +554,7 @@ export default {
 }
 .search-bar {
   width: 95%;
+  backdrop-filter: blur(15px);
 }
 .text-input-container {
   margin-left: auto;
@@ -485,7 +565,7 @@ export default {
   position: absolute;
   // border-top: solid 5px green;
   left: 0;
-  width: 100%;
+  width: calc(100% - 3vw);
   height: 0%;
   backdrop-filter: blur(15px);
   color: $saturated-blue;
@@ -496,6 +576,9 @@ export default {
   &.light, &.solarised-light {
     background: rgba($light-grey, 0.8);
   }
+  & > * {
+    display: none;
+  }
   &.searching {
     display: block;
     pointer-events: auto;
@@ -503,27 +586,23 @@ export default {
     &.visible {
       height: 100vh;
     }
+    & > * {
+      display: block;
+      &.search-content-before-search {
+        display: flex;
+      }
+      &.search-settings {
+        display: flex;
+      }
+    }
+  }
+  &.results-layout {
+    display: flex;
+    padding-left: 3vw;
   }
 }
-
-.results {
-  display: flex;
-}
-.artist {
-  margin-right: 20px;
-  padding-right: 40px;
-  border-radius: 15px;
-  display: flex;
-}
-.artist-image {
-  width: 150px;
-  height: 150px;
-  margin-right: 20px;
-  border-radius: 15px 0px 0px 15px;
-  background-size: cover, cover;
-}
-.artist-name {
-  font-weight: 500;
+.results-container {
+  width: 100%;
 }
 .circle {
   height: 150px;
@@ -539,7 +618,7 @@ export default {
   }
 }
 .search-content-before-search {
-  display: flex;
+  display: none;
   align-items: flex-end;
   height: 100%;
 }
@@ -550,11 +629,33 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 100;
+  &.results-position {
+    position: sticky;
+    transform: none;
+    left: 0;
+    top: 3vh;
+    display: none;
+    align-items: flex-start;
+  }
 }
 .flex-container {
   display: flex;
 }
 .tags {
-  max-width: 80%;
+  max-width: 100%;
+}
+.results {
+  display: flex;
+  transform: none !important; // bandaid fix for anime.js-related bug
+  padding-left: 3vw;
+  padding-top: 3vh;
+  padding-bottom: 10vh;
+  overflow-y: auto;
+}
+.release-results {
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  grid-gap: 20px;
+  margin-left: 3vw;
 }
 </style>

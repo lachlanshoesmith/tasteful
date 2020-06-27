@@ -99,6 +99,13 @@ module.exports = {
         '^/archive': ''
       },
       followRedirects: true
+    },
+    '/coverArtArchive': {
+      target: 'https://coverartarchive.org/',
+      pathRewrite: {
+        '^/coverArtArchive': ''
+      },
+      followRedirects: true
     }
   },
   styleResources: {

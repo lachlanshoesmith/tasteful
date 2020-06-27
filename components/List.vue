@@ -27,7 +27,7 @@ export default {
   color: hsl(222, 5%, 20%);
   transition: all 0.2s linear;
   list-style: none;
-  padding-left: 10px;
+  padding-left: 0px;
   &.dark {
     color: hsl(222, 10%, 55%);
     a {

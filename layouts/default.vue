@@ -400,8 +400,11 @@ button {
 #app {
   transition: background 0.2s linear;
   min-height: 100vh;
+  &.light {
+    background: $light-background;
+  }
   &.dark {
-    background: $deep-black;
+    background: $dark-background;
   }
   &.solarised-light {
     background: $solarised-light-main-background;
@@ -434,6 +437,7 @@ nav {
     left: 0;
     top: 0;
     background: $nav-background;
+    backdrop-filter: blur(5px);
     content: " ";
     width: 100%;
     opacity: 0;

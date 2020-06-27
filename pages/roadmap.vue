@@ -20,7 +20,7 @@
       <paragraph-container>
         <subheading>Q4 2019</subheading>
         <paragraph>
-          <ul>
+          <list>
             <li>
               ✅ ✨
               <strong>Stage 0.1&nbsp;</strong>
@@ -42,13 +42,13 @@
               <strong>Stage 0.4</strong> Chartmaking support will be introduced
               in an alpha stage.
             </li>
-          </ul>
+          </list>
         </paragraph>
       </paragraph-container>
       <paragraph-container>
         <paragraph>
           <subheading>Q1 2020</subheading>
-          <ul>
+          <list>
             <li>
               ⭐
               <strong>Stage 0.5</strong>
@@ -64,13 +64,13 @@
               <strong>Stage 0.7</strong> tasteful opens to the general public in a
               beta stage, donations open.
             </li>
-          </ul>
+          </list>
         </paragraph>
       </paragraph-container>
       <paragraph-container>
         <subheading>Q2 2020</subheading>
         <paragraph>
-          <ul>
+          <list>
             <li>
               ✍️
               <strong>Stage 0.8</strong> Blogs are completed and open to the public.
@@ -80,13 +80,13 @@
               <strong>Stage 1.0</strong> tasteful is officially fully released. It's
               not done, but it's ready for primetime!
             </li>
-          </ul>
+          </list>
         </paragraph>
       </paragraph-container>
       <paragraph-container>
         <subheading>Onwards</subheading>
         <paragraph>
-          <ul>
+          <list>
             <li>
               🤔
               <strong>TBD</strong> There are a lot more features that we're
@@ -102,7 +102,7 @@
               development will slow heavily throughout 2020 as I enter my final
               year of high school.
             </li>
-          </ul>
+          </list>
         </paragraph>
       </paragraph-container>
     </article-content>
@@ -116,6 +116,7 @@ import subheading from '~/components/Subheading.vue'
 import articleContent from '~/components/ArticleContent.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
+import list from '~/components/List.vue'
 
 export default {
   name: 'Roadmap',
@@ -124,7 +125,8 @@ export default {
     subheading,
     articleContent,
     paragraph,
-    paragraphContainer
+    paragraphContainer,
+    list
   }
 }
 </script>

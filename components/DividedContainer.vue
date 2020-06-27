@@ -1,10 +1,10 @@
 <template>
   <div :class="[{redBorder, shadow}, colourMode]" class="divided-container">
-    <div class="container-content-left">
+    <div class="container-content-left" :class="[{hideLeftColumn}]">
       <slot name="left" />
     </div>
-    <div class="divider" :class="[colourMode]" />
-    <div class="container-content-right">
+    <div class="divider" :class="[{hideLeftColumn}, colourMode]" />
+    <div class="container-content-right" :class="[{hideLeftColumn}]">
       <slot name="right" />
     </div>
   </div>
@@ -15,7 +15,8 @@ export default {
   name: 'DividedContainer',
   props: {
     redBorder: Boolean,
-    shadow: Boolean
+    shadow: Boolean,
+    hideLeftColumn: Boolean
   },
   computed: {
     colourMode () {
@@ -100,9 +101,22 @@ export default {
   margin-right: 15px;
   text-align: left;
   width: 35%;
+  &.hideLeftColumn {
+    width: 0%;
+    margin-right: 0;
+    .paragraph {
+      display: none;
+    }
+    .subheading {
+      display: none;
+    }
+  }
 }
 .container-content-right {
   width: 65%;
+  &.hideLeftColumn {
+    width: 100%;
+  }
 }
 .divider {
   width: 3px;
@@ -118,6 +132,9 @@ export default {
   }
   &.solarised-dark {
     background: $solarised-dark-main-background;
+  }
+  &.hideLeftColumn {
+    display: none;
   }
 }
 
