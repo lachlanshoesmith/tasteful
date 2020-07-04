@@ -85,7 +85,7 @@ export default {
   border-radius: 5px;
   padding: 5px;
   border: 1px hsl(252, 15%, 90%) solid;
-  width: 60%;
+  min-width: 60%;
   margin-bottom: 5px;
   transition: all 0.2s linear;
   &.dark {
@@ -129,7 +129,8 @@ export default {
   border: none;
   padding: 5px;
   padding-left: 10px;
-  width: 100%;
+  min-width: 50%;
+  max-width: calc(100% - 30px);
   font-size: 1rem;
   transition: all 0.2s linear;
   border-left: 1px hsl(252, 15%, 90%) solid;

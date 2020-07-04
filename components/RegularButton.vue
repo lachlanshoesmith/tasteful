@@ -131,6 +131,8 @@ export default {
 
 @media (max-width: 1000px) {
   .regular-button {
+    line-height: 1;
+    max-width: 75vw;
     &.centreOnSmallScreens {
       margin-left: auto;
       margin-right: auto;

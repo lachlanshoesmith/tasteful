@@ -17,7 +17,7 @@
     </text-input>
     <div class="search-content-container" :class="{loadingSearchResults, 'results-layout': resultsLoaded, searching, visible}">
       <div class="search-settings" :class="{ 'results-position': resultsLoaded }">
-        <divided-container shadow :hide-left-column="resultsLoaded">
+        <divided-container class="search-settings-divided-container" :class="{resultsLoaded}" shadow :hide-left-column="resultsLoaded" conservative-mobile-view>
           <template v-slot:left>
             <subheading smaller no-top-margin>
               Search configuration
@@ -46,7 +46,6 @@
                 name="include-in-search-release-type"
                 description-value="Choose which releases are displayed."
                 :default-value="releaseTypeName"
-                full-width
                 :options="['All release types', 'Singles', 'LPs', 'EPs']"
                 @change="findReleaseType($event)"
               >
@@ -63,7 +62,6 @@
                 name="include-in-search-country"
                 description-value="Where are the results from?"
                 default-value="All countries"
-                full-width
                 :options="listOfCountries"
               >
                 <template v-slot:icon>
@@ -77,7 +75,6 @@
                 name="amount-of-results"
                 description-value=">5 results requires a premium subscription."
                 :default-value="amountOfResults"
-                full-width
                 :options="[1, 2, 3, 4, 5]"
                 @change="amountOfResults = $event"
               >
@@ -91,7 +88,17 @@
             </div>
           </template>
         </divided-container>
+        <divided-container class="search-settings-mobile-results-prompt" :class="{resultsLoaded}" shadow :hide-left-column="resultsLoaded" :conservative-mobile-view="resultsLoaded">
+          <template v-slot:right>
+            <regular-button centre-on-small-screens include-arrow-icon @pressed="resultsLoaded = false">
+              Return to search parameters
+            </regular-button>
+          </template>
+        </divided-container>
       </div>
+      <regular-button class="hide-search-button" centre-on-small-screens @pressed="hideSearch">
+        Hide search
+      </regular-button>
       <div v-if="!resultsLoaded" class="search-content-before-search" @click="hideSearch">
         <!-- only show if search hasnt been made -->
         <div
@@ -147,6 +154,7 @@ import checkbox from '@/components/Checkbox.vue'
 import spinner from '@/components/Spinner.vue'
 import searchArtist from '@/components/SearchArtist.vue'
 import searchRelease from '@/components/SearchRelease.vue'
+import regularButton from '@/components/RegularButton.vue'
 
 export default {
   name: 'NavSearch',
@@ -164,7 +172,8 @@ export default {
     checkbox,
     spinner,
     searchArtist,
-    searchRelease
+    searchRelease,
+    regularButton
   },
   props: {
     visible: Boolean
@@ -254,8 +263,13 @@ export default {
       this.includeInSearch[query] = value
     },
     hideSearch (e) {
-      if (e.target === e.currentTarget) {
+      try {
+        if (e.target === e.currentTarget) {
         // if the parent div is clicked (what we want)
+          this.searching = false
+        }
+      } catch (err) {
+        // if e is undefined, presumably ie. button is calling this function
         this.searching = false
       }
     },
@@ -628,6 +642,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  height: fit-content;
   z-index: 100;
   &.results-position {
     position: sticky;
@@ -635,7 +650,6 @@ export default {
     left: 0;
     top: 3vh;
     display: none;
-    align-items: flex-start;
   }
 }
 .flex-container {
@@ -657,5 +671,62 @@ export default {
   grid-template-columns: repeat(3, 150px);
   grid-gap: 20px;
   margin-left: 3vw;
+}
+.search-settings-mobile-results-prompt {
+  display: none;
+}
+.hide-search-button {
+  display: none !important; // conflicts with .search-content-container > * display: none
+}
+@media (max-width: 1000px) {
+  .search-content-container {
+    width: 100%;
+    &.results-layout {
+      display: block;
+      padding-left: 0;
+    }
+  }
+  .search-content-before-search {
+    display: none !important; // to fix... one day. im tired
+  }
+  .circle {
+    display: none; // performance yknow
+  }
+  .search-settings {
+    width: 100vw;
+    position: relative;
+    top: 30px;
+    left: 0;
+    transform: none;
+    margin-bottom: 5vh;
+    &.results-position {
+      width: 98vw;
+      left: 1vw;
+      top: 3vh;
+      max-height: 10vh;
+    }
+  }
+  .search-settings-divided-container {
+    margin-left: auto;
+    margin-right: auto;
+    &.resultsLoaded {
+      display: none;
+    }
+  }
+  .search-settings-mobile-results-prompt {
+    &.resultsLoaded {
+      width: 100%;
+      display: flex;
+      &::before {
+        width: 100%;
+      }
+    }
+  }
+  .hide-search-button {
+    display: block !important; // conflicts with .hide-search-button display: none. it's ugly and i need to fix
+    position: sticky;
+    top: 50vh;
+    z-index: 10000;
+  }
 }
 </style>

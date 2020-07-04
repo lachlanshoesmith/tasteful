@@ -1,10 +1,10 @@
 <template>
-  <div :class="[{redBorder, shadow}, colourMode]" class="divided-container">
+  <div :class="[{redBorder, shadow, conservativeMobileView}, colourMode]" class="divided-container">
     <div class="container-content-left" :class="[{hideLeftColumn}]">
       <slot name="left" />
     </div>
     <div class="divider" :class="[{hideLeftColumn}, colourMode]" />
-    <div class="container-content-right" :class="[{hideLeftColumn}]">
+    <div class="container-content-right" :class="[{hideLeftColumn, conservativeMobileView}]">
       <slot name="right" />
     </div>
   </div>
@@ -16,7 +16,8 @@ export default {
   props: {
     redBorder: Boolean,
     shadow: Boolean,
-    hideLeftColumn: Boolean
+    hideLeftColumn: Boolean,
+    conservativeMobileView: Boolean
   },
   computed: {
     colourMode () {
@@ -141,6 +142,17 @@ export default {
 @media (max-width: 1000px) {
   .divided-container {
     display: block;
+    &.conservativeMobileView {
+      width: 90%;
+      padding: 10px;
+      margin-bottom: 0;
+      &:before {
+        transform: translateX(-10px) translateY(-15px);
+      }
+      .divider {
+        display: none;
+      }
+    }
   }
   .container-content-left {
     width: 100%;
@@ -151,6 +163,10 @@ export default {
   }
   .container-content-right {
     width: 100%;
+    &.conservativeMobileView {
+      overflow-y: auto;
+      height: 100%;
+    }
   }
 }
 </style>
