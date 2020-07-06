@@ -80,49 +80,56 @@
         </template>
       </modal>
     </transition>
-    <!-- <nav class="maintenance">
-      <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
-    </nav> -->
-    <nav
-      id="
-      navigation-bar"
-      :class="[{
-        'nav-unstuck': !showNavbar,
-        'nav-beyond-point': showNavBackground,
-      }, colourMode]"
-    >
-      <div id="nav-content" :class="colourMode">
-        <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
-          tasteful
-        </h1>
-        <nav-search :visible="showNavbar" />
-        <div id="links" :class="colourMode">
-          <nuxt-link to="/">
-            <home-icon title="Home" />
-          </nuxt-link><nuxt-link to="/about">
-            <info-icon title="About" />
-          </nuxt-link><nuxt-link to="/roadmap">
-            <timelapse-icon title="Roadmap" />
-          </nuxt-link><nuxt-link to="/donate">
-            <cash-icon title="Donate" />
-          </nuxt-link><a @click="toggleColourScheme">
-            <white-balance-sunny-icon title="Toggle colour scheme" />
-          </a><a id="search-button-container" class="display-only-if-on-mobile">
-            <magnify-icon title="Search" @click="showSearchModal = !showSearchModal" />
-            <transition name="fade">
-              <mini-modal v-if="showSearchModal">
-                <search @close-search-modal="showSearchModal = false" />
-              </mini-modal>
-            </transition>
-          </a><a v-if="user === null || user === false" @click="showModal = !showModal">
-            <key-icon title="Log in" />
-          </a><nuxt-link v-if="user !== null && user !== false" :to="'/user/' + user.username">
-            <face-icon title="Profile" />
-          </nuxt-link>
+    <div v-if="user !== null && user.username === 'lachlantula'">
+      <!-- user !== null && user.username === 'lachlantula' -->
+      <!-- <nav class="maintenance">
+        <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
+      </nav> -->
+      <nav
+        id="
+        navigation-bar"
+        :class="[{
+          'nav-unstuck': !showNavbar,
+          'nav-beyond-point': showNavBackground,
+        }, colourMode]"
+      >
+        <div id="nav-content" :class="colourMode">
+          <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
+            tasteful
+          </h1>
+          <nav-search :visible="showNavbar" />
+          <div id="links" :class="colourMode">
+            <nuxt-link to="/">
+              <home-icon title="Home" />
+            </nuxt-link><nuxt-link to="/about">
+              <info-icon title="About" />
+            </nuxt-link><nuxt-link to="/roadmap">
+              <timelapse-icon title="Roadmap" />
+            </nuxt-link><nuxt-link to="/donate">
+              <cash-icon title="Donate" />
+            </nuxt-link><a @click="toggleColourScheme">
+              <white-balance-sunny-icon title="Toggle colour scheme" />
+            </a><a id="search-button-container" class="display-only-if-on-mobile">
+              <magnify-icon title="Search" @click="showSearchModal = !showSearchModal" />
+              <transition name="fade">
+                <mini-modal v-if="showSearchModal">
+                  <search @close-search-modal="showSearchModal = false" />
+                </mini-modal>
+              </transition>
+            </a><a v-if="user === null || user === false" @click="showModal = !showModal">
+              <key-icon title="Log in" />
+            </a><nuxt-link v-if="user !== null && user !== false" :to="'/user/' + user.username">
+              <face-icon title="Profile" />
+            </nuxt-link>
+          </div>
         </div>
-      </div>
-    </nav>
-    <nuxt />
+      </nav>
+      <nuxt />
+    </div>
+    <div v-else>
+      <subheading>tasteful is currently under maintenance.</subheading>
+      <paragraph>Check back soon.</paragraph>
+    </div>
   </div>
 </template>
 

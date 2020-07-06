@@ -8,7 +8,7 @@
     </div>
     <input
       v-model="value"
-      :class="[{noIcon}, colourMode]"
+      :class="[{noIcon, centred}, colourMode]"
       v-bind="$attrs"
       class="text-input"
       :type="checkInputType()"
@@ -33,6 +33,7 @@ export default {
     fullWidth: Boolean,
     noIcon: Boolean,
     disabled: Boolean,
+    centred: Boolean,
     focusManualBlurHandling: Boolean,
     defaultValue: {
       type: String,
@@ -166,6 +167,9 @@ export default {
   }
   &.noIcon {
     border-left: none;
+  }
+  &.centred {
+    text-align: center;
   }
 }
 

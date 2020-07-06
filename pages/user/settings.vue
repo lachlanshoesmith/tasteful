@@ -1,7 +1,7 @@
 <template>
   <main class="user">
     <!-- blur while loading -->
-    <blur :apply-blur="loading" />
+    <blur v-if="loading" :apply-blur="loading" />
     <article-content v-if="user !== null && user.username === '' && !loading">
       <!-- If no username was found on the account... -->
       <masthead centred smaller>

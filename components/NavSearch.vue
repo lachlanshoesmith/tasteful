@@ -31,10 +31,10 @@
               Include in search
             </input-label>
             <div class="flex-container">
-              <checkbox checked @change="updateSearchQuery('artists', $event)">
+              <checkbox checked @change="updateSearchQuery('artists', $event); search ()">
                 Artists
               </checkbox>
-              <checkbox checked @change="updateSearchQuery('releases', $event)">
+              <checkbox checked @change="updateSearchQuery('releases', $event); search ()">
                 Releases
               </checkbox>
             </div>
@@ -47,14 +47,14 @@
                 description-value="Choose which releases are displayed."
                 :default-value="releaseTypeName"
                 :options="['All release types', 'Singles', 'LPs', 'EPs']"
-                @change="findReleaseType($event)"
+                @change="findReleaseType($event); search ()"
               >
                 <template v-slot:icon>
                   <disc-icon title="Release types" />
                 </template>
               </dropdown-input>
             </div>
-            <div v-if="includeInSearch['artists'] || includeInSearch['releases']">
+            <div v-if="includeInSearch['artists']">
               <input-label>
                 Country
               </input-label>
@@ -63,6 +63,7 @@
                 description-value="Where are the results from?"
                 default-value="All countries"
                 :options="listOfCountries"
+                @change="selectedRegion = $event; search ()"
               >
                 <template v-slot:icon>
                   <map-icon title="Country" />
@@ -76,14 +77,14 @@
                 description-value=">5 results requires a premium subscription."
                 :default-value="amountOfResults"
                 :options="[1, 2, 3, 4, 5]"
-                @change="amountOfResults = $event"
+                @change="amountOfResults = $event; search ()"
               >
                 <template v-slot:icon>
                   <view-list-icon title="Amount of results" />
                 </template>
               </dropdown-input>
             </div>
-            <div v-if="!includeInSearch['artists'] && !includeInSearch['releases']">
+            <div v-if="!includeInSearch['artists'] && !includeInSearch['releases']" class="not-on-mobile">
               <paragraph>Don't feel like searching anything? I get it. We all have those days. I hope you're okay, though. Feel free to click outside of this little window to return to the rest of tasteful.</paragraph>
             </div>
           </template>
@@ -96,7 +97,7 @@
           </template>
         </divided-container>
       </div>
-      <regular-button class="hide-search-button" centre-on-small-screens @pressed="hideSearch">
+      <regular-button v-if="!resultsLoaded" class="hide-search-button" centre-on-small-screens @pressed="hideSearch">
         Hide search
       </regular-button>
       <div v-if="!resultsLoaded" class="search-content-before-search" @click="hideSearch">
@@ -194,6 +195,7 @@ export default {
         artists: false,
         releases: false
       },
+      selectedRegion: 'All countries',
       amountOfResults: '3',
       includeInSearch: {
         artists: true,
@@ -311,9 +313,15 @@ export default {
       this.releases = []
       const searchResult = (type) => {
         if (type === 'artist') {
+          let apiURL
+          if (this.selectedRegion === 'All countries') {
+            apiURL = '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
+          } else {
+            apiURL = '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '" AND country:"' + countryList.getCode(this.selectedRegion) + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
+          }
           this.$axios
             .get(
-              '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
+              apiURL
             )
             .then((res) => {
               const artists = res.data.artists
@@ -579,7 +587,7 @@ export default {
   position: absolute;
   // border-top: solid 5px green;
   left: 0;
-  width: calc(100% - 3vw);
+  width: 100%;
   height: 0%;
   backdrop-filter: blur(15px);
   color: $saturated-blue;
@@ -613,6 +621,7 @@ export default {
   &.results-layout {
     display: flex;
     padding-left: 3vw;
+    width: calc(100% - 3vw);
   }
 }
 .results-container {
@@ -686,6 +695,9 @@ export default {
       padding-left: 0;
     }
   }
+  .not-on-mobile {
+    display: none;
+  }
   .search-content-before-search {
     display: none !important; // to fix... one day. im tired
   }
@@ -727,6 +739,13 @@ export default {
     position: sticky;
     top: 50vh;
     z-index: 10000;
+  }
+  .results {
+    display: block;
+  }
+  .release-results {
+    margin-left: 0;
+    display: block;
   }
 }
 </style>

@@ -29,7 +29,7 @@
           :style="{ 'background-image': 'url(' + release.image + ')'}"
           @mouseover="selectedRelease = release.title"
           @mouseleave="selectedRelease = ''"
-          @click="redirectToRelease(name)"
+          @click="redirectToRelease(release, name)"
         />
       </div>
     </div>
@@ -65,7 +65,8 @@ export default {
     }
   },
   methods: {
-    redirectToRelease (mbid) {
+    redirectToRelease (release, mbid) {
+      this.$store.commit('search/setRelease', release)
       this.$router.push({ path: '/release/' + mbid })
       this.$emit('changeSearching', false)
     }

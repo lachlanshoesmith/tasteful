@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     redirectToRelease (mbid) {
+      this.$store.commit('search/setRelease', this.release)
       this.$router.push({ path: '/release/' + mbid })
       this.$emit('changeSearching', false)
     }
