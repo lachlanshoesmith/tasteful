@@ -69,21 +69,21 @@
                   <map-icon title="Country" />
                 </template>
               </dropdown-input>
-              <input-label>
-                Amount of results displayed
-              </input-label>
-              <dropdown-input
-                name="amount-of-results"
-                description-value=">5 results requires a premium subscription."
-                :default-value="amountOfResults"
-                :options="[1, 2, 3, 4, 5]"
-                @change="amountOfResults = $event; search ()"
-              >
-                <template v-slot:icon>
-                  <view-list-icon title="Amount of results" />
-                </template>
-              </dropdown-input>
             </div>
+            <input-label>
+              Amount of results displayed
+            </input-label>
+            <dropdown-input
+              name="amount-of-results"
+              description-value=">5 results requires a premium subscription."
+              :default-value="amountOfResults"
+              :options="[1, 2, 3, 4, 5]"
+              @change="amountOfResults = $event; search ()"
+            >
+              <template v-slot:icon>
+                <view-list-icon title="Amount of results" />
+              </template>
+            </dropdown-input>
             <div v-if="!includeInSearch['artists'] && !includeInSearch['releases']" class="not-on-mobile">
               <paragraph>Don't feel like searching anything? I get it. We all have those days. I hope you're okay, though. Feel free to click outside of this little window to return to the rest of tasteful.</paragraph>
             </div>

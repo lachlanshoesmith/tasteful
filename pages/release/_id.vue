@@ -34,19 +34,43 @@ export default {
   },
   data () {
     return {
-      id: this.$route.params.id
+      id: this.$route.params.id,
+      release: {}
     }
   },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
-    },
-    release () {
-      return this.$store.state.search.release
     }
   },
   mounted () {
-    document.title = 'tasteful | ' + this.release.title
+    if (this.release.title === undefined) {
+      // if the page is not loaded following a search we must find all the information again
+      // get release group info from musicbrainz
+      this.$axios
+        .get(
+          '/musicBrainzAPI/release-group/?query=mbid:"' + this.id + '"&fmt=json'
+        )
+        .then((res) => {
+          this.release = res.data['release-groups'][0]
+          document.title = 'tasteful | ' + this.release.title
+        })
+      // get release art
+      this.$axios
+        .get(
+          '/coverArtArchive/release-group/' + this.id
+        )
+        .then((res) => {
+          const imageURL = res.data.images[0].thumbnails.small
+          this.$set(this.release, 'image', imageURL)
+        })
+        .catch((err) => {
+          console.log('No album cover found.\n' + err)
+        })
+    } else {
+      this.release = this.$store.state.search.release
+      document.title = 'tasteful | ' + this.release.title
+    }
   }
 }
 </script>

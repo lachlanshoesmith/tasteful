@@ -1,6 +1,7 @@
 export const state = () => ({
   release: {},
   artist: {}
+  // musicbrainzResults: {}
 })
 
 export const mutations = {
@@ -10,6 +11,9 @@ export const mutations = {
   setArtist (state, payload) {
     state.artist = payload
   }
+  // setMusicbrainzResults (state, payload) {
+  //   state.musicbrainzResults = payload
+  // }
 }
 
 export const getters = {
