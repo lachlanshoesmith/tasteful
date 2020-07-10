@@ -18,7 +18,6 @@
         </paragraph>
       </paragraph-container>
       <paragraph-container>
-        <subheading>Q4 2019</subheading>
         <paragraph>
           <list>
             <li>
@@ -33,44 +32,30 @@
               launch.
             </li>
             <li>
-              🕵️‍♀️
+              ✅ 🕵️‍♀️
               <strong>Stage 0.3</strong> Album search functionality opens to the
               public.
             </li>
             <li>
-              📊
-              <strong>Stage 0.4</strong> Chartmaking support will be introduced
-              in an alpha stage.
-            </li>
-          </list>
-        </paragraph>
-      </paragraph-container>
-      <paragraph-container>
-        <paragraph>
-          <subheading>Q1 2020</subheading>
-          <list>
-            <li>
               ⭐
-              <strong>Stage 0.5</strong>
+              <strong>Stage 0.4</strong>
               Ratings are completed. Hell Yeah!
             </li>
             <li>
               📝
-              <strong>Stage 0.6</strong> Reviews are completed. Hell Yeah: The
+              <strong>Stage 0.5</strong> Reviews are completed. Hell Yeah: The
               Sequel! Importing ratings and reviews will also be implemented at this time.
+            </li>
+            <li>
+              📊
+              <strong>Stage 0.6</strong> Chartmaking support will be introduced
+              in an alpha stage.
             </li>
             <li>
               🥳
               <strong>Stage 0.7</strong> tasteful opens to the general public in a
-              beta stage, donations open.
+              beta stage.
             </li>
-          </list>
-        </paragraph>
-      </paragraph-container>
-      <paragraph-container>
-        <subheading>Q2 2020</subheading>
-        <paragraph>
-          <list>
             <li>
               ✍️
               <strong>Stage 0.8</strong> Blogs are completed and open to the public.
@@ -96,9 +81,8 @@
             <li>
               😡
               <strong>Why is development so slow?</strong> It is likely that a
-              lot of these goals will be achieved earlier than what it said
-              here; I just want to give plenty of redundancy in case something
-              takes longer than expected. It's also worth mentioning that
+              lot of these goals will be achieved at different times to what's said
+              on Twitter (for instance). It's also worth mentioning that
               development will slow heavily throughout 2020 as I enter my final
               year of high school.
             </li>

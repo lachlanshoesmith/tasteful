@@ -133,10 +133,10 @@
             👩‍🎨 <a href="https://twitter.com/kolbbbbb">Kol</a> - icon design
           </li>
           <li>
-            🤗 Everyone who follows
+            🤗 Everyone who used to follow
             <a
               href="https://twitter.com/tastefulreviews"
-            >our Twitter account!</a>
+            >our Twitter account</a>. RIP.
           </li>
         </list>
         <paragraph>

@@ -80,7 +80,7 @@
         </template>
       </modal>
     </transition>
-    <div v-if="user !== null && user.username === 'lachlantula'">
+    <div>
       <!-- user !== null && user.username === 'lachlantula' -->
       <!-- <nav class="maintenance">
         <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
@@ -94,6 +94,9 @@
         }, colourMode]"
       >
         <div id="nav-content" :class="colourMode">
+          <!-- <button @click="resetInvites">
+            Over here!
+          </button> -->
           <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
             tasteful
           </h1>
@@ -126,10 +129,10 @@
       </nav>
       <nuxt />
     </div>
-    <div v-else>
+    <!-- <div v-else>
       <subheading>tasteful is currently under maintenance.</subheading>
       <paragraph>Check back soon.</paragraph>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -309,6 +312,17 @@ export default {
     window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
+    // resetInvites () {
+    //   this.$fireStore.collection('invites').get()
+    //     .then((res) => {
+    //       res.docs.forEach((doc) => {
+    //         // i know this is shit practice, don't care enough for this part
+    //         this.$fireStore.collection('invites').doc(doc.id).set({
+    //           used: false
+    //         })
+    //       })
+    //     })
+    // },
     onScroll () {
       const currentScrollPosition =
         window.pageYOffset || document.documentElement.scrollTop

@@ -65,7 +65,8 @@ module.exports = {
         },
         services: {
           auth: true,
-          firestore: true
+          firestore: true,
+          functions: true
         }
       }
     ]

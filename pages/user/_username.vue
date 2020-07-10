@@ -4,6 +4,19 @@
       <masthead centred smaller>
         {{ username }}
       </masthead>
+      <paragraph-container v-if="ratedReleases !== undefined">
+        <subheading>Ratings</subheading>
+        <paragraph soft>
+          This whole section will be improved <em>drastically</em> over the next few updates. I mean, look what happened to the search functionality!
+        </paragraph>
+        <list>
+          <li v-for="release in ratedReleases" :key="release.id">
+            [<strong>{{ release.score }}</strong>] {{ release.artist }} - <nuxt-link :to="'/release/' + release.id">
+              {{ release.title }}
+            </nuxt-link>
+          </li>
+        </list>
+      </paragraph-container>
     </article-content>
     <article-content v-else>
       <paragraph-container>
@@ -21,6 +34,7 @@ import subheading from '~/components/Subheading.vue'
 import paragraph from '~/components/Paragraph.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import articleContent from '~/components/ArticleContent.vue'
+import list from '~/components/List.vue'
 
 export default {
   name: 'User',
@@ -29,12 +43,14 @@ export default {
     subheading,
     paragraph,
     paragraphContainer,
-    articleContent
+    articleContent,
+    list
   },
   data () {
     return {
       username: 'One sec, please...',
       id: undefined,
+      ratedReleases: undefined,
       error: {
         display: false,
         message: ''
@@ -51,6 +67,7 @@ export default {
     let username = this.$route.params.username.toLowerCase()
     usernamesDatabase.get()
       .then((users) => {
+        // this needs to be cleaned up, holy shit...
         const arrayOfLowercaseUsernames = users.docs.map(doc => doc.id.toLowerCase())
         const arrayOfUsernames = users.docs.map(doc => doc.id)
         const usernameIndex = arrayOfLowercaseUsernames.indexOf(username)
@@ -64,6 +81,7 @@ export default {
                 if (userData.uid !== undefined) {
                   // ready to load
                   this.id = userData.uid
+                  this.getRatings()
                   document.title = 'tasteful | ' + username
                 } else {
                   this.error.display = true
@@ -87,6 +105,20 @@ export default {
         this.error.display = true
         this.error.message = 'We ran into a problem: ' + error + '.'
       })
+  },
+  methods: {
+    getRatings () {
+      const user = this.$fireStore.collection('users').doc(this.id)
+      const ratingsCollection = user.collection('ratings')
+      ratingsCollection.get()
+        .then((res) => {
+          this.ratedReleases = []
+          res.docs.forEach((release) => {
+            const releaseData = release.data()
+            this.ratedReleases.push(releaseData)
+          })
+        })
+    }
   }
 }
 </script>

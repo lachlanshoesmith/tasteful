@@ -31,10 +31,10 @@
               Include in search
             </input-label>
             <div class="flex-container">
-              <checkbox checked @change="updateSearchQuery('artists', $event); search ()">
+              <checkbox checked @change="updateSearchQuery('artists', $event); search ('from-input')">
                 Artists
               </checkbox>
-              <checkbox checked @change="updateSearchQuery('releases', $event); search ()">
+              <checkbox checked @change="updateSearchQuery('releases', $event); search ('from-input')">
                 Releases
               </checkbox>
             </div>
@@ -47,7 +47,7 @@
                 description-value="Choose which releases are displayed."
                 :default-value="releaseTypeName"
                 :options="['All release types', 'Singles', 'LPs', 'EPs']"
-                @change="findReleaseType($event); search ()"
+                @change="findReleaseType($event); search ('from-input')"
               >
                 <template v-slot:icon>
                   <disc-icon title="Release types" />
@@ -63,7 +63,7 @@
                 description-value="Where are the results from?"
                 default-value="All countries"
                 :options="listOfCountries"
-                @change="selectedRegion = $event; search ()"
+                @change="selectedRegion = $event; search ('from-input')"
               >
                 <template v-slot:icon>
                   <map-icon title="Country" />
@@ -78,7 +78,7 @@
               description-value=">5 results requires a premium subscription."
               :default-value="amountOfResults"
               :options="[1, 2, 3, 4, 5]"
-              @change="amountOfResults = $event; search ()"
+              @change="amountOfResults = $event; search ('from-input')"
             >
               <template v-slot:icon>
                 <view-list-icon title="Amount of results" />
@@ -136,9 +136,7 @@
 </template>
 
 <script>
-import crypto from 'crypto'
 import magnifyIcon from 'vue-material-design-icons/Magnify.vue'
-import Vibrant from 'node-vibrant'
 import anime from 'animejs/lib/anime.es.js'
 import mapIcon from 'vue-material-design-icons/Map.vue'
 import discIcon from 'vue-material-design-icons/Disc.vue'
@@ -306,264 +304,88 @@ export default {
           })
       })
     },
-    search () {
+    search (source) {
       this.loadingSearchResults = true
       this.showingResults = { artists: false, releases: false }
       this.artists = []
       this.releases = []
-      const searchResult = (type) => {
-        if (type === 'artist') {
-          let apiURL
-          if (this.selectedRegion === 'All countries') {
-            apiURL = '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
-          } else {
-            apiURL = '/musicBrainzAPI/artist/?query=artist:"' + this.searchQuery + '" AND country:"' + countryList.getCode(this.selectedRegion) + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
-          }
-          this.$axios
-            .get(
-              apiURL
-            )
-            .then((res) => {
-              const artists = res.data.artists
-              artists.forEach((artist, i) => {
-                artistInfo(artist, i)
-                this.artists.push(artist)
-              })
-            })
-        }
-        if (type === 'release') {
-          if (this.releaseType) {
-            this.$axios
-              .get(
-                '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '" AND primarytype:"' + this.releaseType + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
-              )
-              .then((res) => {
-                this.processReleases(res)
-              })
-              .finally(() => {
-                if (this.releases.length) {
-                  this.showSearchResults('releases', true)
-                } else {
-                  this.showSearchResults('releases', false)
-                }
-              })
-          } else {
-            this.$axios
-              .get(
-                '/musicBrainzAPI/release-group/?query=releasegroup:"' + this.searchQuery + '"?inc=genres&fmt=json&limit=' + this.amountOfResults
-              )
-              .then((res) => {
-                this.processReleases(res)
-              })
-              .finally(() => {
-                if (this.releases.length) {
-                  this.showSearchResults('releases', true)
-                } else {
-                  this.showSearchResults('releases', false)
-                }
-              })
-          }
-        }
+
+      // const getColours = (image, index, type) => {
+      //   const palette = (v, imagePalette) => {
+      //     v.getPalette()
+      //       .then((palette) => {
+      //         Object.keys(palette).forEach((colour) => {
+      //           const r = palette[colour]._rgb[0]
+      //           const g = palette[colour]._rgb[1]
+      //           const b = palette[colour]._rgb[2]
+      //           const formattedRGB = `rgb(${r}, ${g}, ${b})`
+      //           imagePalette[colour] = formattedRGB
+      //         })
+      //         this.artists[index].imagePalette = imagePalette
+      //       })
+      //       .finally(() => {
+      //         this.showSearchResults('artists')
+      //       })
+      //   }
+      //   if (type === 'artist') {
+      //     const proxyLowResolutionImageURL = '/wikimediaCommons?width=10&f=' + image
+      //     const imagePalette = {}
+      //     const v = new Vibrant(proxyLowResolutionImageURL)
+      //     palette(v, imagePalette)
+      //   } else {
+      //     const imageURL = image
+      //     const imagePalette = {}
+      //     const v = new Vibrant(imageURL)
+      //     palette(v, imagePalette)
+      //   }
+      // }
+
+      // check if a query is present
+      if (!this.searchQuery && source === 'from-input') {
+        this.loadingSearchResults = false
+        return false
       }
-      const artistInfo = (artist, index) => {
-        this.$axios.get(
-          '/musicBrainzAPI/artist/' + artist.id + '?inc=url-rels&fmt=json'
-        )
-          .then((res) => {
-            artistRelations(res.data.relations, index)
-          })
-          .catch((err) => {
-            console.log('ERROR WITH artistInfo: ' + err)
-          })
+
+      // convert country to a code
+      let countryCode = this.selectedRegion
+      if (this.selectedRegion !== 'All countries') {
+        countryCode = countryList.getCode(this.selectedRegion)
       }
-      const artistRelations = (relations, index) => {
-        let foundWikidata = false
-        for (let relationIndex = 0; relationIndex < relations.length; relationIndex++) {
-          const relation = relations[relationIndex]
-          // get wikidata link
-          if (relation.type === 'wikidata') {
-            foundWikidata = true
-            // get wikidata ID
-            const wikidataID = relation.url.resource.slice(30) // https://www.wikidata.org/wiki/ = 30 chars
-            // lookup image
-            getImage(wikidataID, index)
-          }
-        }
-        // if no wikidata page was found, get album art instead
-        if (!foundWikidata) {
-          getAlbumArtCandidate(index)
-        }
-      }
-      const findArtistReleases = (index) => {
-        const artistID = this.artists[index].id
-        this.$set(this.artists[index], 'releases', {})
-        // find releases
-        this.$axios.get('/musicBrainzAPI/release-group/?query=arid:' + artistID + ' AND status:"official" AND primarytype:"album"&limit=30&fmt=json')
-          .then((res) => {
-            // get album artworks
-            const releases = res.data['release-groups']
-            releases.forEach((releasegroup) => {
-              this.$set(this.artists[index].releases, releasegroup.id, {})
-              // TODO: merge [with getAlbumArtLocation(.image) function
-              const releaseTitle = releasegroup.title
-              this.$axios
-                .get(
-                  '/coverArtArchive/release-group/' + releasegroup.id
-                )
-                .then((res) => {
-                  const imageURL = res.data.images[0].thumbnails.small
-                  this.$set(this.artists[index].releases[releasegroup.id], 'image', imageURL)
-                  this.$set(this.artists[index].releases[releasegroup.id], 'title', releaseTitle)
-                })
-                .catch((err) => {
-                  console.log('No album cover found.\n' + err)
-                })
-                .finally(() => {
-                  // once the results start loading..
-                  this.showSearchResults('artists')
-                })
-            })
-          })
-          .catch((err) => {
-            console.log('ERROR WITH ' + artistID + ': ' + err)
-          })
-      }
-      const getImage = (wikidataID, index) => {
+
+      if (this.includeInSearch.artists) {
         this.$axios
           .get(
-            '/wikidataAPI?action=wbgetclaims&format=json&origin=*&property=P18&entity=' + wikidataID
+            `https://us-central1-tasteful.cloudfunctions.net/search?query=${this.searchQuery}&querytype=artist&releasetype=All&region=${countryCode}&limit=${this.amountOfResults}`
           )
           .then((res) => {
-            // get filename and location
-            // (this process is a serious pain)
-            try {
-              const imageInfo = res.data.claims.P18[0].mainsnak
-              // remove invalid characters before hash
-              let imageName = imageInfo.datavalue.value.replace(/ /g, '_')
-              const hashedImageName = crypto.createHash('md5').update(imageName).digest('hex')
-              const firstCharacterInHash = hashedImageName.charAt(0)
-              const secondCharacterInHash = hashedImageName.charAt(1)
-              // remove other invalid characters after hash (generates incorrect md5 otherwise)
-              imageName = imageName.replace('(', '%28') // no regex here as these should only occur once.
-              imageName = imageName.replace(')', '%29')
-              imageName = imageName.replace(',', '%2C')
-              // download very low res image first
-              const lowResolutionImageURL = 'https://commons.wikimedia.org/w/thumb.php?width=10&f=' + imageName // only 10px wide; stretched and blurred while loading the main image.
-              this.artists[index].imageURLLowRes = lowResolutionImageURL
-              console.log(lowResolutionImageURL)
-              // Note: may replace full resolution URL with a good-enough alternative (eg. 400px) in the future
-              const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/' + firstCharacterInHash + '/' + firstCharacterInHash + secondCharacterInHash + '/' + imageName
-              this.artists[index].imageURL = imageURL
-              // get colours (TEMPORARILY DISABLED)
-              // getColours(imageName, index, 'artist')
-
-              // this would normally be handled by getColours()
-              if (this.includeInSearch.releases) {
-                // find releases for that artist
-                findArtistReleases(index)
-              } else {
-                this.showSearchResults('artists')
-              }
-            } catch (e) {
-              if (e === 'TypeError: "res.data.claims.P18 is undefined"') {
-                // If the artist has no image supplied, get an album artwork instead.
-                getAlbumArtCandidate(index)
-              }
+            this.artists = res.data
+            this.showingResults.artists = true
+            if (!this.includeInSearch.releases) {
+              this.loadingSearchResults = false
+              this.resultsLoaded = true
+            } else if (this.includeInSearch.releases && this.showingResults.releases) {
+              this.loadingSearchResults = false
+              this.resultsLoaded = true
             }
           })
-          .catch((e) => {
-            getAlbumArtCandidate(index)
-          })
-      }
-      const getAlbumArtCandidate = (index) => {
-        const artist = this.artists[index]
-        if (artist === undefined) {
-          // if all artists have had their album arts found (ie index > this.artists.length)...
-          // ...finish the search.
-          this.showSearchResults('artists')
-        } else {
-          // otherwise, keep going
-          this.$axios
-            .get(
-              '/musicBrainzAPI/release-group/?query=arid:' + artist.id + '&limit=1&fmt=json'
-            )
-            .then((res) => {
-            // At this stage tasteful will the first album art from the artist (ie debut, probably).
-            // In the future the highest-rating release will be shown, instead.
-              const releases = res.data['release-groups']
-              // Some artists have no releases and fill basically no purpose on MusicBrainz, lol.
-              if (!releases.length) {
-                console.log(artist.name + ' has no releases.')
-              // Will need to find alternative.
-              } else {
-              // choose a release from the group (to get specific MBID)
-              // normally I would just use group's MBID but i'm having CORS issues at the minute.
-              // will probably revisit this one day.
-                const release = releases[0].releases[0]
-                getAlbumArtLocation(release, index)
-              }
-            })
-            .catch((err) => {
-              console.log('ERROR WITH getAlbumArtCandidate: ' + err)
-            })
-        }
-      }
-      const getAlbumArtLocation = (release, index) => {
-        this.$axios
-          .get(
-            '/archive/download/mbid-' + release.id + '/index.json'
-          )
-          .then((res) => {
-            const imageURL = res.data.images[0].image
-            getAlbumArt(imageURL, index)
-          })
-          .catch((err) => {
-            // No album art found, keep it moving.
-            console.log('ERROR for ' + release.title + ': ' + err)
-            index += 1
-            getAlbumArtCandidate(index)
-          })
-      }
-      const getAlbumArt = (imageURL, index) => {
-        this.artists[index].imageURL = imageURL
-        this.artists[index].imageURLLowRes = imageURL
-        // get colours
-        getColours(imageURL, index, 'release')
-      }
-      const getColours = (image, index, type) => {
-        const palette = (v, imagePalette) => {
-          v.getPalette()
-            .then((palette) => {
-              Object.keys(palette).forEach((colour) => {
-                const r = palette[colour]._rgb[0]
-                const g = palette[colour]._rgb[1]
-                const b = palette[colour]._rgb[2]
-                const formattedRGB = `rgb(${r}, ${g}, ${b})`
-                imagePalette[colour] = formattedRGB
-              })
-              this.artists[index].imagePalette = imagePalette
-            })
-            .finally(() => {
-              this.showSearchResults('artists')
-            })
-        }
-        if (type === 'artist') {
-          const proxyLowResolutionImageURL = '/wikimediaCommons?width=10&f=' + image
-          const imagePalette = {}
-          const v = new Vibrant(proxyLowResolutionImageURL)
-          palette(v, imagePalette)
-        } else {
-          const imageURL = image
-          const imagePalette = {}
-          const v = new Vibrant(imageURL)
-          palette(v, imagePalette)
-        }
-      }
-      if (this.includeInSearch.artists) {
-        searchResult('artist') // begin the artist search
       }
       if (this.includeInSearch.releases) {
-        searchResult('release') // begin the release search
+        this.$axios
+          .get(
+            `https://us-central1-tasteful.cloudfunctions.net/search?query=${this.searchQuery}&querytype=release-group&releasetype=${this.releaseType}&region=${countryCode}&limit=${this.amountOfResults}`
+          )
+          .then((res) => {
+            this.releases = res.data
+            this.showingResults.releases = true
+
+            if (!this.includeInSearch.artists) {
+              this.loadingSearchResults = false
+              this.resultsLoaded = true
+            } else if (this.includeInSearch.artists && this.showingResults.artists) {
+              this.loadingSearchResults = false
+              this.resultsLoaded = true
+            }
+          })
       }
     }
   }

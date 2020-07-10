@@ -63,7 +63,7 @@
       <masthead centred smaller>
         Settings
       </masthead>
-      <divided-container id="public-profile">
+      <!-- <divided-container id="public-profile">
         <template v-slot:left>
           <subheading smaller no-top-margin>
             Public profile
@@ -128,7 +128,7 @@
             />
           </div>
         </template>
-      </divided-container>
+      </divided-container> -->
       <divided-container>
         <template v-slot:left>
           <subheading smaller no-top-margin>
@@ -154,10 +154,10 @@
               <palette-icon title="Selected theme" />
             </template>
           </dropdown-input>
-          <input-label>
+          <!-- <input-label>
             Dynamic colouring
           </input-label>
-          <checkbox>It's enabled. This may impact performance.</checkbox>
+          <checkbox>It's enabled. This may impact performance.</checkbox> -->
           <input-label>
             Navbar theme toggle options
           </input-label>
@@ -238,7 +238,7 @@
           </div>
         </template>
       </divided-container>
-      <divided-container>
+      <!-- <divided-container>
         <template v-slot:left>
           <subheading smaller no-top-margin>
             Search
@@ -265,7 +265,7 @@
           </input-label>
           <checkbox>Aren't they nice?</checkbox>
         </template>
-      </divided-container>
+      </divided-container> -->
       <divided-container red-border>
         <template v-slot:left>
           <subheading smaller no-top-margin>
@@ -277,10 +277,10 @@
           </paragraph>
         </template>
         <template v-slot:right>
-          <input-label no-top-margin>
+          <!-- <input-label no-top-margin>
             Experimental features
           </input-label>
-          <checkbox>They're available now. Proceed with caution!</checkbox>
+          <checkbox>They're available now. Proceed with caution!</checkbox> -->
           <regular-button include-arrow-icon @pressed="signOut">
             <span>Sign out</span>
           </regular-button>
@@ -297,10 +297,10 @@
 // @ is an alias to /src
 import crypto from 'crypto'
 import faceIcon from 'vue-material-design-icons/Face.vue'
-import linkIcon from 'vue-material-design-icons/Link.vue'
+// import linkIcon from 'vue-material-design-icons/Link.vue'
 import keyIcon from 'vue-material-design-icons/Key.vue'
 import fingerprintIcon from 'vue-material-design-icons/Fingerprint.vue'
-import genderMaleFemaleIcon from 'vue-material-design-icons/GenderMaleFemale.vue'
+// import genderMaleFemaleIcon from 'vue-material-design-icons/GenderMaleFemale.vue'
 import invertColoursIcon from 'vue-material-design-icons/InvertColors.vue'
 import paletteIcon from 'vue-material-design-icons/Palette.vue'
 import { mapGetters } from 'vuex'
@@ -316,7 +316,7 @@ import articleContent from '~/components/ArticleContent.vue'
 import dividedContainer from '~/components/DividedContainer.vue'
 import inputLabel from '~/components/InputLabel.vue'
 import blur from '~/components/Blur.vue'
-import checkbox from '~/components/Checkbox.vue'
+// import checkbox from '~/components/Checkbox.vue'
 import { adjectives, nouns } from '~/assets/js/words.js'
 
 export default {
@@ -332,15 +332,15 @@ export default {
     regularButton,
     articleContent,
     faceIcon,
-    linkIcon,
+    // linkIcon,
     keyIcon,
     fingerprintIcon,
-    genderMaleFemaleIcon,
+    // genderMaleFemaleIcon,
     paletteIcon,
     invertColoursIcon,
     dividedContainer,
     blur,
-    checkbox,
+    // checkbox,
     inputLabel
   },
   data () {
