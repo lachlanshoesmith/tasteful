@@ -3,7 +3,7 @@
     <transition name="fade">
       <modal v-if="showModal" scrollable @closeModal="showModal = false">
         <template v-slot:heading>
-          <subheading subheading smaller no-top-margin>
+          <subheading no-defined-width smaller no-top-margin>
             <span v-if="showSignIn">Welcome back!</span>
             <span v-else>Welcome aboard!</span>
           </subheading>
@@ -100,31 +100,26 @@
           <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
             tasteful
           </h1>
-          <nav-search :visible="showNavbar" />
-          <div id="links" :class="colourMode">
-            <nuxt-link to="/">
+          <img class="tasteful-icon display-only-if-on-mobile" src="@/assets/images/tasteful-icon.svg" alt="tasteful" @click="$router.push({ name: 'index' })">
+          <nav-search :hide-bar-on-mobile="showMenuOnMobile" :visible="showNavbar" />
+          <div id="links" :class="{showMenuOnMobile}">
+            <nuxt-link to="/" class="link" :class="colourMode">
               <home-icon title="Home" />
-            </nuxt-link><nuxt-link to="/about">
+            </nuxt-link><nuxt-link to="/about" class="link" :class="colourMode">
               <info-icon title="About" />
-            </nuxt-link><nuxt-link to="/roadmap">
+            </nuxt-link><nuxt-link to="/roadmap" class="link" :class="colourMode">
               <timelapse-icon title="Roadmap" />
-            </nuxt-link><nuxt-link to="/donate">
+            </nuxt-link><nuxt-link to="/donate" class="link" :class="colourMode">
               <cash-icon title="Donate" />
-            </nuxt-link><a @click="toggleColourScheme">
+            </nuxt-link><a class="link" :class="colourMode" @click="toggleColourScheme">
               <white-balance-sunny-icon title="Toggle colour scheme" />
-            </a><a id="search-button-container" class="display-only-if-on-mobile">
-              <magnify-icon title="Search" @click="showSearchModal = !showSearchModal" />
-              <transition name="fade">
-                <mini-modal v-if="showSearchModal">
-                  <search @close-search-modal="showSearchModal = false" />
-                </mini-modal>
-              </transition>
-            </a><a v-if="user === null || user === false" @click="showModal = !showModal">
+            </a><a v-if="user === null || user === false" class="link" :class="colourMode" @click="showModal = !showModal">
               <key-icon title="Log in" />
-            </a><nuxt-link v-if="user !== null && user !== false" :to="'/user/' + user.username">
+            </a><nuxt-link v-if="user !== null && user !== false" class="link" :class="colourMode" :to="'/user/' + user.username">
               <face-icon title="Profile" />
             </nuxt-link>
           </div>
+          <a class="link display-only-if-on-mobile toggle-menu-icon" :class="colourMode"><menu-icon title="Open menu" @click="showMenuOnMobile = !showMenuOnMobile" /></a>
         </div>
       </nav>
       <nuxt />
@@ -144,15 +139,13 @@ import TimelapseIcon from 'vue-material-design-icons/Timelapse.vue'
 import CashIcon from 'vue-material-design-icons/Cash.vue'
 import FaceIcon from 'vue-material-design-icons/Face.vue'
 import WhiteBalanceSunnyIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue'
-import MagnifyIcon from 'vue-material-design-icons/Magnify.vue'
 import KeyIcon from 'vue-material-design-icons/Key.vue'
+import MenuIcon from 'vue-material-design-icons/Menu.vue'
 import { mapGetters } from 'vuex'
 import Modal from '@/components/Modal.vue'
-import MiniModal from '@/components/MiniModal.vue'
 import Subheading from '@/components/Subheading.vue'
 import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
-import Search from '@/components/Search.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
 import NavSearch from '@/components/NavSearch.vue'
 
@@ -165,14 +158,12 @@ export default {
     CashIcon,
     FaceIcon,
     WhiteBalanceSunnyIcon,
-    MagnifyIcon,
     KeyIcon,
+    MenuIcon,
     Modal,
-    MiniModal,
     Subheading,
     Paragraph,
     TextInput,
-    Search,
     SubmitButton,
     NavSearch
   },
@@ -190,7 +181,8 @@ export default {
       emailFlashRed: false,
       usernameFlashRed: false,
       passwordFlashRed: false,
-      noOverflowX: false
+      noOverflowX: false,
+      showMenuOnMobile: false
     }
   },
   computed: mapGetters({
@@ -553,6 +545,16 @@ nav.nav-beyond-point {
     }
   }
 }
+.tasteful-icon {
+  transition: all 0.2s linear;
+  height: 30px;
+  margin-right: 10px;
+  opacity: 0.5;
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+  }
+}
 a {
   outline: none;
   color: $saturated-red-dim;
@@ -575,17 +577,17 @@ a {
 }
 #links {
   font-size: 1.5rem;
-  a {
+  .link {
     text-decoration: none;
   }
 }
-#links.dark > a, #links.solarised-dark > a {
+.link.dark, .link.solarised-dark {
   color: hsl(352, 52%, 75%);
   &:hover {
     color: hsl(352, 32%, 55%);
   }
 }
-#links.black > a {
+.link.black {
   color: $quite-dark-grey;
   &:hover {
     color: $light-grey;
@@ -622,6 +624,9 @@ input, button, a {
 }
 
 @media (max-width: 1000px) {
+  #logo {
+    display: none;
+  }
   #sign-in-button-container {
     margin-top: 5%;
     display: block;
@@ -635,6 +640,15 @@ input, button, a {
   }
   .display-only-if-on-mobile {
     display: block;
+  }
+  #links {
+    display: none;
+    &.showMenuOnMobile {
+      display: flex;
+    }
+  }
+  .toggle-menu-icon {
+    margin-left: auto;
   }
 }
 

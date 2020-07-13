@@ -2,9 +2,15 @@
   <div :class="[colourMode]" class="artist">
     <div>
       <div
+        v-if="artist.imageURL !== 'artist-icon'"
         id="artist-image"
         class="artist-image"
-        :style="generateArtistImageStyle(artist.imageURL, artist.imageURLLowRes)"
+        :style="{ 'background-image': `url('${artist.imageURL}'), url('${artist.imageURLLowRes}')` }"
+      />
+      <div
+        v-else
+        id="artist-image"
+        class="artist-image no-image-found"
       />
       <paragraph soft smaller class="artist-release-name">
         {{ selectedRelease }}
@@ -69,14 +75,6 @@ export default {
       this.$store.commit('search/setRelease', release)
       this.$router.push({ path: '/release/' + mbid })
       this.$emit('changeSearching', false)
-    },
-    generateArtistImageStyle (image, imageLowRes) {
-      if (image === 'artist-icon') {
-        // if the artist does not have an image, return the default icon
-        return { 'background-image': 'url("~assets/images/tasteful-artist-icon.svg")' }
-      } else {
-        return { 'background-image': `url('${image}'), url('${imageLowRes}')` }
-      }
     }
   }
 }
@@ -111,14 +109,19 @@ export default {
   }
 }
 .artist-image {
-  min-width: 150px;
-  max-width: 150px;
-  min-height: 150px;
-  max-height: 150px;
+  width: 150px;
+  height: 150px;
   margin-right: 20px;
   // border-radius: 15px 0px 0px 15px;
   border-radius: 15px 0px 0px 0px;
   background-size: cover, cover;
+  &.no-image-found {
+    background: url('~assets/images/tasteful-artist-icon.svg');
+    width: 100px;
+    height: 100px;
+    margin-left: 10px;
+    margin-right: 55px;
+  }
 }
 .artist-name {
   margin-top: 10px;

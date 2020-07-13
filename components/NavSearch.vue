@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-search">
+  <div class="nav-search" :class="{hideBarOnMobile}">
     <text-input
       debounce
       class="search-bar"
@@ -175,7 +175,8 @@ export default {
     regularButton
   },
   props: {
-    visible: Boolean
+    visible: Boolean,
+    hideBarOnMobile: Boolean
   },
   data () {
     return {
@@ -510,6 +511,11 @@ export default {
   display: none !important; // conflicts with .search-content-container > * display: none
 }
 @media (max-width: 1000px) {
+  .nav-search {
+    &.hideBarOnMobile {
+      display: none;
+    }
+  }
   .search-content-container {
     width: 100%;
     &.results-layout {

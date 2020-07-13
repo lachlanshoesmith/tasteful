@@ -24,6 +24,10 @@
       </div>
       <div class="divider" :class="[colourMode]" />
       <div class="modal-content-right">
+        <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
+        <div class="right-heading">
+          <slot name="heading" />
+        </div>
         <slot name="right" />
       </div>
     </div>
@@ -229,22 +233,36 @@ export default {
   display: flex;
 }
 
+.right-side-mobile-header {
+  display: none;
+}
+
 @media (max-width: 1000px) {
   .modal {
     width: 90vw;
+    padding-left: 0;
+    padding-right: 0;
     &:before {
+      transform: translateX(0px) translateY(-35px);
       width: 90vw;
     }
+  }
+  .right-heading {
+    width: 100%;
+  }
+  .large-close-icon {
+    position: absolute;
+    left: 5vw;
   }
   .modal-content {
     padding-left: 0;
   }
-  #modal-content-left {
+  .modal-content-left {
     position: relative;
     width: 0%;
     z-index: 5;
     margin-top: 20px;
-    left: 20px;
+    display: none;
     .subheading, .paragraph {
       display: none;
     }
@@ -252,12 +270,10 @@ export default {
       overflow-y: auto;
     }
   }
-  #modal-content-right {
+  .modal-content-right {
     overflow: none;
     width: 100%;
     text-align: center;
-    margin-left: 10px;
-    margin-right: 10px;
     .text-input-container {
       width: 90%;
       margin-left: auto;
