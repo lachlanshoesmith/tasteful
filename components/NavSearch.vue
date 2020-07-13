@@ -15,7 +15,7 @@
         <spinner v-else />
       </template>
     </text-input>
-    <div class="search-content-container" :class="{loadingSearchResults, 'results-layout': resultsLoaded, searching, visible}">
+    <div class="search-content-container" :class="[{loadingSearchResults, 'results-layout': resultsLoaded, searching, visible}, colourMode]">
       <div class="search-settings" :class="{ 'results-position': resultsLoaded }">
         <divided-container class="search-settings-divided-container" :class="{resultsLoaded}" shadow :hide-left-column="resultsLoaded" conservative-mobile-view>
           <template v-slot:left>
@@ -408,11 +408,11 @@ export default {
 .search-content-container {
   display: none;
   position: absolute;
+  transition: all 0.2s linear;
   // border-top: solid 5px green;
   left: 0;
   width: 100%;
   height: 0%;
-  backdrop-filter: blur(15px);
   color: $saturated-blue;
   pointer-events: none; // allow clicks through element while not visible
   &.dark, &.black, &.solarised-dark {
@@ -447,6 +447,16 @@ export default {
     width: calc(100% - 3vw);
   }
 }
+
+@supports ((-webkit-backdrop-filter: blur(15px)) or (backdrop-filter: blur(15px))) {
+  .search-content-container {
+    backdrop-filter: blur(15px);
+    &.light, &.dark, &.black, &.solarised-light, &.solarised-dark {
+      background: none;
+    }
+  }
+}
+
 .results-container {
   width: 100%;
 }

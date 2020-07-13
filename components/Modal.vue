@@ -201,6 +201,9 @@ export default {
 
 .modal-content-right {
   width: 65%;
+  .large-close-icon {
+    display: none;
+  }
 }
 
 .subheading-content {
@@ -233,7 +236,7 @@ export default {
   display: flex;
 }
 
-.right-side-mobile-header {
+.right-header {
   display: none;
 }
 
@@ -278,6 +281,9 @@ export default {
       width: 90%;
       margin-left: auto;
       margin-right: auto;
+    }
+    .large-close-icon {
+      display: block;
     }
     &.scrollable {
       overflow-y: auto;
