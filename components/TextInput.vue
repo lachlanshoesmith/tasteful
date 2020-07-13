@@ -13,7 +13,7 @@
       class="text-input"
       :type="checkInputType()"
       :readonly="disabled"
-      @input="isTyping = true"
+      @input="reportValue"
       @focus="reportFocus(true)"
       @blur="reportFocus(false)"
       @animationend="reportAnimationEnd"
@@ -56,24 +56,17 @@ export default {
   watch: {
     defaultValue (val) {
       this.value = val
-    },
-    value () {
-      if (this.debounce) {
-        _.debounce(function () {
-          this.isTyping = false
-        }, 500)
-      } else {
-        this.$emit('input', this.value)
-      }
-    },
-    isTyping (val) {
-      if (!val) {
-        // if not typing
-        this.$emit('input', this.value)
-      }
+    }
+  },
+  created () {
+    if (this.debounce) {
+      this.reportValue = _.debounce(this.reportValue, 500)
     }
   },
   methods: {
+    reportValue () {
+      this.$emit('input', this.value)
+    },
     checkInputType () {
       if (this.password) {
         return 'password'

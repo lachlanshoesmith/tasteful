@@ -40,7 +40,9 @@ export default {
   },
   props: {
     scrollable: Boolean,
-    greenBackground: Boolean
+    greenBackground: Boolean,
+    shadow: Boolean,
+    redBorder: Boolean
   },
   computed: {
     colourMode () {
