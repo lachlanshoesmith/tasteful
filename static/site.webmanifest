@@ -13,7 +13,9 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#4425bf",
-    "background_color": "#4425bf",
-    "display": "standalone"
+    "theme_color": "#180c45",
+    "background_color": "#180c45",
+    "start_url": "https://tasteful.reviews",
+    "display": "standalone",
+    "orientation": "portrait"
 }

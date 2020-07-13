@@ -28,6 +28,7 @@ export default {
   name: 'TextInput',
   props: {
     password: Boolean,
+    debounce: Boolean,
     noBottomMargin: Boolean,
     rightMargin: Boolean,
     fullWidth: Boolean,
@@ -56,9 +57,15 @@ export default {
     defaultValue (val) {
       this.value = val
     },
-    value: _.debounce(function () {
-      this.isTyping = false
-    }, 500),
+    value () {
+      if (this.debounce) {
+        _.debounce(function () {
+          this.isTyping = false
+        }, 500)
+      } else {
+        this.$emit('input', this.value)
+      }
+    },
     isTyping (val) {
       if (!val) {
         // if not typing

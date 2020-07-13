@@ -21,9 +21,18 @@ exports.search = functions.https.onRequest((req, res) => {
       'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
     } }
 
-    const findArtistReleases = (i) => {
+    const findArtistReleases = (i, artistInDatabase) => {
       searchResults[i].releases = {}
       const id = searchResults[i].id
+      if (artistInDatabase) {
+        // if the artist exists in the database, read the existing data
+        Object.entries(artistInDatabase.releases).forEach(([releaseID, releasegroup]) => {
+          searchResults[i].releases[releaseID] = {} // ERROR
+          searchResults[i].releases[releaseID].image = releasegroup.image
+          searchResults[i].releases[releaseID].title = releasegroup.title
+        })
+        return 'from database'
+      } // if they don't, we'll need to add them
       // find releases
       return axios
         .get('https://musicbrainz.org/ws/2/release-group/?query=arid:' + id + ' AND status:"official" AND primarytype:"album"&limit=30&fmt=json', headers)
@@ -93,7 +102,10 @@ exports.search = functions.https.onRequest((req, res) => {
         const imageURL = 'https://upload.wikimedia.org/wikipedia/commons/' + firstCharacterInHash + '/' + firstCharacterInHash + secondCharacterInHash + '/' + imageName
         searchResults[i].imageURL = imageURL
       } catch (e) {
-        res.status(500).send(e)
+        // if an image is not found, replace with tasteful image < TO DESIGN >
+        searchResults[i].imageURL = 'artist-icon'
+        searchResults[i].imageURLLowRes = 'artist-icon'
+        // res.status(500).send(e)
         // if (e === 'TypeError: "res.data.claims.P18 is undefined"') {
         // ** AIM TO REPLACE WITH MORE EFFICIENT ALTERNATIVE **
         // If the artist has no image supplied, get an album artwork instead.
@@ -136,16 +148,41 @@ exports.search = functions.https.onRequest((req, res) => {
       }
     }
 
+    const saveSearchResultToDatabase = (i) => {
+      const id = searchResults[i].id
+      admin.firestore().collection('artists')
+        .doc(id)
+        .set(
+          searchResults[i]
+        )
+    }
+
     const processArtists = async (data) => {
       const artists = data.artists
       for (const [i, artist] of artists.entries()) {
         searchResults[i] = artist
+        console.log('Starting.')
+        // check tasteful database
+        const artistInDatabase = await admin.firestore().collection('artists').doc(artist.id)
+          .get()
+          .then(res => res.data())
+        console.log(artistInDatabase)
         const relations = await getArtistRelations(artist)
+        console.log('Got relations.')
         const wikidataID = await getWikidataID(relations)
+        console.log('Got ID.')
         const imageInfo = await getArtistImageInfo(wikidataID)
+        console.log('Got artist image info.')
         getArtistImage(imageInfo, i)
-        const artistReleases = await findArtistReleases(i)
-        await processArtistReleases(artistReleases, i)
+        const artistReleases = await findArtistReleases(i, artistInDatabase)
+        console.log('Got artist releases.')
+        if (artistReleases !== 'from database') {
+          // if it's from the database all data is already obtained, ready to return
+          // otherwise we need to find the data and then save it to database
+          await processArtistReleases(artistReleases, i) // This is the bottleneck.
+          saveSearchResultToDatabase(i)
+          console.log('Processed artist releases.')
+        }
       }
       concludeSearch()
     }
@@ -164,7 +201,7 @@ exports.search = functions.https.onRequest((req, res) => {
 
     const concludeSearch = () => {
       // send back search results as a nice digestable json
-      res.status(200).send(res.json(searchResults))
+      res.status(200).send(searchResults)
     }
 
     let queryURL = 'https://musicbrainz.org/ws/2/' + queryType + '/?query='
@@ -237,4 +274,6 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
       })
   })
 })
-admin.initializeApp()
+admin.initializeApp({
+  credential: admin.credential.cert(require('./admin.json'))
+})

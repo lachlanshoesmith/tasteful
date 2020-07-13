@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg3799" inkscape:version="0.92.4 5da689c313, 2019-01-14" sodipodi:docname="TastefulIconTongueVers2-02.svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 432 432"
+	 style="enable-background:new 0 0 432 432;" xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.4;fill:url(#SVGID_1_);}
+	.st1{fill:url(#path3797_1_);}
+	.st2{opacity:0.4;fill:url(#SVGID_2_);}
+</style>
+<sodipodi:namedview  bordercolor="#666666" borderopacity="1" gridtolerance="10" guidetolerance="10" id="namedview3801" inkscape:current-layer="svg3799" inkscape:cx="211" inkscape:cy="216" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-height="486" inkscape:window-maximized="1" inkscape:window-width="976" inkscape:window-x="12" inkscape:window-y="578" inkscape:zoom="0.36742424" objecttolerance="10" pagecolor="#ffffff" showgrid="false">
+	</sodipodi:namedview>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="48.3773" y1="192.8308" x2="383.6227" y2="192.8308">
+	<stop  offset="0" style="stop-color:#F25050"/>
+	<stop  offset="1" style="stop-color:#6040DD"/>
+</linearGradient>
+<circle class="st0" cx="216" cy="192.8" r="167.6"/>
+<linearGradient id="path3797_1_" gradientUnits="userSpaceOnUse" x1="222.5774" y1="61.1693" x2="399.4226" y2="61.1693" gradientTransform="matrix(1 0 0 -1 -95 254)">
+	<stop  offset="1.260747e-03" style="stop-color:#F25050"/>
+	<stop  offset="1" style="stop-color:#6040DD"/>
+</linearGradient>
+<path id="path3797" inkscape:connector-curvature="0" class="st1" d="M260.2,104.4c-12.7,0-24.8,5.4-33.2,15v95.5
+	c0,12.2-12.4,22.1-27.6,22.1s-27.6-9.9-27.6-22.1c0-12.2,12.4-22.1,27.6-22.1c1.9,0,3.7,0.1,5.5,0.4v-73.9c-8.4-9.5-20.5-15-33.2-15
+	h-44.2v88.4c0,48.8,39.6,88.4,88.4,88.4s88.4-39.6,88.4-88.4v-88.4H260.2z"/>
+<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="0" y1="468.0656" x2="426.9099" y2="468.0656">
+	<stop  offset="0" style="stop-color:#F25050"/>
+	<stop  offset="1" style="stop-color:#6040DD"/>
+</linearGradient>
+<ellipse class="st2" cx="213.5" cy="468.1" rx="213.5" ry="167.6"/>
+</svg>

@@ -4,7 +4,7 @@
       <div
         id="artist-image"
         class="artist-image"
-        :style="{ 'background-image': `url('${artist.imageURL}'), url('${artist.imageURLLowRes}')` }"
+        :style="generateArtistImageStyle(artist.imageURL, artist.imageURLLowRes)"
       />
       <paragraph soft smaller class="artist-release-name">
         {{ selectedRelease }}
@@ -69,6 +69,14 @@ export default {
       this.$store.commit('search/setRelease', release)
       this.$router.push({ path: '/release/' + mbid })
       this.$emit('changeSearching', false)
+    },
+    generateArtistImageStyle (image, imageLowRes) {
+      if (image === 'artist-icon') {
+        // if the artist does not have an image, return the default icon
+        return { 'background-image': 'url("~assets/images/tasteful-artist-icon.svg")' }
+      } else {
+        return { 'background-image': `url('${image}'), url('${imageLowRes}')` }
+      }
     }
   }
 }

@@ -504,7 +504,7 @@ export default {
   margin-left: 3vw;
 }
 .search-settings-mobile-results-prompt {
-  display: none;
+  display: none !important; // conflicts with .search-content-container > * display: none // TO FIX!!
 }
 .hide-search-button {
   display: none !important; // conflicts with .search-content-container > * display: none

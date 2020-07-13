@@ -92,6 +92,7 @@ sw.*
 
 # Firebase
 .firebase
+admin.json
 firebase-debug.log
 .firebase/hosting*
 
