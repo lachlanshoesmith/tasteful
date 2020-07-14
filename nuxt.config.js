@@ -12,6 +12,10 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { name: 'msapplication-TileColor', content: '#180c45' },
       { name: 'theme-color', content: '#180c45' },
+      { name: 'twitter:card', content: 'app' },
+      { name: 'twitter:text:title', content: 'tasteful' },
+      { name: 'twitter:image', content: 'https://raw.githubusercontent.com/lachlantula/tasteful/master/assets/images/tasteful-icon.svg' },
+      { name: 'twitter:text:description', content: 'The greatest online music community.' },
       {
         hid: 'description',
         name: 'description',

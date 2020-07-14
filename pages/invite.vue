@@ -1,6 +1,6 @@
 <template>
   <main class="invite-container">
-    <blur :apply-blur="loading" />
+    <blur loading :apply-blur="loading" />
     <div v-if="user === null || user === false">
       <div class="invite">
         <article-content>
