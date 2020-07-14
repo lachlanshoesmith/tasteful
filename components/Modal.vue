@@ -236,7 +236,7 @@ export default {
   display: flex;
 }
 
-.right-header {
+.right-heading {
   display: none;
 }
 

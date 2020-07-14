@@ -1,7 +1,7 @@
 <template>
   <main class="user">
     <!-- blur while loading -->
-    <blur v-if="loading" :apply-blur="loading" />
+    <blur v-if="loading" loading :apply-blur="loading" />
     <article-content v-if="user !== null && user.username === '' && !loading">
       <!-- If no username was found on the account... -->
       <masthead centred smaller>
@@ -370,7 +370,6 @@ export default {
       } else if (this.user) {
         this.inviteCode = this.user.inviteCode
         this.inviteSeed = this.user.inviteSeed
-        this.loading = false
         // check if Invitation has been used
         this.$fireStore.collection('invites').doc(this.user.invitation).get()
           .then((doc) => {

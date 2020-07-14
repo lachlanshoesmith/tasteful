@@ -1,3 +1,14 @@
+/*
+
+** WHAT TO DO TODAY **
+1. Instead of processing an artist's releases in the search function, use the firebase function processArtistReleases
+2. Solve error when no album art under artist
+3. Ensure placeholder is shown when no album art
+4. Modularise this file
+5. Find new ways to optimise!
+
+*/
+
 const crypto = require('crypto')
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
@@ -60,6 +71,9 @@ exports.search = functions.https.onRequest((req, res) => {
           'https://musicbrainz.org/ws/2/artist/' + artist.id + '?inc=url-rels&fmt=json', headers
         )
         .then(res => res.data.relations)
+        .catch((err) => {
+          res.status(500).send('ERROR WITH ARTIST RELATIONS FOR ' + artist.id + ': ' + err)
+        })
     }
 
     const getWikidataID = (relations) => {
@@ -132,8 +146,12 @@ exports.search = functions.https.onRequest((req, res) => {
         )
         .then(res => res.data.images[0].thumbnails.small)
         .catch((err) => {
-          // TODO: improve handling here
-          console.log('No album cover found.\n' + err)
+          if (err.message === 'Request failed with status code 404') {
+            // no release artwork found
+            return 'no-artwork'
+          } else {
+            res.status(500).send(err)
+          }
         })
     }
 
@@ -236,6 +254,45 @@ exports.search = functions.https.onRequest((req, res) => {
       .catch((err) => {
         res.status(500).send(err)
       })
+  })
+})
+
+exports.processArtistReleases = functions.https.onRequest((req, res) => {
+  return cors()(req, res, async () => {
+    const id = req.query.id
+    const searchResults = {}
+    const headers = { headers: {
+      'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+    } }
+    // get releases
+    console.log('Processing artist releases.')
+    const releases = await axios
+      .get('https://musicbrainz.org/ws/2/release-group/?query=arid:' + id + ' AND status:"official" AND primarytype:"album"&limit=30&fmt=json', headers)
+      .then(res => res.data['release-groups'])
+      .catch((err) => {
+        res.status(500).send('ERROR WITH ' + id + ': ' + err)
+      })
+
+    const getReleaseArtwork = (releasegroup) => {
+      return axios
+        .get(
+          'https://coverartarchive.org/release-group/' + releasegroup.id, headers
+        )
+        .then(res => res.data.images[0].thumbnails.small)
+        .catch((err) => {
+          // TODO: improve handling here
+          console.log('No album cover found.\n' + err)
+        })
+    }
+
+    for (const [i, releasegroup] of releases.entries()) {
+      // add to search results
+      searchResults[i] = releasegroup
+      // get album art
+      const releaseArtwork = await getReleaseArtwork(releasegroup, i)
+      searchResults[i].image = releaseArtwork
+    }
+    res.status(200).send(releases)
   })
 })
 
