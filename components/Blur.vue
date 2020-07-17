@@ -96,4 +96,18 @@ export default {
     }
   }
 }
+
+@media (max-width: 1000px) {
+  .loading {
+    width: 20vw;
+    height: 20vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .loading {
+    width: 30vw;
+    height: 30vw;
+  }
+}
 </style>

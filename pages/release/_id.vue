@@ -1,7 +1,15 @@
 <template>
   <main class="release">
+    <blur loading :apply-blur="loading" />
     <article-content class="release-content">
-      <img class="release-image" :class="[colourMode]" :src="release.image" :alt="release.title">
+      <img
+        id="release-image"
+        class="release-image"
+        :class="[colourMode]"
+        :src="release.image"
+        :alt="release.title"
+        @load="loading = false"
+      >
       <masthead fit-width centred>
         <span v-if="release.title">
           {{ release.title }}
@@ -36,6 +44,7 @@
 <script>
 // @ is an alias to /src
 import { mapGetters } from 'vuex'
+import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
 import articleContent from '~/components/ArticleContent.vue'
 import textInput from '~/components/TextInput.vue'
@@ -45,6 +54,7 @@ import paragraph from '~/components/Paragraph.vue'
 export default {
   name: 'Release',
   components: {
+    blur,
     masthead,
     articleContent,
     textInput,
@@ -55,7 +65,9 @@ export default {
     return {
       id: this.$route.params.id,
       release: {},
-      initialScore: undefined
+      initialScore: undefined,
+      loading: false,
+      consideredUser: false
     }
   },
   computed: mapGetters({
@@ -64,23 +76,11 @@ export default {
   }),
   watch: {
     user (user) {
-      if (user !== null) {
-        // check if the user has already rated the release
-        const releases = this.$fireStore.collection('releases')
-        const username = user.username
-        releases.doc(this.id)
-          .get()
-          .then((res) => {
-            const releasesData = res.data()
-            const userScore = releasesData[username]
-            if (userScore) {
-              this.initialScore = userScore.toString()
-            }
-          })
-      }
+      this.checkIfExistingRating()
     }
   },
   mounted () {
+    this.loading = true
     if (this.release.title === undefined) {
       // if the page is not loaded following a search we must find all the information again
       // get release group info
@@ -96,6 +96,7 @@ export default {
       this.release = this.$store.state.search.release
       document.title = 'tasteful | ' + this.release.title
     }
+    this.checkIfExistingRating()
   },
   methods: {
     rate (scoreString) {
@@ -132,6 +133,22 @@ export default {
       } else if (scoreString === '') {
         // Remove the rating.
         applyRating(false)
+      }
+    },
+    checkIfExistingRating () {
+      if (this.user !== null) {
+      // check if the user has already rated the release
+        const releases = this.$fireStore.collection('releases')
+        const username = this.user.username
+        releases.doc(this.id)
+          .get()
+          .then((res) => {
+            const releasesData = res.data()
+            const userScore = releasesData[username]
+            if (userScore) {
+              this.initialScore = userScore.toString()
+            }
+          })
       }
     }
   }

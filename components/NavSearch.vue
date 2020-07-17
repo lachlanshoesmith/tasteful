@@ -408,8 +408,8 @@ export default {
 .search-content-container {
   display: none;
   position: absolute;
-  transition: all 0.2s linear;
-  // border-top: solid 5px green;
+  will-change: background;
+  transition: background 0.2s linear;
   left: 0;
   width: 100%;
   height: 0%;

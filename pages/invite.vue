@@ -85,9 +85,10 @@
         <paragraph-container>
           <subheading>You already have an account, silly!</subheading>
           <paragraph>
-            You may have meant to go to your <nuxt-link to="/user/settings">
-              user settings
-            </nuxt-link> to generate or share your Invitation?
+            You may have meant to go to your
+            <nuxt-link to="/user/settings">
+              user settings</nuxt-link> <!-- eslint-disable-line -->
+            to generate or share your Invitation?
           </paragraph>
         </paragraph-container>
       </article-content>

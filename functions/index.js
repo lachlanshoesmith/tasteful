@@ -2,10 +2,9 @@
 
 ** WHAT TO DO TODAY **
 1. Instead of processing an artist's releases in the search function, use the firebase function processArtistReleases
-2. Solve error when no album art under artist
-3. Ensure placeholder is shown when no album art
-4. Modularise this file
-5. Find new ways to optimise!
+2. Modularise this file
+3. Find new ways to optimise!
+4. Move onwards to artist and release page enhancements.
 
 */
 
@@ -28,9 +27,11 @@ exports.search = functions.https.onRequest((req, res) => {
     //          &region=All countries&releaseType=All
 
     const searchResults = []
-    const headers = { headers: {
-      'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
-    } }
+    const headers = {
+      headers: {
+        'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+      }
+    }
 
     const findArtistReleases = (i, artistInDatabase) => {
       searchResults[i].releases = {}
@@ -197,9 +198,12 @@ exports.search = functions.https.onRequest((req, res) => {
         if (artistReleases !== 'from database') {
           // if it's from the database all data is already obtained, ready to return
           // otherwise we need to find the data and then save it to database
-          await processArtistReleases(artistReleases, i) // This is the bottleneck.
-          saveSearchResultToDatabase(i)
+          // await processArtistReleases(artistReleases, i) // This is the bottleneck.
+          searchResults[i].releases = artistReleases
+          searchResults[i].cached = false
           console.log('Processed artist releases.')
+        } else {
+          searchResults[i].cached = true
         }
       }
       concludeSearch()
@@ -261,9 +265,11 @@ exports.processArtistReleases = functions.https.onRequest((req, res) => {
   return cors()(req, res, async () => {
     const id = req.query.id
     const searchResults = {}
-    const headers = { headers: {
-      'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
-    } }
+    const headers = {
+      headers: {
+        'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+      }
+    }
     // get releases
     console.log('Processing artist releases.')
     const releases = await axios
@@ -300,9 +306,11 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
   return cors()(req, res, () => {
     const id = req.query.query
 
-    const headers = { headers: {
-      'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
-    } }
+    const headers = {
+      headers: {
+        'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+      }
+    }
 
     const getReleaseArtwork = (releasegroup) => {
       return axios

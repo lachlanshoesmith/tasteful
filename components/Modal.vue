@@ -251,6 +251,7 @@ export default {
     }
   }
   .right-heading {
+    display: block;
     width: 100%;
   }
   .large-close-icon {

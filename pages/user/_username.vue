@@ -1,5 +1,6 @@
 <template>
   <main class="user">
+    <blur loading :apply-blur="loading" />
     <article-content v-if="!error.display">
       <masthead centred smaller>
         {{ username }}
@@ -29,6 +30,7 @@
 
 <script>
 // @ is an alias to /src
+import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
 import subheading from '~/components/Subheading.vue'
 import paragraph from '~/components/Paragraph.vue'
@@ -39,6 +41,7 @@ import list from '~/components/List.vue'
 export default {
   name: 'User',
   components: {
+    blur,
     masthead,
     subheading,
     paragraph,
@@ -48,9 +51,10 @@ export default {
   },
   data () {
     return {
-      username: 'One sec, please...',
+      username: this.$route.params.username,
       id: undefined,
       ratedReleases: undefined,
+      loading: false,
       error: {
         display: false,
         message: ''
@@ -65,6 +69,7 @@ export default {
   mounted () {
     const usernamesDatabase = this.$fireStore.collection('usernames')
     let username = this.$route.params.username.toLowerCase()
+    this.loading = true
     usernamesDatabase.get()
       .then((users) => {
         // this needs to be cleaned up, holy shit...
@@ -91,19 +96,23 @@ export default {
                 this.error.display = true
                 this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
               }
+              this.loading = false
             })
             .catch((error) => {
               this.error.display = true
               this.error.message = 'We ran into a problem: ' + error + '.'
+              this.loading = false
             })
         } else {
           this.error.display = true
           this.error.message = 'I\'m pretty sure this user doesn\'t exist. Check the URL.'
+          this.loading = false
         }
       })
       .catch((error) => {
         this.error.display = true
         this.error.message = 'We ran into a problem: ' + error + '.'
+        this.loading = false
       })
   },
   methods: {
