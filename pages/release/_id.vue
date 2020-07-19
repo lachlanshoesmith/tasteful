@@ -134,6 +134,7 @@ export default {
           artist: this.release['artist-credit'][0].name,
           id: this.id
         }
+        releases.doc(this.id).set(releaseData, { merge: true })
         releaseData['ratings.' + username] = score
         releases.doc(this.id).update(releaseData)
         userDoc.collection('ratings').doc(this.id).set({ score }, {
@@ -157,14 +158,15 @@ export default {
     checkIfExistingRating () {
       if (this.user !== null) {
       // check if the user has already rated the release
-        const releases = this.$fireStore.collection('releases')
-        const username = this.user.username
-        releases.doc(this.id)
+        const users = this.$fireStore.collection('users')
+        const id = this.user.id
+        users.doc(id + '/ratings/' + this.id)
           .get()
           .then((res) => {
-            const releasesData = res.data()
-            const userScore = releasesData[username]
-            if (userScore) {
+            const scoreDoc = res.data()
+            if (scoreDoc !== undefined) {
+              // if the user has rated the release
+              const userScore = scoreDoc.score
               this.initialScore = userScore.toString()
             }
           })
@@ -175,7 +177,10 @@ export default {
       releases.doc(this.id)
         .get()
         .then((res) => {
-          this.ratings = res.data().ratings
+          if (res.data() !== undefined) {
+            // ratings exist
+            this.ratings = res.data().ratings
+          }
         })
     }
   }
