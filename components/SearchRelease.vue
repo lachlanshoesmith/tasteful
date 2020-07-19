@@ -55,7 +55,7 @@ export default {
 .release-title-artworkless {
   color: $snow-white;
   font-size: 1.5rem;
-  max-width: 100px;
+  max-width: 10ch;
   max-height: 100px;
   word-wrap: break-word;
   text-align: center;

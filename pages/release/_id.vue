@@ -1,7 +1,7 @@
 <template>
   <main class="release">
     <blur loading :apply-blur="loading" />
-    <article-content class="release-content">
+    <sidebar>
       <img
         id="release-image"
         class="release-image"
@@ -10,7 +10,10 @@
         :alt="release.title"
         @load="loading = false"
       >
-      <masthead fit-width centred>
+      <subheading smaller centred no-top-margin>
+        {{ release['artist-credit'][0].artist.name }}
+      </subheading>
+      <masthead fit-width smaller centred>
         <span v-if="release.title">
           {{ release.title }}
         </span>
@@ -18,6 +21,11 @@
           Loading...
         </span>
       </masthead>
+      <paragraph centred>
+        Average score: {{ averageScore }}
+      </paragraph>
+    </sidebar>
+    <article-content class="release-content">
       <text-input
         v-if="user !== null"
         debounce
@@ -50,6 +58,8 @@ import articleContent from '~/components/ArticleContent.vue'
 import textInput from '~/components/TextInput.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
+import sidebar from '~/components/Sidebar.vue'
+import subheading from '~/components/Subheading.vue'
 
 export default {
   name: 'Release',
@@ -59,12 +69,24 @@ export default {
     articleContent,
     textInput,
     paragraph,
-    paragraphContainer
+    paragraphContainer,
+    sidebar,
+    subheading
   },
   data () {
     return {
       id: this.$route.params.id,
-      release: {},
+      averageScore: undefined,
+      ratings: {},
+      release: {
+        'artist-credit': [
+          {
+            'artist': {
+              name: 'Loading...'
+            }
+          }
+        ]
+      },
       initialScore: undefined,
       loading: false,
       consideredUser: false
@@ -97,6 +119,7 @@ export default {
       document.title = 'tasteful | ' + this.release.title
     }
     this.checkIfExistingRating()
+    this.getOtherRatings()
   },
   methods: {
     rate (scoreString) {
@@ -105,19 +128,15 @@ export default {
         const releases = this.$fireStore.collection('releases')
         const users = this.$fireStore.collection('users')
         const userDoc = users.doc(this.user.id)
-        const compactReleaseObj = {
+        const username = this.user.username
+        const releaseData = {
           title: this.release.title,
           artist: this.release['artist-credit'][0].name,
-          id: this.id,
-          score
+          id: this.id
         }
-        const username = this.user.username
-        const scoreObj = {}
-        scoreObj[username] = score
-        releases.doc(this.id).set(scoreObj, {
-          merge: true
-        })
-        userDoc.collection('ratings').doc(this.id).set(compactReleaseObj, {
+        releaseData['ratings.' + username] = score
+        releases.doc(this.id).update(releaseData)
+        userDoc.collection('ratings').doc(this.id).set({ score }, {
           merge: true
         })
         alert('Your rating for ' + this.release.title + ' has been submitted.')
@@ -150,6 +169,14 @@ export default {
             }
           })
       }
+    },
+    getOtherRatings () {
+      const releases = this.$fireStore.collection('releases')
+      releases.doc(this.id)
+        .get()
+        .then((res) => {
+          this.ratings = res.data().ratings
+        })
     }
   }
 }

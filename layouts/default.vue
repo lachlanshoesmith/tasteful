@@ -97,6 +97,9 @@
           <!-- <button @click="resetInvites">
             Over here!
           </button> -->
+          <!-- <button @click="massMove">
+            Over here to mass move!!
+          </button> -->
           <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
             tasteful
           </h1>
@@ -311,6 +314,26 @@ export default {
     //         // i know this is shit practice, don't care enough for this part
     //         this.$fireStore.collection('invites').doc(doc.id).set({
     //           used: false
+    //         })
+    //       })
+    //     })
+    // },
+    // massMove () {
+    //   this.$fireStore.collection('releases').get()
+    //     .then((res) => {
+    //       res.docs.forEach((doc) => {
+    //         // i know this is shit practice, don't care enough for this part
+    //         const release = doc.id
+    //         const ratings = doc.data()
+    //         // this.$fireStore.collection('releases/' + release + '/ratings')
+    //         //   .get()
+    //         //   .then((res) => {
+    //         //     res.docs.forEach((doc) => {
+    //         //       this.$fireStore.doc('releases/' + release + '/ratings/' + doc.id).delete()
+    //         //     })
+    //         //   })
+    //         this.$fireStore.doc('releases/' + release).set({
+    //           ratings
     //         })
     //       })
     //     })

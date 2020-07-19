@@ -176,6 +176,7 @@ export default {
 .icon-container {
   height: 30px;
   padding-left: 5px;
+  min-width: 24px;
   padding-right: 10px; // to make even with the additional 5px padding imposed by .text-input-container
   padding-top: 2.5px;
   padding-bottom: 2.5px;

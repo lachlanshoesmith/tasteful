@@ -1,6 +1,6 @@
 <template>
   <div :class="[{smaller, noDefinedWidth }]" class="subheading">
-    <h1 :class="[colourMode, { smaller, noTopMargin, noCentreOnMobile }]" class="subheading-content">
+    <h1 :class="[colourMode, { smaller, centred, noTopMargin, noCentreOnMobile }]" class="subheading-content">
       <slot>Subheading content</slot>
     </h1>
   </div>
@@ -11,6 +11,7 @@ export default {
   name: 'Subheading',
   props: {
     smaller: Boolean,
+    centred: Boolean,
     noTopMargin: Boolean,
     noCentreOnMobile: Boolean,
     noDefinedWidth: Boolean
@@ -55,6 +56,9 @@ export default {
     font-size: 1rem;
     line-height: 1.5rem;
     text-transform: uppercase;
+  }
+  &.centred {
+    text-align: center;
   }
   &.noTopMargin {
     margin-top: 0;

@@ -31,12 +31,25 @@
         <div
           v-for="(release, name) in artist.releases"
           :key="name"
-          class="artist-release"
-          :style="{ 'background-image': 'url(' + release.image + ')'}"
-          @mouseover="selectedRelease = release.title"
-          @mouseleave="selectedRelease = ''"
-          @click="redirectToRelease(release, name)"
-        />
+        >
+          <div
+            v-if="release.image"
+            class="artist-release"
+            :style="{ 'background-image': 'url(' + release.image + ')'}"
+            @mouseover="selectedRelease = release.title"
+            @mouseleave="selectedRelease = ''"
+            @click="redirectToRelease(release, name)"
+          />
+          <div
+            v-else
+            class="artist-release no-artwork"
+            @mouseover="selectedRelease = release.title"
+            @mouseleave="selectedRelease = ''"
+            @click="redirectToRelease(release, release.id)"
+          >
+            <span class="release-title-artworkless">{{ getAcronym(release.title) }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -75,6 +88,17 @@ export default {
       this.$store.commit('search/setRelease', release)
       this.$router.push({ path: '/release/' + mbid })
       this.$emit('changeSearching', false)
+    },
+    getAcronym (text) {
+      const firstLetters = text.match(/\b(\w)/g)
+      try {
+        const acronym = firstLetters.join('')
+        return acronym
+      } catch (e) {
+        // this often occurs if the title is non-Latin
+        const acronym = text.charAt(0) // instead return first letter
+        return acronym
+      }
     }
   }
 }
@@ -151,7 +175,22 @@ export default {
     cursor: pointer;
   }
 }
+.no-artwork {
+  background: $tasteful-gradient;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.release-title-artworkless {
+  color: $snow-white;
+  font-size: 1rem;
+  max-width: 4ch;
+  overflow-x: auto;
+  max-height: 45px;
+  text-align: center;
+}
 .artist-release-name {
+  width: 140px;
   padding-left: 5px;
   padding-right: 5px;
   line-height: 1.5;
