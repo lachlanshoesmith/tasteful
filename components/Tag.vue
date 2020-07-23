@@ -12,6 +12,7 @@ export default {
 
 <style lang="scss" scoped>
   .tag {
+    color: $greyer-blue;
     text-transform: uppercase;
     font-size: 0.6rem;
     padding: 5px;

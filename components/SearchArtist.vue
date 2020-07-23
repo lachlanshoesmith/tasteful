@@ -128,9 +128,6 @@ export default {
   &.solarised-dark {
     color: $solarised-dark-main-background;
   }
-  .tags {
-    color: #999;
-  }
 }
 .artist-image {
   width: 150px;

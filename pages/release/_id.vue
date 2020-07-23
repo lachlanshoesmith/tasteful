@@ -10,10 +10,16 @@
         :alt="release.title"
         @load="loading = false"
       >
-      <subheading smaller centred no-top-margin>
-        {{ release['artist-credit'][0].artist.name }}
-      </subheading>
-      <masthead fit-width smaller centred>
+      <nuxt-link
+        class="link"
+        :to="'/artist/' + release['artist-credit'][0].artist.id"
+        :class="colourMode"
+      >
+        <subheading smaller centred no-top-margin>
+          {{ release['artist-credit'][0].artist.name }}
+        </subheading>
+      </nuxt-link>
+      <masthead full-width smaller centred small-bottom-margin>
         <span v-if="release.title">
           {{ release.title }}
         </span>
@@ -22,30 +28,48 @@
         </span>
       </masthead>
       <paragraph centred>
-        Average score: {{ averageScore }}
+        Average score of <strong>{{ averageScore }}</strong> from
+        <strong>
+          {{ amountOfRatings }}
+          <span v-if="amountOfRatings === 1">
+            rating
+          </span>
+          <span v-else>
+            ratings
+          </span>
+        </strong>
       </paragraph>
+      <div class="tags">
+        <tag v-for="tag in release.genres" :key="tag.id">
+          {{ tag.name }}
+        </tag>
+      </div>
     </sidebar>
-    <article-content class="release-content">
-      <text-input
-        v-if="user !== null"
-        debounce
-        no-icon
-        centred
-        placeholder="Enter a score out of 100."
-        :default-value="initialScore"
-        @input="rate($event)"
-      />
-      <paragraph-container v-else>
-        <paragraph centred soft>
-          You need to sign in to rate releases.
-        </paragraph>
-      </paragraph-container>
-      <paragraph-container>
-        <paragraph centred soft>
-          Album ratings are currently in alpha. Enjoy cataloguing early, though!
-        </paragraph>
-      </paragraph-container>
-    </article-content>
+    <divided-container>
+      <template v-slot:left>
+        <paragraph-container>
+          <paragraph soft>
+            Album ratings are currently in alpha. Enjoy cataloguing early, though!
+          </paragraph>
+        </paragraph-container>
+      </template>
+      <template v-slot:right>
+        <text-input
+          v-if="user !== null"
+          debounce
+          no-icon
+          centred
+          placeholder="Enter a score out of 100."
+          :default-value="initialScore"
+          @input="rate($event)"
+        />
+        <paragraph-container v-else>
+          <paragraph centred soft>
+            You need to sign in to rate releases.
+          </paragraph>
+        </paragraph-container>
+      </template>
+    </divided-container>
   </main>
 </template>
 
@@ -54,29 +78,32 @@
 import { mapGetters } from 'vuex'
 import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
-import articleContent from '~/components/ArticleContent.vue'
 import textInput from '~/components/TextInput.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import paragraph from '~/components/Paragraph.vue'
 import sidebar from '~/components/Sidebar.vue'
 import subheading from '~/components/Subheading.vue'
+import tag from '~/components/Tag.vue'
+import dividedContainer from '~/components/DividedContainer.vue'
 
 export default {
   name: 'Release',
   components: {
     blur,
     masthead,
-    articleContent,
     textInput,
     paragraph,
     paragraphContainer,
     sidebar,
-    subheading
+    subheading,
+    tag,
+    dividedContainer
   },
   data () {
     return {
       id: this.$route.params.id,
       averageScore: undefined,
+      amountOfRatings: undefined,
       ratings: {},
       release: {
         'artist-credit': [
@@ -135,11 +162,11 @@ export default {
           id: this.id
         }
         releases.doc(this.id).set(releaseData, { merge: true })
-        releaseData['ratings.' + username] = score
-        releases.doc(this.id).update(releaseData)
-        userDoc.collection('ratings').doc(this.id).set({ score }, {
-          merge: true
-        })
+        const updateContent = {}
+        updateContent[`ratings.${username}`] = score
+        releases.doc(this.id).update(updateContent)
+        releaseData.score = score
+        userDoc.collection('ratings').doc(this.id).set(releaseData)
         alert('Your rating for ' + this.release.title + ' has been submitted.')
       }
 
@@ -180,6 +207,10 @@ export default {
           if (res.data() !== undefined) {
             // ratings exist
             this.ratings = res.data().ratings
+            const ratings = Object.values(this.ratings)
+            const sum = ratings.reduce((val, val2) => val + val2, 0)
+            this.amountOfRatings = ratings.length
+            this.averageScore = Math.floor(sum / this.amountOfRatings)
           }
         })
     }
@@ -198,7 +229,7 @@ export default {
 .release-image {
   border-radius: 15px;
   box-shadow: 0px 0px 50px;
-  max-width: 60vw;
+  width: 100%;
   margin-top: 20px;
   margin-bottom: 20px;
   &.light {
@@ -217,9 +248,10 @@ export default {
     color: $solarised-dark-main-background;
   }
 }
-.release-content {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+.link {
+  text-decoration: none;
+}
+.tags {
+  max-width: 300px;
 }
 </style>

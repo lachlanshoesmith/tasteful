@@ -308,7 +308,7 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
 
     const headers = {
       headers: {
-        'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+        'User-Agent': 'tasteful/0.3.0 ( lcshoesmith@protonmail.com )'
       }
     }
 
@@ -323,6 +323,23 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
         })
     }
 
+    const getGenres = () => {
+      return axios
+        .get(
+          'https://musicbrainz.org/ws/2/release-group/' + id + '?inc=genres&fmt=json',
+          headers
+        )
+        .then(genres => genres.data.genres)
+        .catch((err) => {
+          if (err.response.status === 401) {
+            // some releases do not have genres, and this is often the cause of errors
+            return 401
+          } else {
+            res.status(500).send(err)
+          }
+        })
+    }
+
     axios
       .get(
         'https://musicbrainz.org/ws/2/release-group/?query=mbid:"' + id + '"&fmt=json',
@@ -330,8 +347,10 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
       )
       .then(async (queryResult) => {
         const release = queryResult.data['release-groups'][0]
+        const genres = await getGenres()
         const artwork = await getReleaseArtwork(release)
         release.image = artwork
+        release.genres = genres
         res.status(200).send(release)
       })
       .catch((err) => {
