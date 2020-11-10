@@ -27,7 +27,7 @@
           Loading...
         </span>
       </masthead>
-      <paragraph centred>
+      <paragraph v-if="amountOfRatings" centred>
         Average score of <strong>{{ averageScore }}</strong> from
         <strong>
           {{ amountOfRatings }}
@@ -38,6 +38,9 @@
             ratings
           </span>
         </strong>
+      </paragraph>
+      <paragraph v-else centred>
+        No users have rated this release.
       </paragraph>
       <div class="tags">
         <tag v-for="tag in release.genres" :key="tag.id">
