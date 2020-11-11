@@ -27,59 +27,15 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .subheading {
-  padding: 0;
-  border-radius: 100px;
-  max-width: 50ch;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 .subheading-content {
-  margin-top: 30px;
-  color: hsl(253, 100%, 94%);
-  font-size: 1.8rem;
-  font-weight: 500;
-  text-align: left;
-  line-height: 2rem;
-  color: $saturated-blue-dim;
-  transition: all 0.2s linear;
-  &.dark {
-    color: $saturated-blue;
-  }
-  &.solarised-light {
-    color: $solarised-light-strong-content;
-  }
-  &.solarised-dark {
-    color: $solarised-dark-strong-content;
-  }
-  &.black {
-    color: $quite-light-grey;
-  }
-  &.smaller {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    text-transform: uppercase;
-  }
-  &.centred {
-    text-align: center;
-  }
-  &.noTopMargin {
-    margin-top: 0;
-  }
-}
-@media (max-width: 1000px) {
-  .subheading {
-    &.mobileMinWidth {
-      // to fill small screens
-      min-width: 100%;
-    }
-    &.noDefinedWidth {
-      min-width: min-content;
-      max-width: 100%;
-    }
-  }
-  .subheading-content {
-    text-align: center;
-  }
-  .noCentreOnMobile {
-    text-align: left;
-  }
+  color: $dimmer-purple;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin: 0;
 }
 </style>

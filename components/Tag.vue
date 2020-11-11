@@ -1,27 +1,31 @@
 <template>
-  <span class="tag">
+  <p class="tag" :class="{desaturated}">
     <slot />
-  </span>
+  </p>
 </template>
 
 <script>
 export default {
-  name: 'Tag'
+  name: 'Tag',
+  props: {
+    desaturated: Boolean
+  }
 }
 </script>
 
 <style lang="scss" scoped>
   .tag {
-    color: $greyer-blue;
+    display: inline-block;
+    color: $dimmish-purple;
     text-transform: uppercase;
-    font-size: 0.6rem;
-    padding: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    margin-right: 10px;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 900;
-    border-radius: 100px;
+    font-size: 14px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    &.desaturated {
+      color: $desaturated-dimmest-purple;
+    }
   }
 </style>

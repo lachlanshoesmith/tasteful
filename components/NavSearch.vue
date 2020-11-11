@@ -414,6 +414,7 @@ export default {
   width: 100%;
   height: 0%;
   color: $saturated-blue;
+  z-index: 4;
   pointer-events: none; // allow clicks through element while not visible
   &.dark, &.black, &.solarised-dark {
     background: rgba($deep-black, 0.8);

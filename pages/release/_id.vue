@@ -1,7 +1,37 @@
 <template>
   <main class="release">
     <blur loading :apply-blur="loading" />
-    <sidebar>
+    <hero :background="release.image">
+      <header>
+        <nuxt-link
+          class="link"
+          :to="'/artist/' + release['artist-credit'][0].artist.id"
+          :class="colourMode"
+        >
+          <subheading smaller centred no-top-margin>
+            {{ release['artist-credit'][0].artist.name }}
+          </subheading>
+        </nuxt-link>
+        <masthead full-width smaller centred small-bottom-margin>
+          <span v-if="release.title">
+            {{ release.title }}
+          </span>
+          <span v-else>
+            Loading...
+          </span>
+        </masthead>
+        <tag desaturated>
+          {{ release.firstReleaseDate[3] }}
+          <nuxt-link to="/">
+            {{ release.firstReleaseDate[2] }}
+          </nuxt-link>
+        </tag>
+        <div class="tags">
+          <tag v-for="tag in release.genres" :key="tag.id">
+            {{ tag.name }}
+          </tag>
+        </div>
+      </header>
       <img
         id="release-image"
         class="release-image"
@@ -10,24 +40,7 @@
         :alt="release.title"
         @load="loading = false"
       >
-      <nuxt-link
-        class="link"
-        :to="'/artist/' + release['artist-credit'][0].artist.id"
-        :class="colourMode"
-      >
-        <subheading smaller centred no-top-margin>
-          {{ release['artist-credit'][0].artist.name }}
-        </subheading>
-      </nuxt-link>
-      <masthead full-width smaller centred small-bottom-margin>
-        <span v-if="release.title">
-          {{ release.title }}
-        </span>
-        <span v-else>
-          Loading...
-        </span>
-      </masthead>
-      <paragraph v-if="amountOfRatings" centred>
+      <!-- <paragraph v-if="amountOfRatings" centred>
         Average score of <strong>{{ averageScore }}</strong> from
         <strong>
           {{ amountOfRatings }}
@@ -41,38 +54,18 @@
       </paragraph>
       <paragraph v-else centred>
         No users have rated this release.
-      </paragraph>
-      <div class="tags">
-        <tag v-for="tag in release.genres" :key="tag.id">
-          {{ tag.name }}
-        </tag>
-      </div>
-    </sidebar>
-    <divided-container>
-      <template v-slot:left>
-        <paragraph-container>
-          <paragraph soft>
-            Album ratings are currently in alpha. Enjoy cataloguing early, though!
-          </paragraph>
-        </paragraph-container>
-      </template>
-      <template v-slot:right>
-        <text-input
-          v-if="user !== null"
-          debounce
-          no-icon
-          centred
-          placeholder="Enter a score out of 100."
-          :default-value="initialScore"
-          @input="rate($event)"
-        />
-        <paragraph-container v-else>
-          <paragraph centred soft>
-            You need to sign in to rate releases.
-          </paragraph>
-        </paragraph-container>
-      </template>
-    </divided-container>
+      </paragraph> -->
+    </hero>
+    <div class="flex-container">
+      <regular-button>Update rating</regular-button>
+      <regular-button>Add to list</regular-button>
+      <regular-button secondary>
+        Edit this release
+      </regular-button>
+    </div>
+    <text-input placeholder="Something provocative and enticing!">
+      Header
+    </text-input>
   </main>
 </template>
 
@@ -81,26 +74,22 @@
 import { mapGetters } from 'vuex'
 import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
-import textInput from '~/components/TextInput.vue'
-import paragraphContainer from '~/components/ParagraphContainer.vue'
-import paragraph from '~/components/Paragraph.vue'
-import sidebar from '~/components/Sidebar.vue'
+import hero from '~/components/Hero.vue'
 import subheading from '~/components/Subheading.vue'
 import tag from '~/components/Tag.vue'
-import dividedContainer from '~/components/DividedContainer.vue'
+import regularButton from '~/components/RegularButton.vue'
+import textInput from '~/components/TextInput.vue'
 
 export default {
   name: 'Release',
   components: {
     blur,
     masthead,
-    textInput,
-    paragraph,
-    paragraphContainer,
-    sidebar,
+    hero,
     subheading,
     tag,
-    dividedContainer
+    regularButton,
+    textInput
   },
   data () {
     return {
@@ -115,7 +104,8 @@ export default {
               name: 'Loading...'
             }
           }
-        ]
+        ],
+        firstReleaseDate: []
       },
       initialScore: undefined,
       loading: false,
@@ -223,38 +213,26 @@ export default {
 
 <style lang="scss" scoped>
 .release {
-  padding-left: 3vw;
-  padding-right: 3vw;
-  display: flex;
-  justify-content: center;
   padding-bottom: 3vh;
 }
 .release-image {
-  border-radius: 15px;
+  border-radius: 10px;
   box-shadow: 0px 0px 50px;
-  width: 100%;
+  width: 300px;
+  margin-left: auto;
   margin-top: 20px;
   margin-bottom: 20px;
   &.light {
-    color: $quite-light-grey;
-  }
-  &.dark {
-    color: $saturated-purple-dim;
-  }
-  &.black {
-    color: $black;
-  }
-  &.solarised-light {
-    color: $solarised-light-main-background;
-  }
-  &.solarised-dark {
-    color: $solarised-dark-main-background;
+    color: rgba($saturated-purple, 0.25)
   }
 }
 .link {
   text-decoration: none;
 }
 .tags {
-  max-width: 300px;
+  max-width: 90%;
+}
+.flex-container {
+  display: flex;
 }
 </style>

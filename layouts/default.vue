@@ -80,95 +80,37 @@
         </template>
       </modal>
     </transition>
-    <div>
-      <!-- user !== null && user.username === 'lachlantula' -->
-      <!-- <nav class="maintenance">
-        <strong>tasteful is currently under live maintenance.</strong> Please check back later so that the site isn't under load. 🙏
-      </nav> -->
-      <nav
-        id="
-        navigation-bar"
-        :class="[{
-          'nav-unstuck': !showNavbar,
-          'nav-beyond-point': showNavBackground,
-        }, colourMode]"
-      >
-        <div id="nav-content" :class="colourMode">
-          <!-- <button @click="resetInvites">
-            Over here!
-          </button> -->
-          <!-- <button @click="massMove">
-            Over here to mass move!!
-          </button> -->
-          <h1 id="logo" :class="colourMode" @click="$router.push({ name: 'index' })">
-            tasteful
-          </h1>
-          <img class="tasteful-icon display-only-if-on-mobile" src="@/assets/images/tasteful-icon.svg" alt="tasteful" @click="$router.push({ name: 'index' })">
-          <nav-search :hide-bar-on-mobile="showMenuOnMobile" :visible="showNavbar" />
-          <div id="links" :class="{showMenuOnMobile}">
-            <nuxt-link to="/" class="link" :class="colourMode">
-              <home-icon title="Home" />
-            </nuxt-link><nuxt-link to="/about" class="link" :class="colourMode">
-              <info-icon title="About" />
-            </nuxt-link><nuxt-link to="/roadmap" class="link" :class="colourMode">
-              <timelapse-icon title="Roadmap" />
-            </nuxt-link><nuxt-link to="/donate" class="link" :class="colourMode">
-              <cash-icon title="Donate" />
-            </nuxt-link><a class="link" :class="colourMode" @click="toggleColourScheme">
-              <white-balance-sunny-icon title="Toggle colour scheme" />
-            </a><a v-if="user === null || user === false" class="link" :class="colourMode" @click="showModal = !showModal">
-              <key-icon title="Log in" />
-            </a><nuxt-link v-if="user !== null && user !== false" class="link" :class="colourMode" :to="'/user/' + user.username">
-              <face-icon title="Profile" />
-            </nuxt-link>
-          </div>
-          <a class="link display-only-if-on-mobile toggle-menu-icon" :class="colourMode"><menu-icon title="Open menu" @click="showMenuOnMobile = !showMenuOnMobile" /></a>
-        </div>
-      </nav>
-      <nuxt />
-    </div>
     <!-- <div v-else>
       <subheading>tasteful is currently under maintenance.</subheading>
       <paragraph>Check back soon.</paragraph>
     </div> -->
+    <div>
+      <nuxt />
+    </div>
   </div>
 </template>
 
 <script>
 import EmailIcon from 'vue-material-design-icons/Email.vue'
-import HomeIcon from 'vue-material-design-icons/Home.vue'
-import InfoIcon from 'vue-material-design-icons/Information.vue'
-import TimelapseIcon from 'vue-material-design-icons/Timelapse.vue'
-import CashIcon from 'vue-material-design-icons/Cash.vue'
 import FaceIcon from 'vue-material-design-icons/Face.vue'
-import WhiteBalanceSunnyIcon from 'vue-material-design-icons/WhiteBalanceSunny.vue'
 import KeyIcon from 'vue-material-design-icons/Key.vue'
-import MenuIcon from 'vue-material-design-icons/Menu.vue'
 import { mapGetters } from 'vuex'
 import Modal from '@/components/Modal.vue'
 import Subheading from '@/components/Subheading.vue'
 import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
-import NavSearch from '@/components/NavSearch.vue'
 
 export default {
   components: {
     EmailIcon,
-    HomeIcon,
-    InfoIcon,
-    TimelapseIcon,
-    CashIcon,
     FaceIcon,
-    WhiteBalanceSunnyIcon,
     KeyIcon,
-    MenuIcon,
     Modal,
     Subheading,
     Paragraph,
     TextInput,
-    SubmitButton,
-    NavSearch
+    SubmitButton
   },
   data () {
     return {
@@ -404,6 +346,11 @@ export default {
 @font-face {
   font-family: 'Public Sans';
   font-weight: 500;
+  src: url(/fonts/PublicSans-SemiBold.woff2) format("woff2");
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-weight: 700;
   src: url(/fonts/PublicSans-Bold.woff2) format("woff2");
 }
 @font-face {
@@ -419,9 +366,9 @@ html,
   min-height: 100%;
   width: 100%;
   box-sizing: border-box;
-  &.noOverflowX {
-    overflow-x: hidden;
-  }
+  // &.noOverflowX {
+  //   overflow-x: hidden;
+  // }
 }
 body,
 html,
@@ -437,7 +384,7 @@ button {
   transition: background 0.2s linear;
   min-height: 100vh;
   &.light {
-    background: $light-background;
+    background: $lightest-purple;
   }
   &.dark {
     background: $dark-background;
@@ -580,11 +527,12 @@ nav.nav-beyond-point {
 }
 a {
   outline: none;
-  color: $saturated-red-dim;
+  color: $saturated-purple;
+  text-decoration: none;
   transition: all 0.2s linear;
   &:hover {
     cursor: pointer;
-    color: $saturated-red;
+    color: $dimmer-purple;
   }
   &.soft, &.dark, &.solarised-dark {
     color: $soft-red;

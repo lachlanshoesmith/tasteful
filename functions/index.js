@@ -1,14 +1,5 @@
-/*
-
-** WHAT TO DO TODAY **
-1. Instead of processing an artist's releases in the search function, use the firebase function processArtistReleases
-2. Modularise this file
-3. Find new ways to optimise!
-4. Move onwards to artist and release page enhancements.
-
-*/
-
 const crypto = require('crypto')
+const moment = require('moment')
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const axios = require('axios')
@@ -29,7 +20,7 @@ exports.search = functions.https.onRequest((req, res) => {
     const searchResults = []
     const headers = {
       headers: {
-        'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+        'User-Agent': 'Application tasteful/0.4.0 (lcshoesmith@protonmail.com)'
       }
     }
 
@@ -267,7 +258,7 @@ exports.processArtistReleases = functions.https.onRequest((req, res) => {
     const searchResults = {}
     const headers = {
       headers: {
-        'User-Agent': 'Application tasteful/0.3.0 (lcshoesmith@protonmail.com)'
+        'User-Agent': 'Application tasteful/0.4.0 (lcshoesmith@protonmail.com)'
       }
     }
     // get releases
@@ -308,7 +299,7 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
 
     const headers = {
       headers: {
-        'User-Agent': 'tasteful/0.3.0 ( lcshoesmith@protonmail.com )'
+        'User-Agent': 'tasteful/0.4.0 ( lcshoesmith@protonmail.com )'
       }
     }
 
@@ -323,13 +314,13 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
         })
     }
 
-    const getGenres = () => {
+    const getReleaseInfo = () => {
       return axios
         .get(
           'https://musicbrainz.org/ws/2/release-group/' + id + '?inc=genres&fmt=json',
           headers
         )
-        .then(genres => genres.data.genres)
+        .then(releaseInfo => releaseInfo.data)
         .catch((err) => {
           if (err.response.status === 401) {
             // some releases do not have genres, and this is often the cause of errors
@@ -340,6 +331,17 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
         })
     }
 
+    const formatReleaseDate = (releaseDate) => {
+      // sample data: 1996-05-28 (28th of May, 1996 [Merzbow - Pulse Demon])
+      const year = releaseDate.substring(0, 4)
+      const month = releaseDate.substring(5, 7)
+      const day = releaseDate.substring(8)
+
+      const formattedDate = moment(releaseDate).format('DD MMMM')
+
+      return [day, month, year, formattedDate]
+    }
+
     axios
       .get(
         'https://musicbrainz.org/ws/2/release-group/?query=mbid:"' + id + '"&fmt=json',
@@ -347,10 +349,13 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
       )
       .then(async (queryResult) => {
         const release = queryResult.data['release-groups'][0]
-        const genres = await getGenres()
+        const releaseInfo = await getReleaseInfo()
         const artwork = await getReleaseArtwork(release)
         release.image = artwork
-        release.genres = genres
+        release.genres = releaseInfo.genres
+        const firstReleaseDate = releaseInfo['first-release-date']
+        const formattedReleaseDate = formatReleaseDate(firstReleaseDate)
+        release.firstReleaseDate = formattedReleaseDate
         res.status(200).send(release)
       })
       .catch((err) => {

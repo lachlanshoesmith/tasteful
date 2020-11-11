@@ -31,8 +31,16 @@ $soft-red-dim-dark: hsl(352, 45%, 20%);
 
 // ! Purples
 
-//  * saturated
+$dimmest-purple: hsl(253, 68%, 15%);
+$dimmer-purple: hsl(253, 69%, 20%);
+$dimmish-purple: hsl(252, 20%, 56%);
+$lighter-purple:  hsl(249, 39%, 93%);
+$lightest-purple: hsl(250, 60%, 96%);
 $saturated-purple: hsl(252, 70%, 56%);
+$desaturated-dimmest-purple: hsl(249, 10%, 26%);
+$desaturated-dimmish-purple: hsl(251, 10%, 56%);
+$desaturated-lightest-purple: hsl(250, 15%, 70%);
+// old
 $saturated-purple-quite-dim: hsl(252, 67%, 35%);
 $saturated-purple-dim: hsl(252, 70%, 16%);
 
