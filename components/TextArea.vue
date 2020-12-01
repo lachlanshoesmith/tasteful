@@ -1,20 +1,19 @@
 <template>
-  <div class="text-input-container" :class="[{fullWidth}]">
-    <label class="text-input-label" :for="name">
+  <div class="text-area-container" :class="{fullWidth}">
+    <label class="text-area-label" :for="name">
       <slot />
     </label>
-    <input
+    <textarea
       v-model="value"
       :name="name"
       :class="[{fullWidth}, colourMode]"
       v-bind="$attrs"
-      class="text-input"
-      :type="checkInputType()"
+      class="text-area"
       :readonly="disabled"
       @input="reportValue"
       @focus="reportFocus(true)"
       @blur="reportFocus(false)"
-    >
+    />
   </div>
 </template>
 
@@ -22,9 +21,8 @@
 import _ from 'lodash'
 
 export default {
-  name: 'TextInput',
+  name: 'TextArea',
   props: {
-    password: Boolean,
     debounce: Boolean,
     disabled: Boolean,
     focusManualBlurHandling: Boolean,
@@ -64,13 +62,6 @@ export default {
     reportValue () {
       this.$emit('input', this.value)
     },
-    checkInputType () {
-      if (this.password) {
-        return 'password'
-      } else {
-        return 'text'
-      }
-    },
     reportFocus (focused) {
       if (!this.focusManualBlurHandling) {
         this.$emit('focus', focused)
@@ -84,7 +75,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.text-input {
+.text-area {
   background: $lighter-purple;
   font-size: 14px;
   border-radius: 15px;
@@ -92,6 +83,9 @@ export default {
   margin-bottom: 16px;
   border: none;
   color: $desaturated-dimmest-purple;
+  resize: none;
+  line-height: 1.5;
+  min-height: 128px;
   &::placeholder {
     color: $desaturated-dimmish-purple;
   }
@@ -102,13 +96,15 @@ export default {
     width: 100%;
   }
 }
-.text-input-label {
+.text-area-label {
   display: block;
   margin-top: 16px;
   margin-bottom: 16px;
   color: $desaturated-lightest-purple;
 }
-.text-input-container {
-  width: 100%;
+.text-area-container {
+  &.fullWidth {
+    width: 100%;
+  }
 }
 </style>

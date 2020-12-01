@@ -27,16 +27,14 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .hero-container {
-  width: 100vw;
+  width: 100%;
 }
 .hero {
   width: 50vw;
   transition: all 0.2s linear;
   display: flex;
   align-items: center;
-  position: fixed;
-  left: 0;
-  right: 0;
+  position: absolute;
   z-index: 2;
   padding-left: 25vw;
   padding-right: 25vw;
@@ -47,8 +45,7 @@ export default {
   filter: blur(250px);
   width: 110%;
   left: -5%;
-  position: fixed;
-  right: 0;
+  position: absolute;
   z-index: 1;
   opacity: 0.4;
 }

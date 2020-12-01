@@ -1,6 +1,6 @@
 <template>
-  <div :class="[{smaller, noDefinedWidth }]" class="subheading">
-    <h1 :class="[colourMode, { smaller, centred, noTopMargin, noCentreOnMobile }]" class="subheading-content">
+  <div class="subheading">
+    <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content">
       <slot>Subheading content</slot>
     </h1>
   </div>
@@ -11,10 +11,7 @@ export default {
   name: 'Subheading',
   props: {
     smaller: Boolean,
-    centred: Boolean,
-    noTopMargin: Boolean,
-    noCentreOnMobile: Boolean,
-    noDefinedWidth: Boolean
+    smallest: Boolean
   },
   computed: {
     colourMode () {
@@ -37,5 +34,13 @@ export default {
   text-transform: uppercase;
   letter-spacing: 4px;
   margin: 0;
+  &.smaller, &.smallest {
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  &.smallest {
+    font-weight: 500;
+    color: $muted-purple;
+  }
 }
 </style>

@@ -84,6 +84,17 @@
       <subheading>tasteful is currently under maintenance.</subheading>
       <paragraph>Check back soon.</paragraph>
     </div> -->
+    <div v-if="user">
+      <span>Logged in as: {{ user.username }}</span>
+      <nuxt-link to="/user/settings">
+        Go sign out
+      </nuxt-link>
+    </div>
+    <div v-else>
+      <button @click="showModal = true">
+        Login
+      </button>
+    </div>
     <div>
       <nuxt />
     </div>
@@ -212,7 +223,7 @@ export default {
       if (user !== null && user !== false && this.email !== '') {
         // when sign in is completed (and not from persisted state)...
         // check to see if the user has a username
-        const usersDatabase = this.$fireStore.collection('users')
+        const usersDatabase = this.$fire.firestore.collection('users')
         usersDatabase.doc(this.user.id).get()
           .then((user) => {
             const userData = user.data()
@@ -239,7 +250,7 @@ export default {
   mounted () {
     window.addEventListener('scroll', this.onScroll)
     // check if user is already logged in
-    this.$fireAuth.onAuthStateChanged((user) => {
+    this.$fire.auth.onAuthStateChanged((user) => {
       if (user) {
         this.$store.dispatch('login/updateUser', user)
       }
@@ -249,37 +260,6 @@ export default {
     window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    // resetInvites () {
-    //   this.$fireStore.collection('invites').get()
-    //     .then((res) => {
-    //       res.docs.forEach((doc) => {
-    //         // i know this is shit practice, don't care enough for this part
-    //         this.$fireStore.collection('invites').doc(doc.id).set({
-    //           used: false
-    //         })
-    //       })
-    //     })
-    // },
-    // massMove () {
-    //   this.$fireStore.collection('releases').get()
-    //     .then((res) => {
-    //       res.docs.forEach((doc) => {
-    //         // i know this is shit practice, don't care enough for this part
-    //         const release = doc.id
-    //         const ratings = doc.data()
-    //         // this.$fireStore.collection('releases/' + release + '/ratings')
-    //         //   .get()
-    //         //   .then((res) => {
-    //         //     res.docs.forEach((doc) => {
-    //         //       this.$fireStore.doc('releases/' + release + '/ratings/' + doc.id).delete()
-    //         //     })
-    //         //   })
-    //         this.$fireStore.doc('releases/' + release).set({
-    //           ratings
-    //         })
-    //       })
-    //     })
-    // },
     onScroll () {
       const currentScrollPosition =
         window.pageYOffset || document.documentElement.scrollTop
@@ -303,7 +283,7 @@ export default {
       let indexOfThemeToCommit = 0
       // if the currently selected theme is not in the toggle...
       if (indexOfTheme === -1) {
-        // ...reset the theme to the first declared in the toggle.
+      // ...reset the theme to the first declared in the toggle.
         indexOfThemeToCommit = 0
       } else if (indexOfTheme === 0) {
         indexOfThemeToCommit = 1
@@ -320,12 +300,12 @@ export default {
         this.$store.dispatch('login/signUpUser', { email: this.email, username: this.username, password: this.password })
       } else { // sign up
         alert('Sign ups are currently disabled. If you have an invite code and seed, visit https://tasteful.reviews/invite.')
-        // this.$store.dispatch('login/signUpUser', { email: this.email, password: this.password })
+      // this.$store.dispatch('login/signUpUser', { email: this.email, password: this.password })
       }
     },
     updateDisplayOnSearch (searching) {
       if (searching) {
-        // If the search menu is up, disable overflow.
+      // If the search menu is up, disable overflow.
         this.noOverflowX = true
       } else {
         this.noOverflowX = false

@@ -22,8 +22,8 @@ export const mutations = {
     } else if (payload.new) {
       // if it's a new user, add their username
       // first add it to the user's own document
-      const usernames = this.$fireStore.collection('usernames')
-      const users = this.$fireStore.collection('users')
+      const usernames = this.$fire.firestore.collection('usernames')
+      const users = this.$fire.firestore.collection('users')
       users
         .doc(payload.id)
         .set(
@@ -53,7 +53,7 @@ export const mutations = {
     } else {
       // check if the user has a username in the system
       const id = payload.id
-      const usernameDocument = this.$fireStore.collection('users').doc(id)
+      const usernameDocument = this.$fire.firestore.collection('users').doc(id)
       usernameDocument.get()
         .then((doc) => {
           if (doc.exists) {
@@ -79,7 +79,7 @@ export const mutations = {
 
 export const actions = {
   signInUser ({ commit }, payload) {
-    this.$fireAuth
+    this.$fire.auth
       .signInWithEmailAndPassword(payload.email, payload.password)
       .then(
         (user) => {
@@ -140,7 +140,7 @@ export const actions = {
       errorPayload.code = 'username/too-long'
     } else {
       // check if the username already exists
-      const usernames = this.$fireStore.collection('usernames')
+      const usernames = this.$fire.firestore.collection('usernames')
       usernames.get().then((data) => {
         data.forEach((username) => {
           if (payload.username.toLowerCase() === username.id.toLowerCase()) {
@@ -150,7 +150,7 @@ export const actions = {
         })
         // if all is well, attempt to continue with sign up
         if (!errorPayload.display) {
-          this.$fireAuth
+          this.$fire.auth
             .createUserWithEmailAndPassword(payload.email, payload.password)
             .then(
               (user) => {
@@ -180,7 +180,7 @@ export const actions = {
     commit('setError', errorPayload)
   },
   signOutUser ({ commit }) {
-    this.$fireAuth
+    this.$fire.auth
       .signOut()
       .then(() => {
         commit('setUser', 'logout')

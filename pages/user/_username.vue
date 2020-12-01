@@ -67,7 +67,7 @@ export default {
     }
   },
   mounted () {
-    const usernamesDatabase = this.$fireStore.collection('usernames')
+    const usernamesDatabase = this.$fire.firestore.collection('usernames')
     let username = this.$route.params.username.toLowerCase()
     this.loading = true
     usernamesDatabase.get()
@@ -117,7 +117,7 @@ export default {
   },
   methods: {
     getRatings () {
-      const user = this.$fireStore.collection('users').doc(this.id)
+      const user = this.$fire.firestore.collection('users').doc(this.id)
       const ratingsCollection = user.collection('ratings')
       ratingsCollection.get()
         .then((res) => {

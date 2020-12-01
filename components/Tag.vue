@@ -1,5 +1,5 @@
 <template>
-  <p class="tag" :class="{desaturated}">
+  <p class="tag" :class="[{desaturated}, align]">
     <slot />
   </p>
 </template>
@@ -8,7 +8,11 @@
 export default {
   name: 'Tag',
   props: {
-    desaturated: Boolean
+    desaturated: Boolean,
+    align: {
+      type: String,
+      default: 'centre'
+    }
   }
 }
 </script>
@@ -26,6 +30,16 @@ export default {
     letter-spacing: 1px;
     &.desaturated {
       color: $desaturated-dimmest-purple;
+    }
+    &.centre {
+      text-align: center;
+    }
+    &.left {
+      text-align: left;
+    }
+    &.right {
+      text-align: right;
+      width: 100%;
     }
   }
 </style>

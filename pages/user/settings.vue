@@ -371,7 +371,7 @@ export default {
         this.inviteCode = this.user.inviteCode
         this.inviteSeed = this.user.inviteSeed
         // check if Invitation has been used
-        this.$fireStore.collection('invites').doc(this.user.invitation).get()
+        this.$fire.firestore.collection('invites').doc(this.user.invitation).get()
           .then((doc) => {
             const data = doc.data()
             this.inviteUsed = data.used
@@ -423,8 +423,8 @@ export default {
         this.error.message = 'Keep it under 16 characters, cheers.'
       } else {
         // check if username already existed
-        const usernames = this.$fireStore.collection('usernames')
-        const users = this.$fireStore.collection('users')
+        const usernames = this.$fire.firestore.collection('usernames')
+        const users = this.$fire.firestore.collection('users')
         usernames.get().then((data) => {
           data.forEach((username) => {
             if (
@@ -504,18 +504,18 @@ export default {
       this.inviteSeed = crypto.randomBytes(4).toString('hex')
       const invitation = crypto.createHash('sha256').update(this.inviteCode + this.inviteSeed).digest('hex')
       // check if invitation has already been created (odds are mindbogglingly low)
-      this.$fireStore.collection('invites').doc(invitation).get()
+      this.$fire.firestore.collection('invites').doc(invitation).get()
         .then((res) => {
           if (res.exists) {
             alert('You just got incredibly lucky: you generated an existing Invitation. This is EXTREMELY rare (like, 1 in trillions of zillions or something odds). I wasn\'t expecting anyone to see this... but I hope you enjoyed this celebration. Have a good day!')
           } else {
-            this.$fireStore.collection('users').doc(this.user.id).set({
+            this.$fire.firestore.collection('users').doc(this.user.id).set({
               inviteSeed: this.inviteSeed,
               inviteCode: this.inviteCode,
               invitation
             }, { merge: true })
               .then(() => {
-                this.$fireStore.collection('invites').doc(invitation).set({
+                this.$fire.firestore.collection('invites').doc(invitation).set({
                   used: false
                 })
               })

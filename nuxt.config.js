@@ -44,7 +44,8 @@ module.exports = {
     {
       src: '~/plugins/vuex-persist',
       ssr: false
-    }
+    },
+    '~/plugins/user'
   ],
   /*
    ** Nuxt.js dev-modules
@@ -76,7 +77,8 @@ module.exports = {
         services: {
           auth: true,
           firestore: true,
-          functions: true
+          functions: true,
+          storage: true
         }
       }
     ]

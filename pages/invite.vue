@@ -150,7 +150,7 @@ export default {
   methods: {
     testInvitation () {
       const invitation = crypto.createHash('sha256').update(this.inviteCode + this.inviteSeed).digest('hex')
-      this.$fireStore.collection('invites').doc(invitation).get()
+      this.$fire.firestore.collection('invites').doc(invitation).get()
         .then((res) => {
           if (res.exists && (res.data().used === false)) {
             this.submitInvitation(invitation)
@@ -163,7 +163,7 @@ export default {
         })
     },
     submitInvitation (invitation) {
-      this.$fireStore.collection('invites').doc(invitation).set({
+      this.$fire.firestore.collection('invites').doc(invitation).set({
         used: true
       })
         .then(() => {

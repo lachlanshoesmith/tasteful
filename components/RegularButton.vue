@@ -1,5 +1,5 @@
 <template>
-  <button class="regular-button" :class="[{secondary}, colourMode]" @click="$emit('pressed')">
+  <button class="regular-button" :class="[type, colourMode]" @click="handleClick">
     <slot />
   </button>
 </template>
@@ -8,11 +8,27 @@
 export default {
   name: 'RegularButton',
   props: {
-    secondary: Boolean
+    type: {
+      type: String,
+      default: 'secondary'
+    },
+    to: {
+      type: String,
+      default: ''
+    }
   },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
+    }
+  },
+  methods: {
+    handleClick () {
+      if (!this.to) {
+        this.$emit('pressed')
+      } else {
+        window.open(this.to, '_blank')
+      }
     }
   }
 }
@@ -38,11 +54,15 @@ export default {
   margin-right: 16px;
   border-radius: 10px;
 
-  &.light {
+  &.secondary {
     color: $dimmish-purple;
   }
-  &.secondary {
+  &.tertiary {
     color: $desaturated-lightest-purple;
+  }
+  &.primary {
+    background: $dimmish-purple;
+    color: $lightest-purple;
   }
   &:hover {
     cursor: pointer;
