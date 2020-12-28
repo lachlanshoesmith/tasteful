@@ -106,7 +106,7 @@
             Pronouns
           </input-label>
           <div class="flex-container">
-            <dropdown-input
+            <dropdown
               name="pronouns-input-one"
               description-value="A pronoun."
               :options="['he', 'she', 'they', 'ze', 'xey', 'any']"
@@ -117,8 +117,8 @@
               <template v-slot:icon>
                 <gender-male-female-icon title="Pronouns" />
               </template>
-            </dropdown-input>
-            <dropdown-input
+            </dropdown>
+            <dropdown
               no-icon
               name="pronouns-input-two"
               description-value="Another pronoun!"
@@ -142,7 +142,7 @@
           <input-label no-top-margin>
             Currently selected theme
           </input-label>
-          <dropdown-input
+          <dropdown
             name="selected-theme-input"
             description-value="Which lovely theme will you choose?"
             :default-value="colourMode"
@@ -153,7 +153,7 @@
             <template v-slot:icon>
               <palette-icon title="Selected theme" />
             </template>
-          </dropdown-input>
+          </dropdown>
           <!-- <input-label>
             Dynamic colouring
           </input-label>
@@ -162,7 +162,7 @@
             Navbar theme toggle options
           </input-label>
           <div class="flex-container">
-            <dropdown-input
+            <dropdown
               name="navbar-theme-toggle-input-one"
               description-value="A nice theme."
               :default-value="colourModeToggle[0]"
@@ -174,8 +174,8 @@
               <template v-slot:icon>
                 <invert-colours-icon title="Navbar theme toggle" />
               </template>
-            </dropdown-input>
-            <dropdown-input
+            </dropdown>
+            <dropdown
               no-icon
               name="navbar-theme-toggle-input-two"
               description-value="Another theme that you like (we hope)."
@@ -309,7 +309,7 @@ import subheading from '~/components/Subheading.vue'
 import paragraph from '~/components/Paragraph.vue'
 import paragraphContainer from '~/components/ParagraphContainer.vue'
 import textInput from '~/components/TextInput.vue'
-import dropdownInput from '~/components/DropdownInput.vue'
+import dropdown from '~/components/Dropdown.vue'
 import submitButton from '~/components/SubmitButton.vue'
 import regularButton from '~/components/RegularButton.vue'
 import articleContent from '~/components/ArticleContent.vue'
@@ -327,7 +327,7 @@ export default {
     paragraph,
     paragraphContainer,
     textInput,
-    dropdownInput,
+    dropdown,
     submitButton,
     regularButton,
     articleContent,

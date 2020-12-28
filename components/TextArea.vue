@@ -93,7 +93,7 @@ export default {
     opacity: 1;
   }
   &.fullWidth {
-    width: 100%;
+    width: calc(100% - 32px);
   }
 }
 .text-area-label {

@@ -9,6 +9,13 @@ export const state = () => ({
 
 export const mutations = {
   setUser (state, payload) {
+    const getAvatar = (id) => {
+      const imagePath = 'users/' + id + '/avatar.jpg'
+      return this.$fire.storage.ref().child(imagePath)
+        .getDownloadURL()
+        .then(url => url)
+    }
+
     // check if user means to log out
     if (payload === 'logout') {
       // Setting 'user' to false instead of null makes clear the difference between when
@@ -19,50 +26,18 @@ export const mutations = {
         display: false,
         message: ''
       }
-    } else if (payload.new) {
-      // if it's a new user, add their username
-      // first add it to the user's own document
-      const usernames = this.$fire.firestore.collection('usernames')
-      const users = this.$fire.firestore.collection('users')
-      users
-        .doc(payload.id)
-        .set(
-          {
-            username: payload.username
-          },
-          { merge: true }
-        )
-        .then(() => {
-          // then add it to the list of usernames
-          usernames
-            .doc(payload.username)
-            .set({
-              uid: payload.id
-            })
-            .then(() => {
-              // all is done.
-              state.user = payload
-            })
-            .catch((error) => {
-              console.log('Something went wrong. ' + error)
-            })
-        })
-        .catch((error) => {
-          console.log('Something went wrong. ' + error)
-        })
     } else {
-      // check if the user has a username in the system
+      // get username
       const id = payload.id
-      const usernameDocument = this.$fire.firestore.collection('users').doc(id)
-      usernameDocument.get()
-        .then((doc) => {
-          if (doc.exists) {
-            payload = doc.data()
-            payload.id = id
-            state.user = payload
-          } else {
-            state.user = payload
-          }
+      const user = this.$fire.firestore.collection('users').doc(id)
+      user.get()
+        .then(async (doc) => {
+          payload = doc.data()
+          payload.id = id
+          // get avatar
+          const avatar = await getAvatar(id)
+          payload.avatar = avatar
+          state.user = payload
         })
         .catch((error) => {
           console.log(error)

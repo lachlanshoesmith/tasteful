@@ -23,13 +23,7 @@
         <slot name="left" />
       </div>
       <div class="divider" :class="[colourMode]" />
-      <div class="modal-content-right">
-        <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
-        <div class="right-heading">
-          <slot name="heading" />
-        </div>
-        <slot name="right" />
-      </div>
+      <div class="modal-content-right" :style=" { 'background-image': `url(${imageForRightSide})`} " />
     </div>
   </div>
 </template>
@@ -46,7 +40,11 @@ export default {
     scrollable: Boolean,
     greenBackground: Boolean,
     shadow: Boolean,
-    redBorder: Boolean
+    redBorder: Boolean,
+    imageForRightSide: {
+      type: String,
+      default: ''
+    }
   },
   computed: {
     colourMode () {
@@ -83,127 +81,35 @@ export default {
   }
 }
 
-// OLD MODAL
-// .modal {
-//   background: hsl(0, 0%, 100%);
-//   box-shadow: 0px 0px 50px hsl(0, 0%, 95%);
-//   width: 50vw;
-//   min-height: 50vh;
-//   max-height: 80vh;
-//   border-radius: 50px;
-//   transition: all 0.2s linear;
-//   display: flex;
-//   padding-bottom: 20px;
-//   &:before {
-//     position: absolute;
-//     transform: translateY(-10px);
-//     z-index: -1;
-//     content: " ";
-//     background: linear-gradient(270deg, #f14f4f, #5f40dd);
-//     width: 50vw;
-//     height: 50vh;
-//     border-radius: 50px;
-//     transition: all 0.2s linear;
-//   }
-//   &.dark {
-//     background: hsl(0, 0%, 10%);
-//     box-shadow: 0px 0px 20px hsl(0, 0%, 12%);
-//   }
-//   &.greenBackground {
-//     background: $green-gradient;
-//     background-size: 400% 400%;
-//     animation: GradientAnimation 2s ease infinite;
-//   }
-// }
-
 .modal {
-  background: $quite-white;
+  background: $lightest-purple;
   display: flex;
-  width: 40vw;
-  min-height: 30vh;
-  padding: 30px;
-  padding-left: 40px;
-  padding-right: 40px;
-  margin-bottom: 40px;
-  border-radius: 0px 0px 10px 10px;
+  width: 50vw;
+  min-height: 50vh;
+  border-radius: 10px;
   transition: all 0.2s linear;
   z-index: 1;
   position: relative;
-  &.dark {
-    background: $quite-deep-black;
-  }
-  &:before {
-    transform: translateX(-40px) translateY(-35px);
-    content: " ";
-    position: absolute;
-    background: $tasteful-gradient;
-    width: 100%;
-    height: 5px;
-    border-radius: 10px 10px 0px 0px;
-    transition: all 0.2s linear;
-  }
-  &.solarised-light, &.solarised-dark {
-    &:before {
-      background: $solarised-tasteful-gradient;
-    }
-  }
-  &.solarised-light {
-    background: $solarised-light-secondary-background;
-    &:before {
-      opacity: 0.5;
-    }
-  }
-  &.solarised-dark {
-    background: $solarised-dark-secondary-background;
-  }
-  &.black {
-    background: $deep-black;
-    &:before {
-      background: $quite-deep-black;
-    }
-  }
-  &.redBorder {
-    &:before {
-      background: $red-gradient;
-    }
-  }
-  &.shadow {
-    box-shadow: 0px 0px 50px;
-    &.light {
-      color: $quite-light-grey;
-    }
-    &.dark {
-      color: $dark-grey;
-    }
-    &.black {
-      color: $black;
-    }
-    &.solarised-light {
-      color: $solarised-light-main-background;
-    }
-    &.solarised-dark {
-      color: $solarised-dark-main-background;
-    }
-  }
+  box-shadow: 0px 0px 50px $desaturated-dimmest-purple;
 }
 
 .modal-content {
   height: 100%;
-  padding-left: 5%;
-  padding-top: 5%;
 }
 
 .modal-content-left {
-  margin-right: 15px;
+  margin-right: 128px;
   text-align: left;
-  width: 35%;
+  width: calc(50% - 176px);
+  padding-left: 48px;
+  padding-top: 48px;
+  padding-bottom: 48px;
 }
 
 .modal-content-right {
-  width: 65%;
-  .large-close-icon {
-    display: none;
-  }
+  width: 50%;
+  background-size: cover;
+  border-radius: 0px 10px 10px 0px;
 }
 
 .subheading-content {
@@ -213,17 +119,17 @@ export default {
 .large-close-icon {
   width: 24px;
   height: 24px;
+  position: absolute;
+  left: 16px;
+  top: 16px;
   svg {
-    color: hsl(222, 5%, 20%);
+    color: $desaturated-dimmest-purple;
     width: 24px;
     height: 24px;
+    transition: color 0.2s linear;
     &:hover {
+      color: $desaturated-dimmish-purple;
       cursor: pointer;
-    }
-  }
-  &.dark {
-    svg {
-      color: hsl(222, 10%, 55%);
     }
   }
 }
@@ -234,68 +140,6 @@ export default {
 
 .flex-container {
   display: flex;
-}
-
-.right-heading {
-  display: none;
-}
-
-@media (max-width: 1000px) {
-  .modal {
-    width: 90vw;
-    padding-left: 0;
-    padding-right: 0;
-    &:before {
-      transform: translateX(0px) translateY(-35px);
-      width: 90vw;
-    }
-  }
-  .right-heading {
-    display: block;
-    width: 100%;
-  }
-  .large-close-icon {
-    position: absolute;
-    left: 5vw;
-  }
-  .modal-content {
-    padding-left: 0;
-  }
-  .modal-content-left {
-    position: relative;
-    width: 0%;
-    z-index: 5;
-    margin-top: 20px;
-    display: none;
-    .subheading, .paragraph {
-      display: none;
-    }
-    &.scrollable {
-      overflow-y: auto;
-    }
-  }
-  .modal-content-right {
-    overflow: none;
-    width: 100%;
-    text-align: center;
-    .text-input-container {
-      width: 90%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .large-close-icon {
-      display: block;
-    }
-    &.scrollable {
-      overflow-y: auto;
-    }
-  }
-}
-
-@keyframes GradientAnimation {
-  0%{background-position:82% 0%}
-  50%{background-position:19% 100%}
-  100%{background-position:82% 0%}
 }
 
 </style>

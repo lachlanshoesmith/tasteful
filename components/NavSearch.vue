@@ -42,7 +42,7 @@
               <input-label>
                 Type of release
               </input-label>
-              <dropdown-input
+              <dropdown
                 name="include-in-search-release-type"
                 description-value="Choose which releases are displayed."
                 :default-value="releaseTypeName"
@@ -52,7 +52,7 @@
                 <template v-slot:icon>
                   <disc-icon title="Release types" />
                 </template>
-              </dropdown-input>
+              </dropdown>
             </div>
             <div v-if="includeInSearch['artists']">
               <input-label>
@@ -148,7 +148,7 @@ import dividedContainer from '@/components/DividedContainer.vue'
 import subheading from '@/components/Subheading.vue'
 import paragraph from '@/components/Paragraph.vue'
 import inputLabel from '@/components/InputLabel.vue'
-import dropdownInput from '@/components/DropdownInput.vue'
+import dropdown from '@/components/Dropdown.vue'
 import checkbox from '@/components/Checkbox.vue'
 import spinner from '@/components/Spinner.vue'
 import searchArtist from '@/components/SearchArtist.vue'
@@ -167,7 +167,7 @@ export default {
     subheading,
     paragraph,
     inputLabel,
-    dropdownInput,
+    dropdown,
     checkbox,
     spinner,
     searchArtist,

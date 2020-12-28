@@ -1,5 +1,5 @@
 <template>
-  <div :class="[{wider}]" class="article-content">
+  <div :class="[{ wider }]" class="article-content">
     <slot />
   </div>
 </template>

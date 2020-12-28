@@ -1,5 +1,29 @@
 <template>
   <main class="release">
+    <transition name="fade">
+      <modal v-if="showAddToListModal" scrollable :image-for-right-side="release.imageHQ" @closeModal="showAddToListModal = false">
+        <template v-slot:heading>
+          <masthead smaller>
+            Add release to list
+          </masthead>
+        </template>
+        <template v-slot:left>
+          <dropdown
+            name="selected-list"
+            description-value="2020 favourites, for example."
+            :options="['Example list 1', 'Example list 2']"
+          >
+            Selected list
+          </dropdown>
+          <text-area name="list-item-description" full-width placeholder="Descriptions are optional, but should be related to the album or artist if included." @input="listItemToAdd.description=$event">
+            Description
+          </text-area>
+          <regular-button wide type="call-to-action">
+            Add to list
+          </regular-button>
+        </template>
+      </modal>
+    </transition>
     <blur loading :apply-blur="loading" />
     <hero :background="release.image">
       <header>
@@ -41,28 +65,37 @@
         @load="loading = false"
       >
     </hero>
-    <div class="flex-container content">
+    <div v-if="selectedReview === false" class="flex-container content">
       <div class="left-column">
         <div class="flex-container">
           <regular-button type="secondary">
             Update rating
           </regular-button>
-          <regular-button type="secondary">
+          <regular-button type="secondary" @pressed="showAddToListModal = true">
             Add to list
           </regular-button>
-          <regular-button type="tertiary" :to="'https://musicbrainz.org/release-group/' + id">
+          <regular-button no-right-margin type="tertiary" :to="'https://musicbrainz.org/release-group/' + id">
             Edit this release
           </regular-button>
         </div>
         <div class="flex-container user-review-container">
           <div class="user-score-container">
-            <profile-picture size="medium" url="https://pbs.twimg.com/profile_images/1291718797456359424/7mwTI5rz_400x400.jpg" />
+            <div v-if="user">
+              <profile-picture :username="user.username" size="medium" :url="user.avatar" />
+            </div>
             <p class="user-score">
               {{ initialScore }}
             </p>
           </div>
-          <div>
-            <text-input full-width placeholder="Something provocative and enticing!" name="review-header" :default-value="reviewContent.header" @input="reviewContent.header=$event">
+          <div class="user-review-composition-container">
+            <text-input
+              full-width
+              maxlength="125"
+              placeholder="Something provocative and enticing!"
+              name="review-header"
+              :default-value="reviewContent.header"
+              @input="reviewContent.header=$event"
+            >
               Header
             </text-input>
             <text-area name="review-body" full-width placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin felis nibh, condimentum sit amet tempor quis, ultricies eu massa. Pellentesque aliquam mi at odio commodo, at pharetra arcu consectetur." :default-value="reviewContent.body" @input="reviewContent.body=$event">
@@ -72,7 +105,7 @@
               <regular-button type="primary" @pressed="postReview()">
                 Post review
               </regular-button>
-              <regular-button type="tertiary">
+              <regular-button type="tertiary" @pressed="openRichEditor">
                 Open rich editor
               </regular-button>
             </div>
@@ -119,34 +152,54 @@
           </pill>
         </div>
         <div v-if="reviews" class="reviews">
-          <div v-for="(review, i) in reviews" :key="review.id" class="review">
-            <div class="flex-container">
-              <div>
-                <profile-picture size="small" :url="review.avatar" />
-              </div>
-              <div>
-                <subheading smallest>
-                  <nuxt-link :to="'/user/' + review.username">
-                    {{ review.username }}
-                  </nuxt-link>
-                </subheading>
-                <subheading smaller>
-                  {{ review.header }}
-                </subheading>
-                <paragraph>{{ review.body }}</paragraph>
-                <div v-if="review.likes">
-                  <p>Likes: {{ review.likes }}</p>
-                  <p>Likers: {{ review.likers }}</p>
-                </div>
-                <button @click="likeReview(review, i)">
-                  <span v-if="user === null || review.likers.includes(user.id)">Unlike this review</span>
-                  <span v-else>Like this review</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <review
+            v-for="(review, i) in paragraphOnlyReviews"
+            :key="review.id"
+            :index="i"
+            :user="user"
+            :review="review"
+            :release="id"
+            @liked="likeReview(review, i)"
+            @show="selectedReview = i"
+          />
         </div>
       </div>
+    </div>
+    <div v-else class="review-container">
+      <article-content>
+        <masthead>
+          {{ reviews[selectedReview].header }}
+        </masthead>
+        <div class="flex-container review-author-container">
+          <profile-picture :username="reviews[selectedReview].username" size="small" :url="reviews[selectedReview].avatar" />
+          <div class="review-author">
+            <subheading smaller no-margin>
+              Review by
+              <nuxt-link :to="'/user/' + reviews[selectedReview].username">
+                {{ reviews[selectedReview].username }}
+              </nuxt-link>
+            </subheading>
+            <subheading smallest no-margin>
+              18 December 2020
+            </subheading>
+          </div>
+        </div>
+        <div v-for="block in reviews[selectedReview].body" :key="block.id" class="review-content-block">
+          <paragraph v-if="block.type === 'paragraph'" :editable="editing" v-html="sanitise(block.content)" />
+          <div v-else-if="block.type === 'image'" class="review-image-container">
+            <img class="review-image" :src="block.url" :alt="block.caption">
+            <subheading :editable="editing" smaller>
+              {{ block.caption }}
+            </subheading>
+          </div>
+        </div>
+        <button @click="selectedReview = false; editing = false">
+          Go back
+        </button>
+      </article-content>
+      <bar v-if="editing">
+        You are currently in <strong>edit mode</strong>. Click on an element to edit its contents.
+      </bar>
     </div>
   </main>
 </template>
@@ -154,6 +207,7 @@
 <script>
 // @ is an alias to /src
 import { mapGetters } from 'vuex'
+import sanitizeHtml from 'sanitize-html'
 import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
 import hero from '~/components/Hero.vue'
@@ -165,7 +219,12 @@ import textArea from '~/components/TextArea.vue'
 import verticalTable from '~/components/VerticalTable.vue'
 import profilePicture from '~/components/ProfilePicture.vue'
 import pill from '~/components/Pill.vue'
+import modal from '~/components/Modal.vue'
+import dropdown from '~/components/Dropdown.vue'
+import review from '~/components/Review.vue'
 import paragraph from '~/components/Paragraph.vue'
+import articleContent from '~/components/ArticleContent.vue'
+import bar from '~/components/Bar.vue'
 
 export default {
   name: 'Release',
@@ -181,11 +240,16 @@ export default {
     verticalTable,
     profilePicture,
     pill,
-    paragraph
+    modal,
+    dropdown,
+    review,
+    paragraph,
+    articleContent,
+    bar
   },
   data () {
     return {
-      id: this.$route.params.id,
+      id: this.$route.params.release,
       averageScore: undefined,
       amountOfRatings: undefined,
       reviews: undefined,
@@ -204,9 +268,17 @@ export default {
         header: '',
         body: ''
       },
+      listItemToAdd: {
+        selectedList: '',
+        description: ''
+      },
       initialScore: undefined,
+      paragraphOnlyReviews: undefined,
       loading: false,
-      consideredUser: false
+      consideredUser: false,
+      showAddToListModal: false,
+      selectedReview: false,
+      editing: false
     }
   },
   computed: mapGetters({
@@ -297,6 +369,9 @@ export default {
               this.reviewContent = review.data()
             })
         })
+        .catch(() => {
+          // User does not have a review.
+        })
     },
     getRatingsAndReviews () {
       const releases = this.$fire.firestore.collection('releases')
@@ -322,6 +397,9 @@ export default {
         .get()
         .then((res) => {
           this.reviews = res.docs.map(doc => doc.data())
+          this.getReviewerAvatars()
+          this.getReviewerUsernames()
+          this.createParagraphOnlyReviews()
         })
     },
     postReview () {
@@ -357,8 +435,6 @@ export default {
           if (!release.exists) {
             this.addReleaseToDatabase()
           }
-          this.getReviewerAvatars()
-          this.getReviewerUsernames()
         })
     },
     addReleaseToDatabase (release) {
@@ -366,15 +442,19 @@ export default {
     },
     likeReview (review, i) {
       const releases = this.$fire.firestore.collection('releases')
-      if (review.likers.includes(this.user.id)) {
+      // check if user has already liked
+      if (this.reviews[i].likers.some(liker => liker.id === this.user.id)) {
         this.reviews[i].likes = review.likes - 1
-        const indexOfLiker = this.reviews[i].likers.indexOf(this.user.id)
+        const indexOfLiker = this.reviews[i].likers.findIndex(review => review.id === this.user.id)
         this.reviews[i].likers.splice(indexOfLiker, 1)
       } else if (this.user.id === review.author) {
         alert('You can\'t like your own review, sorry.')
       } else {
         this.reviews[i].likes = review.likes + 1
-        this.reviews[i].likers.push(this.user.id)
+        this.reviews[i].likers.push({
+          id: this.user.id,
+          username: this.user.username
+        })
       }
       const likes = this.reviews[i].likes
       const likers = this.reviews[i].likers
@@ -387,25 +467,63 @@ export default {
       this.checkIfExistingRating()
       this.checkForExistingReview()
     },
+    getAvatar (id) {
+      const imagePath = 'users/' + id + '/avatar.jpg'
+      return this.$fire.storage.ref().child(imagePath)
+        .getDownloadURL()
+        .then(url => url)
+    },
     getReviewerAvatars () {
-      this.reviews.forEach((review) => {
+      this.reviews.forEach(async (review) => {
         const i = this.reviews.indexOf(review)
-        const imagePath = 'users/' + review.author + '/avatar.jpg'
-        this.$fire.storage.ref().child(imagePath)
-          .getDownloadURL()
+        await this.getAvatar(review.author)
           .then((url) => {
-            this.reviews[i].avatar = url
+            this.$set(this.reviews[i], 'avatar', url)
           })
       })
     },
+    getUsername (id) {
+      return this.$fire.firestore.collection('users').doc(id)
+        .get()
+        .then((user) => {
+          const userData = user.data()
+          return userData.username
+        })
+    },
     getReviewerUsernames () {
-      this.reviews.forEach((review) => {
+      this.reviews.forEach(async (review) => {
         const i = this.reviews.indexOf(review)
-        this.$getUsername(review.author, this.$fire)
-          .then((username) => {
-            this.reviews[i].username = username
-          })
+        const username = await this.getUsername(review.author)
+        this.$set(this.reviews[i], 'username', username)
       })
+    },
+    sanitise (html) {
+      const sanitiser = {
+        'allowedTags': ['strong'],
+        'allowedAttributes': {}
+      }
+      const sanitisedHTML = sanitizeHtml(html, sanitiser)
+      return sanitisedHTML
+    },
+    createParagraphOnlyReviews () {
+      const paragraphOnlyReviews = []
+      this.reviews.forEach((review) => {
+        const body = review.body // array of 'blocks'
+        const bodyOnlyParagraphs = []
+        body.forEach((block) => {
+          if (block.type === 'paragraph') {
+            bodyOnlyParagraphs.push(block)
+          }
+        })
+        const reviewWithOnlyParagraphBlocks = Object.assign({}, review)
+        reviewWithOnlyParagraphBlocks.body = bodyOnlyParagraphs // The Line.
+        paragraphOnlyReviews.push(reviewWithOnlyParagraphBlocks)
+      })
+      this.paragraphOnlyReviews = paragraphOnlyReviews
+    },
+    openRichEditor () {
+      this.editing = true
+      this.selectedReview = 0
     }
   }
 }
@@ -452,6 +570,9 @@ export default {
 .user-review-container {
   margin-bottom: 32px;
 }
+.user-review-composition-container {
+  width: 100%;
+}
 .relevant-lists-and-charts {
   margin-left: 32px;
 }
@@ -467,7 +588,33 @@ export default {
   margin-left: 35px;
   max-width: 25vw;
 }
-.review {
-  max-width: 400px;
+.review-container {
+  display: flex;
+  justify-content: center;
+}
+.review-author-container {
+  align-items: center;
+  margin-top: 24px;
+}
+.review-author {
+  margin-left: 8px;
+}
+.review-image-container {
+  margin-top: 64px;
+  margin-bottom: 64px;
+  max-width: 512px;
+}
+.review-image {
+  margin-bottom: 32px;
+  max-width: 512px;
+  box-shadow: 0px 4px 32px $desaturated-dimmest-purple;
+  border-radius: 5px;
+}
+.review-caption {
+  max-width: 90%;
+}
+.review-content-block {
+  display: flex;
+  justify-content: center;
 }
 </style>

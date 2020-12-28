@@ -1,10 +1,17 @@
 <template>
-  <p :class="[{error, soft, smaller, noLeftMarginOnMobile, noTopMargin, centred}, colourMode]" class="paragraph">
-    <slot>Paragraph content</slot>
+  <p v-if="!hidden" ref="body" :class="[{error, soft, smaller, noLeftMarginOnMobile, noTopMargin, centred}, colourMode]" :contenteditable="editable" class="paragraph">
+    <slot v-if="!truncatedBody && !htmlContent">
+      Paragraph content
+    </slot>
+    <span v-else-if="truncatedBody">{{ truncatedBody }}</span>
+    <span v-else-if="!truncatedHTMLContent && htmlContent" v-html="htmlContent" />
+    <span v-else-if="truncatedHTMLContent" v-html="truncatedHTMLContent" />
   </p>
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   name: 'Paragraph',
   props: {
@@ -13,11 +20,62 @@ export default {
     noTopMargin: Boolean,
     smaller: Boolean,
     centred: Boolean,
-    soft: Boolean
+    soft: Boolean,
+    alwaysShow: Boolean,
+    truncate: {
+      type: Number,
+      default: 9999999999999
+    },
+    editable: Boolean,
+    htmlContent: {
+      type: String,
+      default: ''
+    }
+  },
+  data () {
+    return {
+      truncatedBody: '',
+      truncatedHTMLContent: '',
+      hidden: false
+    }
   },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
+    }
+  },
+  mounted () {
+    if (this.truncate) {
+      const lengthOfBody = this.truncate
+      const truncateProperties = {
+        length: lengthOfBody,
+        // truncates without cutting off words
+        'separator': /,? +/
+      }
+      if (!this.htmlContent) {
+        const body = this.$refs.body.textContent
+        if (lengthOfBody < body.length) {
+          this.truncatedBody = _.truncate(body, truncateProperties)
+          const difference = body.length - lengthOfBody
+          this.$emit('toTruncate', difference)
+        } else {
+          const difference = body.length - lengthOfBody
+          this.$emit('toTruncate', difference)
+        }
+      } else {
+        const body = this.htmlContent
+        if (lengthOfBody < body.length) {
+          this.truncatedHTMLContent = _.truncate(body, truncateProperties)
+          const difference = 0
+          this.$emit('toTruncate', difference)
+        } else {
+          const difference = body.length - lengthOfBody
+          if (difference < 0 && !this.alwaysShow) {
+            this.hidden = true
+          }
+          this.$emit('toTruncate', difference)
+        }
+      }
     }
   }
 }
@@ -28,7 +86,7 @@ export default {
 .paragraph {
   font-size: 1rem;
   font-weight: 400;
-  text-align: left;
+  text-align: justify;
   line-height: 2rem;
   max-width: 50ch;
   color: hsl(222, 5%, 20%);

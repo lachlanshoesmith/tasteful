@@ -44,8 +44,7 @@ module.exports = {
     {
       src: '~/plugins/vuex-persist',
       ssr: false
-    },
-    '~/plugins/user'
+    }
   ],
   /*
    ** Nuxt.js dev-modules

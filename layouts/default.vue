@@ -18,65 +18,61 @@
               <span v-else>Already got an account with us?</span>
             </a>
           </paragraph>
-        </template>
-        <template v-slot:right>
-          <div>
-            <!-- <input-label no-top-margin>
+          <!-- <input-label no-top-margin>
               <span v-if="showSignIn">Sign in</span>
               <span v-else>Sign up</span>
             </input-label> -->
-            <paragraph v-if="allowSignup && !showSignIn">
-              Your Invitation has been approved, so you're good to sign up.
-            </paragraph>
-            <form @submit.prevent="signIn">
-              <text-input name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @input="email = $event" @animation-over="emailFlashRed = false">
-                <template v-slot:icon>
-                  <email-icon title="Email" />
-                </template>
-              </text-input>
-              <text-input
-                v-if="!showSignIn"
-                name="username-input"
-                placeholder="Username"
-                :class="{'flashRed' : usernameFlashRed}"
-                @input="username = $event"
-                @animation-over="usernameFlashRed = false"
-              >
-                <template v-slot:icon>
-                  <face-icon title="Username" />
-                </template>
-              </text-input>
-              <text-input
-                name="password-input"
-                placeholder="Password"
-                :class="{'flashRed' : passwordFlashRed}"
-                password
-                @input="password = $event"
-                @animation-over="passwordFlashRed = false"
-              >
-                <template v-slot:icon>
-                  <key-icon title="Password" />
-                </template>
-              </text-input>
-              <div id="sign-in-button-container">
-                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed || usernameFlashRed" :success="user !== null && user !== false">
-                  <span v-if="user === null || user === false" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
-                  <span v-else v-text="showSignIn ? 'Signed in' : 'Signed up'" />
-                </submit-button>
-                <!-- <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a> -->
-                <a class="soft modal-link display-only-if-on-mobile" @click="showSignIn = !showSignIn">
-                  <span v-if="showSignIn">Don't have an account yet?</span>
-                  <span v-else>Already got an account with us?</span>
-                </a>
-              </div>
-            </form>
-            <paragraph v-if="error.display" error>
-              {{ error.message }}
-            </paragraph>
-            <!-- <paragraph v-if="!showSignIn" smaller>
+          <paragraph v-if="allowSignup && !showSignIn">
+            Your Invitation has been approved, so you're good to sign up.
+          </paragraph>
+          <form @submit.prevent="signIn">
+            <text-input name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @input="email = $event" @animation-over="emailFlashRed = false">
+              <template v-slot:icon>
+                <email-icon title="Email" />
+              </template>
+            </text-input>
+            <text-input
+              v-if="!showSignIn"
+              name="username-input"
+              placeholder="Username"
+              :class="{'flashRed' : usernameFlashRed}"
+              @input="username = $event"
+              @animation-over="usernameFlashRed = false"
+            >
+              <template v-slot:icon>
+                <face-icon title="Username" />
+              </template>
+            </text-input>
+            <text-input
+              name="password-input"
+              placeholder="Password"
+              :class="{'flashRed' : passwordFlashRed}"
+              password
+              @input="password = $event"
+              @animation-over="passwordFlashRed = false"
+            >
+              <template v-slot:icon>
+                <key-icon title="Password" />
+              </template>
+            </text-input>
+            <div id="sign-in-button-container">
+              <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed || usernameFlashRed" :success="user !== null && user !== false">
+                <span v-if="user === null || user === false" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
+                <span v-else v-text="showSignIn ? 'Signed in' : 'Signed up'" />
+              </submit-button>
+              <!-- <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a> -->
+              <a class="soft modal-link display-only-if-on-mobile" @click="showSignIn = !showSignIn">
+                <span v-if="showSignIn">Don't have an account yet?</span>
+                <span v-else>Already got an account with us?</span>
+              </a>
+            </div>
+          </form>
+          <paragraph v-if="error.display" error>
+            {{ error.message }}
+          </paragraph>
+          <!-- <paragraph v-if="!showSignIn" smaller>
               By signing up for tasteful you agree to our Terms of Service and Privacy Policy, as well as the license the Software follows.
             </paragraph> -->
-          </div>
         </template>
       </modal>
     </transition>

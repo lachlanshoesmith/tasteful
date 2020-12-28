@@ -31,6 +31,7 @@
     "node-sass": "^4.13.0",
     "node-vibrant": "^3.1.5",
     "nuxt": "^2.0.0",
+    "sanitize-html": "^2.3.0",
     "sass-loader": "^8.0.0",
     "sjcl": "^1.0.8",
     "vue-material-design-icons": "^4.4.0",

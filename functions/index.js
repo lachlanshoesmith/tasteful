@@ -136,7 +136,7 @@ exports.search = functions.https.onRequest((req, res) => {
         .get(
           'https://coverartarchive.org/release-group/' + releasegroup.id, headers
         )
-        .then(res => res.data.images[0].thumbnails.small)
+        .then(res => [res.data.images[0].thumbnails.small, res.data.images[0].thumbnails['1200']])
         .catch((err) => {
           if (err.message === 'Request failed with status code 404') {
             // no release artwork found
@@ -207,7 +207,8 @@ exports.search = functions.https.onRequest((req, res) => {
         searchResults[i] = releasegroup
         // get album art
         const releaseArtwork = await getReleaseArtwork(releasegroup, i)
-        searchResults[i].image = releaseArtwork
+        searchResults[i].image = releaseArtwork[0]
+        searchResults[i].imageHQ = releaseArtwork[1]
       }
       concludeSearch()
     }
@@ -275,7 +276,7 @@ exports.processArtistReleases = functions.https.onRequest((req, res) => {
         .get(
           'https://coverartarchive.org/release-group/' + releasegroup.id, headers
         )
-        .then(res => res.data.images[0].thumbnails.small)
+        .then(res => [res.data.images[0].thumbnails.small, res.data.images[0].thumbnails['1200']])
         .catch((err) => {
           // TODO: improve handling here
           console.log('No album cover found.\n' + err)
@@ -287,7 +288,8 @@ exports.processArtistReleases = functions.https.onRequest((req, res) => {
       searchResults[i] = releasegroup
       // get album art
       const releaseArtwork = await getReleaseArtwork(releasegroup, i)
-      searchResults[i].image = releaseArtwork
+      searchResults[i].image = releaseArtwork[0]
+      searchResults[i].imageHQ = releaseArtwork[1]
     }
     res.status(200).send(releases)
   })
@@ -308,7 +310,7 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
         .get(
           'https://coverartarchive.org/release-group/' + releasegroup.id, headers
         )
-        .then(releaseArt => releaseArt.data.images[0].thumbnails.small)
+        .then(releaseArt => [releaseArt.data.images[0].thumbnails.large, releaseArt.data.images[0].thumbnails['1200']])
         .catch((err) => {
           res.status(500).send(err)
         })
@@ -351,7 +353,8 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
         const release = queryResult.data['release-groups'][0]
         const releaseInfo = await getReleaseInfo()
         const artwork = await getReleaseArtwork(release)
-        release.image = artwork
+        release.image = artwork[0]
+        release.imageHQ = artwork[1]
         release.genres = releaseInfo.genres
         const firstReleaseDate = releaseInfo['first-release-date']
         const formattedReleaseDate = formatReleaseDate(firstReleaseDate)

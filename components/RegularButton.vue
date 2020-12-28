@@ -1,5 +1,5 @@
 <template>
-  <button class="regular-button" :class="[type, colourMode]" @click="handleClick">
+  <button class="regular-button" :class="[{wide, noRightMargin }, type, colourMode]" @click="handleClick">
     <slot />
   </button>
 </template>
@@ -15,7 +15,9 @@ export default {
     to: {
       type: String,
       default: ''
-    }
+    },
+    wide: Boolean,
+    noRightMargin: Boolean
   },
   computed: {
     colourMode () {
@@ -63,6 +65,16 @@ export default {
   &.primary {
     background: $dimmish-purple;
     color: $lightest-purple;
+  }
+  &.call-to-action {
+    background: $saturated-purple;
+    color: $lightest-purple;
+  }
+  &.wide {
+    width: 100%;
+  }
+  &.noRightMargin {
+    margin-right: 0;
   }
   &:hover {
     cursor: pointer;

@@ -1,6 +1,6 @@
 <template>
-  <div class="subheading">
-    <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content">
+  <div class="subheading" :class="{ noMargin }">
+    <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content" :contenteditable="editable">
       <slot>Subheading content</slot>
     </h1>
   </div>
@@ -11,7 +11,9 @@ export default {
   name: 'Subheading',
   props: {
     smaller: Boolean,
-    smallest: Boolean
+    smallest: Boolean,
+    noMargin: Boolean,
+    editable: Boolean
   },
   computed: {
     colourMode () {
@@ -24,8 +26,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .subheading {
-  margin-top: 8px;
+  margin: 0px;
   margin-bottom: 8px;
+  &.noMargin {
+    margin-bottom: 0px;
+  }
 }
 .subheading-content {
   color: $dimmer-purple;
