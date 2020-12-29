@@ -1,12 +1,12 @@
 <template>
-  <div class="text-input-container" :class="[{fullWidth}]">
+  <div class="text-input-container">
     <label class="text-input-label" :for="name">
       <slot />
     </label>
     <input
       v-model="value"
       :name="name"
-      :class="[{fullWidth}, colourMode]"
+      :class="[{fullWidth, alternate, noMargin}, colourMode]"
       v-bind="$attrs"
       class="text-input"
       :type="checkInputType()"
@@ -27,6 +27,8 @@ export default {
     password: Boolean,
     debounce: Boolean,
     disabled: Boolean,
+    alternate: Boolean,
+    noMargin: Boolean,
     focusManualBlurHandling: Boolean,
     defaultValue: {
       type: String,
@@ -100,6 +102,12 @@ export default {
   }
   &.fullWidth {
     width: calc(100% - 32px);
+  }
+  &.alternate {
+    background: $lightest-purple;
+  }
+  &.noMargin {
+    margin: 0;
   }
 }
 .text-input-label {

@@ -83,7 +83,9 @@ export default {
 }
 .favourited-icon, .unfavourited-icon {
   transition: all 0.2s linear;
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
 }
 .likes {
   margin: 0;

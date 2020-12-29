@@ -1,6 +1,6 @@
 <template>
   <div :class="[{ noShadow, fitWidth, noLeftMarginOnLargeScreens, smallBottomMargin, fullWidth }, colourMode]" class="masthead">
-    <h1 :class="[{ centred, fitWidth, smaller }, colourMode]" class="masthead-content">
+    <h1 :class="[{ centred, fitWidth, smaller }, colourMode]" class="masthead-content" :contenteditable="editable">
       <slot>Masthead content</slot>
     </h1>
   </div>

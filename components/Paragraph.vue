@@ -157,6 +157,12 @@ export default {
     min-width: 100%;
   }
 }
+.editing-tools {
+  display: none;
+  &:hover {
+    display: block;
+  }
+}
 @media (max-width: 1000px) {
   .paragraph {
     margin-left: auto;

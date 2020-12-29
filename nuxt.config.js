@@ -16,6 +16,7 @@ module.exports = {
       { name: 'twitter:text:title', content: 'tasteful' },
       { name: 'twitter:image', content: 'https://raw.githubusercontent.com/lachlantula/tasteful/master/assets/images/tasteful-icon.png' },
       { name: 'twitter:text:description', content: 'The greatest online music community.' },
+      { name: 'monetization', content: '$ilp.uphold.com/Jgjj7JNxj8fW' },
       {
         hid: 'description',
         name: 'description',

@@ -167,7 +167,7 @@
     </div>
     <div v-else class="review-container">
       <article-content>
-        <masthead>
+        <masthead :editable="editing">
           {{ reviews[selectedReview].header }}
         </masthead>
         <div class="flex-container review-author-container">
@@ -184,21 +184,88 @@
             </subheading>
           </div>
         </div>
-        <div v-for="block in reviews[selectedReview].body" :key="block.id" class="review-content-block">
-          <paragraph v-if="block.type === 'paragraph'" :editable="editing" v-html="sanitise(block.content)" />
+        <div v-for="(block, i) in reviews[selectedReview].body" :key="block.id" class="review-content-block">
+          <div v-if="editing" class="block-editing-toolbar">
+            <div class="block-number">
+              <p>{{ i + 1 }}</p>
+            </div>
+            <div class="block-information">
+              <dropdown
+                alternate
+                name="block-type"
+                description-value="This determines the block type."
+                :options="['Image', 'Paragraph', 'Subheading']"
+                :default-value="block.type.charAt(0).toUpperCase() + block.type.slice(1)"
+                @change="block = changeBlockType(block, $event.toLowerCase())"
+              />
+            </div>
+            <button class="delete-review-block-button" @click="reviews[selectedReview].body.splice(i, 1)">
+              <close-icon title="Delete block" class="delete-review-icon" />
+            </button>
+          </div>
+          <paragraph v-if="block.type === 'paragraph'" :editable="editing">
+            {{ block.content }}
+          </paragraph>
+          <subheading v-if="block.type === 'subheading'" :top-margin="editing" :editable="editing">
+            {{ block.content }}
+          </subheading>
           <div v-else-if="block.type === 'image'" class="review-image-container">
-            <img class="review-image" :src="block.url" :alt="block.caption">
+            <img
+              v-if="block.imageURL && !block.changeImage"
+              class="review-image"
+              :src="block.imageURL"
+              :alt="block.content"
+              @error="$set(block, 'changeImage', true)"
+              @click="clickedReviewImage(block.imageURL, selectedReview, i)"
+            >
+            <div v-else-if="block.changeImage && editing" class="review-image-selector">
+              <text-input
+                alternate
+                full-width
+                no-margin
+                placeholder="https://something.com/images/relevant-photo.jpg"
+                name="review-imageURL-input"
+                :default-value="block.imageURL"
+                @input="imageURLToAdd = $event"
+              >
+                Image URL
+              </text-input>
+              <paragraph centred soft>
+                Image uploading is not currently supported. Consider using a third party service, such as <a href="https://imgur.com/" target="_blank">Imgur</a>.
+                Ensure you use a direct link (<a href="https://i.imgur.com/wMeVWI7.png" target="_blank">here's an example</a>, if you're not quite following).
+              </paragraph>
+              <regular-button class="review-image-save-changes-button" type="primary" @pressed="saveReviewImageChanges(block.imageURL, selectedReview, i)">
+                Save changes
+              </regular-button>
+            </div>
             <subheading :editable="editing" smaller>
-              {{ block.caption }}
+              <span v-if="block.content">{{ block.content }}</span>
+              <span v-if="editing && !block.content">Click me to add a caption.</span>
             </subheading>
           </div>
         </div>
-        <button @click="selectedReview = false; editing = false">
-          Go back
-        </button>
+        <div v-if="editing" id="add-new-block-container" class="review-content-block">
+          <div class="flex-container">
+            <regular-button type="primary">
+              Publish
+            </regular-button>
+            <regular-button type="secondary" @pressed="addNewBlock(selectedReview)">
+              Add new block
+            </regular-button>
+            <regular-button no-right-margin type="secondary" @pressed="selectedReview = false; editing = false">
+              Close editor
+            </regular-button>
+          </div>
+          <paragraph soft centred>
+            By publishing this review you agree to tasteful's Content Guidelines. Breaking these rules may result in the removal of this review or the suspension of your account.
+          </paragraph>
+          <paragraph no-top-margin centred>
+            Your content is automatically saved as a draft if you're not finished!
+          </paragraph>
+        </div>
       </article-content>
       <bar v-if="editing">
-        You are currently in <strong>edit mode</strong>. Click on an element to edit its contents.
+        You are currently in <strong>edit mode</strong>. Click on a block to edit its contents.
       </bar>
     </div>
   </main>
@@ -208,6 +275,7 @@
 // @ is an alias to /src
 import { mapGetters } from 'vuex'
 import sanitizeHtml from 'sanitize-html'
+import closeIcon from 'vue-material-design-icons/Close.vue'
 import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
 import hero from '~/components/Hero.vue'
@@ -245,7 +313,8 @@ export default {
     review,
     paragraph,
     articleContent,
-    bar
+    bar,
+    closeIcon
   },
   data () {
     return {
@@ -278,7 +347,9 @@ export default {
       consideredUser: false,
       showAddToListModal: false,
       selectedReview: false,
-      editing: false
+      editing: false,
+      newBlockCount: 0,
+      imageURLToAdd: ''
     }
   },
   computed: mapGetters({
@@ -524,6 +595,54 @@ export default {
     openRichEditor () {
       this.editing = true
       this.selectedReview = 0
+    },
+    addNewBlock (selectedReview) {
+      const possibleBlockContent = [
+        'This is a fresh, new, and lovely block with which you can do what you please.',
+        'An empty canvas which permits all sorts of wonderful and delightful expression.',
+        'What quality will you describe in this area? That\'s up to you, I suppose.',
+        'Don\'t forget that you can change the type of block this is to something other than a paragraph by using the dropdown above this block.',
+        `So much room for expressing your love for ${this.release.title}, so little time...`,
+        'I\'ve run out of things to say. Enjoy the same text from the next block out!',
+        'A new block.'
+      ]
+      const blockContent = possibleBlockContent[this.newBlockCount]
+      if (this.newBlockCount !== (possibleBlockContent.length - 1)) {
+        this.newBlockCount = this.newBlockCount + 1
+      }
+      this.reviews[selectedReview].body.push({
+        content: blockContent,
+        type: 'paragraph'
+      })
+    },
+    clickedReviewImage (imageURL, selectedReview, i) {
+      if (!this.editing) {
+        window.open(imageURL, '_blank')
+      } else {
+        // Allow the user to change the image.
+        this.imageURLToAdd = imageURL
+        this.$set(this.reviews[selectedReview].body[i], 'changeImage', true)
+      }
+    },
+    saveReviewImageChanges (imageURL, selectedReview, i) {
+      if (this.imageURLToAdd === '') {
+        // remove block
+        this.reviews[selectedReview].body.splice(i, 1)
+      } else {
+        this.reviews[selectedReview].body[i].changeImage = false
+        this.$set(this.reviews[selectedReview].body[i], 'imageURL', this.imageURLToAdd)
+        this.imageURLToAdd = ''
+      }
+    },
+    changeBlockType (block, type) {
+      const updatedBlock = block
+      updatedBlock.type = type
+      if (type === 'image') {
+        const imageBlock = updatedBlock
+        imageBlock.changeImage = true
+        return imageBlock
+      }
+      return updatedBlock
     }
   }
 }
@@ -609,12 +728,64 @@ export default {
   max-width: 512px;
   box-shadow: 0px 4px 32px $desaturated-dimmest-purple;
   border-radius: 5px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+.review-image-selector {
+  background: $lighter-purple;
+  padding: 32px;
+  border-radius: 10px;
+  margin-bottom: 32px;
+}
+.review-image-save-changes-button {
+  margin-left: auto;
+  margin-right: auto;
 }
 .review-caption {
   max-width: 90%;
 }
 .review-content-block {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+#add-new-block-container {
+  margin-top: 64px;
+  margin-bottom: 96px;
+  background: $lighter-purple;
+  padding: 32px;
+  border-radius: 10px;
+}
+.block-editing-toolbar {
+  display: flex;
+  border-radius: 0px 16px 16px 0px;
+  background: $lighter-purple;
+  width: 100%;
+  margin-top: 32px;
+}
+.block-number {
+  background: $desaturated-dimmish-purple;
+  color: $lighter-purple;
+  padding: 16px;
+  border-radius: 16px 0px 0px 16px;
+}
+.block-information {
+  margin-left: 16px;
+}
+.delete-review-block-button {
+  appearance: none;
+  background: none;
+  border: none;
+  margin-left: auto;
+  margin-right: 16px;
+}
+.delete-review-icon {
+  color: $desaturated-dimmish-purple;
+  transition: all 0.2s linear;
+  &:hover {
+    color: $saturated-purple;
+    cursor: pointer;
+  }
 }
 </style>

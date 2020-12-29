@@ -6,7 +6,7 @@
     <select
       v-model="value"
       :name="name"
-      :class="[{placeholder}, colourMode]"
+      :class="[{placeholder, alternate}, colourMode]"
       v-bind="$attrs"
       class="dropdown"
       @change="reportValue"
@@ -42,7 +42,8 @@ export default {
       default: () => {
         return []
       }
-    }
+    },
+    alternate: Boolean
   },
   data () {
     return {
@@ -62,17 +63,17 @@ export default {
     }
   },
   mounted () {
-    if (this.descriptionValue) {
-      this.value = this.descriptionValue
-    } else if (this.defaultValue) {
+    if (this.defaultValue) {
       this.value = this.defaultValue
+    } else if (this.descriptionValue) {
+      this.value = this.descriptionValue
     } else {
       this.value = this.options[0]
     }
   },
   methods: {
     reportValue () {
-      this.$emit('change', this.currentValue)
+      this.$emit('change', this.value)
     }
   }
 }
@@ -91,6 +92,16 @@ export default {
   padding: 16px;
   &.placeholder {
     color: rgba($desaturated-dimmish-purple, 0.5); // opacity accounts for placeholder effect seen in some browsers
+  }
+  &.alternate {
+    background: $lightest-purple;
+    color: $desaturated-dimmest-purple;
+    &.placeholder {
+      color: rgba($desaturated-dimmest-purple, 0.5);
+    }
+  }
+  &:hover {
+    cursor: pointer;
   }
 }
 

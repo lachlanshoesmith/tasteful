@@ -1,5 +1,5 @@
 <template>
-  <div class="subheading" :class="{ noMargin }">
+  <div class="subheading" :class="{ noMargin, topMargin }">
     <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content" :contenteditable="editable">
       <slot>Subheading content</slot>
     </h1>
@@ -13,7 +13,8 @@ export default {
     smaller: Boolean,
     smallest: Boolean,
     noMargin: Boolean,
-    editable: Boolean
+    editable: Boolean,
+    topMargin: Boolean
   },
   computed: {
     colourMode () {
@@ -30,6 +31,9 @@ export default {
   margin-bottom: 8px;
   &.noMargin {
     margin-bottom: 0px;
+  }
+  &.topMargin {
+    margin-top: 16px;
   }
 }
 .subheading-content {
