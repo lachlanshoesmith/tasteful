@@ -15,7 +15,7 @@
 
     <!-- The new modal design is a slightly modified DividedContainer, essentially. -->
     <div :class="[{redBorder, shadow}, colourMode]" class="modal">
-      <div class="modal-content-left">
+      <div class="modal-content-left" :class="{largerLeftSide}">
         <div class="flex-container">
           <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
           <slot name="heading" />
@@ -44,7 +44,8 @@ export default {
     imageForRightSide: {
       type: String,
       default: ''
-    }
+    },
+    largerLeftSide: Boolean
   },
   computed: {
     colourMode () {
@@ -104,6 +105,10 @@ export default {
   padding-left: 48px;
   padding-top: 48px;
   padding-bottom: 48px;
+  &.largerLeftSide {
+    margin-right: 64px;
+    width: calc(50% - 48px);
+  }
 }
 
 .modal-content-right {

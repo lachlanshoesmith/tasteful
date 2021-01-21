@@ -2,13 +2,13 @@
   <div id="app" :class="[colourMode]">
     <transition name="fade">
       <modal v-if="showModal" scrollable @closeModal="showModal = false">
-        <template v-slot:heading>
+        <template #heading>
           <subheading no-defined-width smaller no-top-margin>
             <span v-if="showSignIn">Welcome back!</span>
             <span v-else>Welcome aboard!</span>
           </subheading>
         </template>
-        <template v-slot:left>
+        <template #left>
           <paragraph>
             <span v-if="showSignIn">It's always a pleasure to see you.</span>
             <span v-else>Well, this is awkward... I guess we've never met. Let's change that.</span>
@@ -27,7 +27,7 @@
           </paragraph>
           <form @submit.prevent="signIn">
             <text-input name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @input="email = $event" @animation-over="emailFlashRed = false">
-              <template v-slot:icon>
+              <template #icon>
                 <email-icon title="Email" />
               </template>
             </text-input>
@@ -39,7 +39,7 @@
               @input="username = $event"
               @animation-over="usernameFlashRed = false"
             >
-              <template v-slot:icon>
+              <template #icon>
                 <face-icon title="Username" />
               </template>
             </text-input>
@@ -51,7 +51,7 @@
               @input="password = $event"
               @animation-over="passwordFlashRed = false"
             >
-              <template v-slot:icon>
+              <template #icon>
                 <key-icon title="Password" />
               </template>
             </text-input>
@@ -76,10 +76,6 @@
         </template>
       </modal>
     </transition>
-    <!-- <div v-else>
-      <subheading>tasteful is currently under maintenance.</subheading>
-      <paragraph>Check back soon.</paragraph>
-    </div> -->
     <div v-if="user">
       <span>Logged in as: {{ user.username }}</span>
       <nuxt-link to="/user/settings">
@@ -91,9 +87,18 @@
         Login
       </button>
     </div>
-    <div>
-      <nuxt />
+    <div v-if="user">
+      <nuxt v-if="user.username === 'lachlantula' || user.username === 'lachlan'" />
     </div>
+    <div v-else>
+      that was fun. but it's time for me to go (unless you're logged in as lachlantula).
+    </div>
+    <bar :visible="barVisible">
+      <span v-if="barMessage">{{ barMessage }}</span>
+      <span v-else> <!-- little easter egg for the eagle eyed; shows when the editor is closed and after draft is saved -->
+        Weeeeeeeeeee! 🙌
+      </span>
+    </bar>
   </div>
 </template>
 
@@ -107,6 +112,7 @@ import Subheading from '@/components/Subheading.vue'
 import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
+import bar from '@/components/Bar.vue'
 
 export default {
   components: {
@@ -117,8 +123,10 @@ export default {
     Subheading,
     Paragraph,
     TextInput,
-    SubmitButton
+    SubmitButton,
+    bar
   },
+  layout: 'default',
   data () {
     return {
       showNavbar: true,
@@ -142,7 +150,9 @@ export default {
     user: 'login/user',
     colourMode: 'theme/colourMode',
     colourModeToggle: 'theme/colourModeToggle',
-    allowSignup: 'login/allowSignup'
+    allowSignup: 'login/allowSignup',
+    barVisible: 'interface/barVisible',
+    barMessage: 'interface/barMessage'
   }),
   watch: {
     $route (to, from) {

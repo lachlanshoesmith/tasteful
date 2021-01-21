@@ -2,7 +2,7 @@
   <main class="about">
     <transition name="fade">
       <modal v-if="showModal" @closeModal="showModal = false">
-        <template v-slot:left>
+        <template #left>
           <masthead centred>
             Donation destination
           </masthead>
@@ -12,7 +12,7 @@
             and as such can vouch for their quality.
           </paragraph>
         </template>
-        <template v-slot:right>
+        <template #right>
           <paragraph-container>
             <subheading>November</subheading>
             <paragraph>
@@ -103,7 +103,7 @@
       no-definitive-height
       dont-show-right-on-mobile
     >
-      <template v-slot:left>
+      <template #left>
         <subheading>
           The Care Package
         </subheading>
@@ -129,7 +129,7 @@
           💰 Starting from $5
         </subheading>
       </template>
-      <template v-slot:right>
+      <template #right>
         <div>
           <img id="screenshot" src="@/assets/images/screenshot.png" alt="Screenshot of tasteful code.">
           <paragraph class="faded">

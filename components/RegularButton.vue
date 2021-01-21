@@ -1,5 +1,5 @@
 <template>
-  <button class="regular-button" :class="[{wide, noRightMargin }, type, colourMode]" @click="handleClick">
+  <button class="regular-button" :title="disable ? disabledReason : false" :class="[{wide, noRightMargin, centred, 'disabled' : disable }, type, colourMode]" :disabled="disable" @click="handleClick">
     <slot />
   </button>
 </template>
@@ -17,7 +17,13 @@ export default {
       default: ''
     },
     wide: Boolean,
-    noRightMargin: Boolean
+    noRightMargin: Boolean,
+    centred: Boolean,
+    disable: Boolean,
+    disabledReason: {
+      type: String,
+      default: ''
+    }
   },
   computed: {
     colourMode () {
@@ -76,12 +82,26 @@ export default {
   &.noRightMargin {
     margin-right: 0;
   }
+  &.centred {
+    margin-left: auto;
+    margin-right: auto;
+  }
   &:hover {
     cursor: pointer;
     color: $lightest-purple;
     &.light {
       background: $saturated-purple;
       box-shadow: 0px 0px 10px hsl(252, 20%, 56%);
+    }
+  }
+  &.disabled {
+    background: none;
+    color: $desaturated-lightest-purple;
+    opacity: 0.8;
+    &:hover {
+      cursor: not-allowed;
+      background: none;
+      box-shadow: none;
     }
   }
   &:focus {

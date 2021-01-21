@@ -90,6 +90,7 @@ export default {
   border-radius: 10px;
   border: none;
   padding: 16px;
+  margin-bottom: 16px;
   &.placeholder {
     color: rgba($desaturated-dimmish-purple, 0.5); // opacity accounts for placeholder effect seen in some browsers
   }

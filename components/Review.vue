@@ -14,7 +14,7 @@
           {{ review.header }}
         </subheading>
         <div v-for="(block, i) in review.body" :key="block.id">
-          <paragraph v-if="block.type === 'paragraph'" :always-show="i === 0" :truncate="truncationLength" :html-content="sanitise(block.content)" @toTruncate="truncationLength = Number($event); truncated = true" />
+          <paragraph v-if="block.type === 'paragraph'" :always-show="i === 0" :truncate="truncationLength" @toTruncate="truncationLength = Number($event); truncated = true" />
         </div>
         <a v-if="truncated" :href="`#${review.author}`" @click="$emit('show')">
           Read more
@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import sanitizeHtml from 'sanitize-html'
 import profilePicture from '~/components/ProfilePicture.vue'
 import subheading from '~/components/Subheading.vue'
 import paragraph from '~/components/Paragraph.vue'
@@ -41,14 +40,16 @@ export default {
     likeButton
   },
   props: {
-    review: {
+    reviewProp: {
       type: Object,
       default: () => {
         return {
           author: 'loading',
           avatar: 'loading',
           body: 'loading',
-          header: 'loading'
+          header: 'loading',
+          likers: [],
+          likes: 0
         }
       }
     },
@@ -70,7 +71,15 @@ export default {
   data () {
     return {
       truncated: false,
-      truncationLength: 300
+      truncationLength: 300,
+      review: {
+        author: 'loading',
+        avatar: 'loading',
+        body: 'loading',
+        header: 'loading',
+        likers: [],
+        likes: 0
+      }
     }
   },
   watch: {
@@ -81,18 +90,11 @@ export default {
     }
   },
   async mounted () {
+    this.review = this.reviewProp
     this.review.username = await this.getUsername()
     this.review.avatar = await this.getAvatar()
   },
   methods: {
-    sanitise (html) {
-      const sanitiser = {
-        'allowedTags': ['strong'],
-        'allowedAttributes': {}
-      }
-      const sanitisedHTML = sanitizeHtml(html, sanitiser)
-      return sanitisedHTML
-    },
     getAvatar () {
       const imagePath = 'users/' + this.review.author + '/avatar.jpg'
       return this.$fire.storage.ref().child(imagePath)

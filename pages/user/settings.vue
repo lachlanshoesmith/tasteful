@@ -31,7 +31,7 @@
             :class="{ flashRed: usernameError }"
             @animation-over="usernameError = false"
           >
-            <template v-slot:icon>
+            <template #icon>
               <face-icon title="Username" />
             </template>
           </text-input>
@@ -64,7 +64,7 @@
         Settings
       </masthead>
       <!-- <divided-container id="public-profile">
-        <template v-slot:left>
+        <template #left>
           <subheading smaller no-top-margin>
             Public profile
           </subheading>
@@ -73,7 +73,7 @@
             public.
           </paragraph>
         </template>
-        <template v-slot:right>
+        <template #right>
           <input-label no-top-margin>
             Display name
           </input-label>
@@ -84,7 +84,7 @@
             full-width
             @input="update('display name', $event)"
           >
-            <template v-slot:icon>
+            <template #icon>
               <face-icon title="Display name" />
             </template>
           </text-input>
@@ -98,7 +98,7 @@
             full-width
             @input="update('username')"
           >
-            <template v-slot:icon>
+            <template #icon>
               <link-icon title="Username" />
             </template>
           </text-input>
@@ -114,7 +114,7 @@
               right-margin
               @change="update('pronouns', $event)"
             >
-              <template v-slot:icon>
+              <template #icon>
                 <gender-male-female-icon title="Pronouns" />
               </template>
             </dropdown>
@@ -130,7 +130,7 @@
         </template>
       </divided-container> -->
       <divided-container>
-        <template v-slot:left>
+        <template #left>
           <subheading smaller no-top-margin>
             Theming
           </subheading>
@@ -138,7 +138,7 @@
             Your changes will persist across sessions, but not different browsers and devices at this stage.
           </paragraph>
         </template>
-        <template v-slot:right>
+        <template #right>
           <input-label no-top-margin>
             Currently selected theme
           </input-label>
@@ -150,7 +150,7 @@
             full-width
             @change="update('theme', $event)"
           >
-            <template v-slot:icon>
+            <template #icon>
               <palette-icon title="Selected theme" />
             </template>
           </dropdown>
@@ -171,7 +171,7 @@
               right-margin
               @change="update('theme-toggle', [0, $event])"
             >
-              <template v-slot:icon>
+              <template #icon>
                 <invert-colours-icon title="Navbar theme toggle" />
               </template>
             </dropdown>
@@ -189,7 +189,7 @@
       </divided-container>
 
       <divided-container>
-        <template v-slot:left>
+        <template #left>
           <subheading smaller no-top-margin>
             Invites
           </subheading>
@@ -197,7 +197,7 @@
             Expanding tasteful's world domination, one code and seed at a time.
           </paragraph>
         </template>
-        <template v-slot:right>
+        <template #right>
           <div v-if="!inviteCode">
             <regular-button @pressed="generateInvitation">
               <span>Generate Invitation</span>
@@ -217,7 +217,7 @@
               full-width
               disabled
             >
-              <template v-slot:icon>
+              <template #icon>
                 <key-icon title="Invite code" />
               </template>
             </text-input>
@@ -230,7 +230,7 @@
               full-width
               disabled
             >
-              <template v-slot:icon>
+              <template #icon>
                 <fingerprint-icon title="Invite seed" />
               </template>
             </text-input>
@@ -239,7 +239,7 @@
         </template>
       </divided-container>
       <!-- <divided-container>
-        <template v-slot:left>
+        <template #left>
           <subheading smaller no-top-margin>
             Search
           </subheading>
@@ -247,7 +247,7 @@
             For settings related to the tasteful search engine, I suppose.
           </paragraph>
         </template>
-        <template v-slot:right>
+        <template #right>
           <input-label no-top-margin>
             Display album art where no artist image is available
           </input-label>
@@ -267,7 +267,7 @@
         </template>
       </divided-container> -->
       <divided-container red-border>
-        <template v-slot:left>
+        <template #left>
           <subheading smaller no-top-margin>
             Danger zone
           </subheading>
@@ -276,7 +276,7 @@
             irreversable troubles!
           </paragraph>
         </template>
-        <template v-slot:right>
+        <template #right>
           <!-- <input-label no-top-margin>
             Experimental features
           </input-label>

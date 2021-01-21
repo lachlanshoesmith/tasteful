@@ -1,6 +1,6 @@
 <template>
   <div class="subheading" :class="{ noMargin, topMargin }">
-    <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content" :contenteditable="editable">
+    <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content" :contenteditable="editable" @input="emitValue" @keydown.enter.prevent>
       <slot>Subheading content</slot>
     </h1>
   </div>
@@ -19,6 +19,11 @@ export default {
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
+    }
+  },
+  methods: {
+    emitValue (element) {
+      this.$emit('change', element.target.textContent)
     }
   }
 }

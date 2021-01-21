@@ -2,12 +2,12 @@
   <main class="release-review">
     <transition name="fade">
       <modal v-if="showAddToListModal" scrollable :image-for-right-side="release.imageHQ" @closeModal="showAddToListModal = false">
-        <template v-slot:heading>
+        <template #heading>
           <masthead smaller>
             Add release to list
           </masthead>
         </template>
-        <template v-slot:left>
+        <template #left>
           <dropdown
             name="selected-list"
             description-value="2020 favourites, for example."
@@ -83,7 +83,9 @@
           </div>
         </div>
         <div v-for="block in review.body" :key="block.id" class="review-content-block">
-          <paragraph v-if="block.type === 'paragraph'" v-html="sanitise(block.content)" />
+          <paragraph v-if="block.type === 'paragraph'">
+            {{ block.content }}
+          </paragraph>
           <div v-else-if="block.type === 'image'" class="review-image-container">
             <img class="review-image" :src="block.url" :alt="block.caption">
             <subheading smaller>
@@ -139,7 +141,7 @@ export default {
       release: {
         'artist-credit': [
           {
-            'artist': {
+            artist: {
               name: 'Loading...'
             }
           }
@@ -212,8 +214,8 @@ export default {
     },
     sanitise (html) {
       const sanitiser = {
-        'allowedTags': ['strong'],
-        'allowedAttributes': {}
+        allowedTags: ['strong'],
+        allowedAttributes: {}
       }
       const sanitisedHTML = sanitizeHtml(html, sanitiser)
       return sanitisedHTML

@@ -1,11 +1,17 @@
 <template>
-  <p v-if="!hidden" ref="body" :class="[{error, soft, smaller, noLeftMarginOnMobile, noTopMargin, centred}, colourMode]" :contenteditable="editable" class="paragraph">
+  <p
+    v-if="!hidden"
+    ref="body"
+    :class="[{error, soft, smaller, noLeftMarginOnMobile, noTopMargin, noBottomMargin, centred}, colourMode]"
+    :contenteditable="editable"
+    class="paragraph"
+    @input="emitValue"
+    @keydown.enter.prevent
+  >
     <slot v-if="!truncatedBody && !htmlContent">
       Paragraph content
     </slot>
     <span v-else-if="truncatedBody">{{ truncatedBody }}</span>
-    <span v-else-if="!truncatedHTMLContent && htmlContent" v-html="htmlContent" />
-    <span v-else-if="truncatedHTMLContent" v-html="truncatedHTMLContent" />
   </p>
 </template>
 
@@ -18,6 +24,7 @@ export default {
     error: Boolean,
     noLeftMarginOnMobile: Boolean,
     noTopMargin: Boolean,
+    noBottomMargin: Boolean,
     smaller: Boolean,
     centred: Boolean,
     soft: Boolean,
@@ -35,7 +42,6 @@ export default {
   data () {
     return {
       truncatedBody: '',
-      truncatedHTMLContent: '',
       hidden: false
     }
   },
@@ -50,32 +56,22 @@ export default {
       const truncateProperties = {
         length: lengthOfBody,
         // truncates without cutting off words
-        'separator': /,? +/
+        separator: /,? +/
       }
-      if (!this.htmlContent) {
-        const body = this.$refs.body.textContent
-        if (lengthOfBody < body.length) {
-          this.truncatedBody = _.truncate(body, truncateProperties)
-          const difference = body.length - lengthOfBody
-          this.$emit('toTruncate', difference)
-        } else {
-          const difference = body.length - lengthOfBody
-          this.$emit('toTruncate', difference)
-        }
+      const body = this.$refs.body.textContent
+      if (lengthOfBody < body.length) {
+        this.truncatedBody = _.truncate(body, truncateProperties)
+        const difference = body.length - lengthOfBody
+        this.$emit('toTruncate', difference)
       } else {
-        const body = this.htmlContent
-        if (lengthOfBody < body.length) {
-          this.truncatedHTMLContent = _.truncate(body, truncateProperties)
-          const difference = 0
-          this.$emit('toTruncate', difference)
-        } else {
-          const difference = body.length - lengthOfBody
-          if (difference < 0 && !this.alwaysShow) {
-            this.hidden = true
-          }
-          this.$emit('toTruncate', difference)
-        }
+        const difference = body.length - lengthOfBody
+        this.$emit('toTruncate', difference)
       }
+    }
+  },
+  methods: {
+    emitValue (element) {
+      this.$emit('change', element.target.textContent)
     }
   }
 }
@@ -150,6 +146,9 @@ export default {
   }
   &.noTopMargin {
     margin-top: 0;
+  }
+  &.noBottomMargin {
+    margin-bottom: 0;
   }
   &.centred {
     text-align: center;

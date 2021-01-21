@@ -1,7 +1,7 @@
 <template>
-  <div class="hero-container">
-    <div class="hero-background" :style="{ backgroundImage: `url(${background})` }" />
-    <div class="hero">
+  <div class="hero-container" :class="{fullscreen}">
+    <div class="hero-background" :class="{fullscreen}" :style="{ backgroundImage: `url(${background})` }" />
+    <div class="hero" :class="{narrow, fullscreen}">
       <slot />
     </div>
   </div>
@@ -14,7 +14,9 @@ export default {
     background: {
       type: String,
       default: ''
-    }
+    },
+    narrow: Boolean,
+    fullscreen: Boolean
   },
   computed: {
     colourMode () {
@@ -38,6 +40,11 @@ export default {
   z-index: 2;
   padding-left: 25vw;
   padding-right: 25vw;
+  &.narrow {
+    width: 40vw;
+    padding-left: 30vw;
+    padding-right: 30vw;
+  }
 }
 .hero-background {
   background-size: cover;
@@ -51,5 +58,8 @@ export default {
 }
 .hero-container, .hero, .hero-background {
   height: 400px;
+}
+.fullscreen {
+  height: 100vh;
 }
 </style>

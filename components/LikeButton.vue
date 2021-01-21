@@ -9,12 +9,12 @@
     </p>
     <transition name="fade">
       <modal v-if="showModal" @closeModal="showModal = false">
-        <template v-slot:heading>
+        <template #heading>
           <masthead smaller>
             Review likers
           </masthead>
         </template>
-        <template v-slot:left>
+        <template #left>
           <ul>
             <li v-for="liker in likers" :key="liker.id">
               {{ liker.username }}

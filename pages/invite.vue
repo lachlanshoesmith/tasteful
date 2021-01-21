@@ -8,13 +8,13 @@
             Invites
           </masthead>
           <divided-container>
-            <template v-slot:left>
+            <template #left>
               <subheading smaller no-top-margin>
                 Invites
               </subheading>
               <paragraph>@lachlantula doesn't have any. Don't ask him.</paragraph>
             </template>
-            <template v-slot:right>
+            <template #right>
               <form @submit.prevent="testInvitation">
                 <text-input
                   v-model="inviteCode"
@@ -24,12 +24,12 @@
                   placeholder="Invite code"
                   @animation-over="flashRed = false"
                 >
-                  <template v-slot:icon>
+                  <template #icon>
                     <key-icon decorative title="Invite code" />
                   </template>
                 </text-input>
                 <text-input v-model="inviteSeed" :class="{'flashRed' : flashRed}" full-width name="invite-seed-input" placeholder="Invite seed">
-                  <template v-slot:icon>
+                  <template #icon>
                     <fingerprint-icon decorative title="Invite seed" />
                   </template>
                 </text-input>

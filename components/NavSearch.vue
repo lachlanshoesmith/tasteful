@@ -10,7 +10,7 @@
       @input="searchQuery = $event"
       @focus="updateDisplay"
     >
-      <template v-slot:icon>
+      <template #icon>
         <magnify-icon v-if="!loadingSearchResults" title="Search" />
         <spinner v-else />
       </template>
@@ -18,7 +18,7 @@
     <div class="search-content-container" :class="[{loadingSearchResults, 'results-layout': resultsLoaded, searching, visible}, colourMode]">
       <div class="search-settings" :class="{ 'results-position': resultsLoaded }">
         <divided-container class="search-settings-divided-container" :class="{resultsLoaded}" shadow :hide-left-column="resultsLoaded" conservative-mobile-view>
-          <template v-slot:left>
+          <template #left>
             <subheading smaller no-top-margin>
               Search configuration
             </subheading>
@@ -26,7 +26,7 @@
               Adjust these search parameters to hone in on what you want to find<span v-if="!includeInSearch['artists'] && !includeInSearch['releases']"> (or not, I guess)</span>.
             </paragraph>
           </template>
-          <template v-slot:right>
+          <template #right>
             <input-label no-top-margin>
               Include in search
             </input-label>
@@ -49,7 +49,7 @@
                 :options="['All release types', 'Singles', 'LPs', 'EPs']"
                 @change="findReleaseType($event); search ('from-input')"
               >
-                <template v-slot:icon>
+                <template #icon>
                   <disc-icon title="Release types" />
                 </template>
               </dropdown>
@@ -65,7 +65,7 @@
                 :options="listOfCountries"
                 @change="selectedRegion = $event; search ('from-input')"
               >
-                <template v-slot:icon>
+                <template #icon>
                   <map-icon title="Country" />
                 </template>
               </dropdown-input>
@@ -80,7 +80,7 @@
               :options="[1, 2, 3, 4, 5]"
               @change="amountOfResults = $event; search ('from-input')"
             >
-              <template v-slot:icon>
+              <template #icon>
                 <view-list-icon title="Amount of results" />
               </template>
             </dropdown-input>
@@ -90,7 +90,7 @@
           </template>
         </divided-container>
         <divided-container class="search-settings-mobile-results-prompt" :class="{resultsLoaded}" shadow :hide-left-column="resultsLoaded" :conservative-mobile-view="resultsLoaded">
-          <template v-slot:right>
+          <template #right>
             <regular-button centre-on-small-screens include-arrow-icon @pressed="resultsLoaded = false">
               Return to search parameters
             </regular-button>
@@ -211,7 +211,7 @@ export default {
       const circlesToRender = []
       for (let i = 0; i < amountToRender; i++) {
         const circle = {
-          'startingPoint': [_.random(25, 70), _.random(0, 500)] // x and y , respectively
+          startingPoint: [_.random(25, 70), _.random(0, 500)] // x and y , respectively
         }
         circlesToRender.push(circle)
       }

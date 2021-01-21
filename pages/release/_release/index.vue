@@ -1,26 +1,107 @@
 <template>
   <main class="release">
     <transition name="fade">
-      <modal v-if="showAddToListModal" scrollable :image-for-right-side="release.imageHQ" @closeModal="showAddToListModal = false">
-        <template v-slot:heading>
+      <modal v-if="showAddToListModal" larger-left-side scrollable :image-for-right-side="release.imageHQ" @closeModal="showAddToListModal = false; showCreateListModal = false; showAdjustPositionInListModal = false">
+        <template #heading>
           <masthead smaller>
-            Add release to list
+            <span v-if="showCreateListModal">Create new list</span>
+            <span v-else-if="showAdjustPositionInListModal">Adjust position in list</span>
+            <span v-else>
+              Add
+              <span v-if="release.title.length < 100">
+                {{ release.tile }}
+              </span>
+              <span v-else>
+                release
+              </span>
+              to list</span>
           </masthead>
         </template>
-        <template v-slot:left>
-          <dropdown
-            name="selected-list"
-            description-value="2020 favourites, for example."
-            :options="['Example list 1', 'Example list 2']"
-          >
-            Selected list
-          </dropdown>
-          <text-area name="list-item-description" full-width placeholder="Descriptions are optional, but should be related to the album or artist if included." @input="listItemToAdd.description=$event">
-            Description
-          </text-area>
-          <regular-button wide type="call-to-action">
-            Add to list
-          </regular-button>
+        <template #left>
+          <div v-if="showCreateListModal">
+            <text-input
+              full-width
+              maxlength="96"
+              placeholder="The inspiration for the list, perhaps?"
+              name="new-list-name"
+              @input="newList.name=$event"
+            >
+              List name
+            </text-input>
+            <text-area name="new-list-description" full-width placeholder="Descriptions are optional, but they can help give your list some identity and purpose." @input="newList.description=$event">
+              Description
+            </text-area>
+            <div class="flex-container">
+              <text-input
+                full-width
+                placeholder="https://via.placeholder.com/64C/"
+                name="new-list-imageURL-input"
+                @input="newList.imageURL = $event"
+              >
+                Image URL
+              </text-input>
+              <div class="new-list-image-preview" :style="{ backgroundImage: `url(${newList.imageURL})` }" />
+            </div>
+            <paragraph soft>
+              Image uploading is not currently supported. Consider using a third party service, such as <a href="https://imgur.com/" target="_blank">Imgur</a>.
+              Ensure you use a direct link (<a href="https://i.imgur.com/wMeVWI7.png" target="_blank">here's an example</a>, if you're not quite following).
+            </paragraph>
+            <div class="flex-container">
+              <regular-button wide type="call-to-action" @pressed="createNewList()">
+                Create new list
+              </regular-button>
+              <regular-button no-right-margin type="primary" @pressed="showCreateListModal = false">
+                Go back
+              </regular-button>
+            </div>
+          </div>
+          <div v-else-if="showAdjustPositionInListModal">
+            Hello
+            <div class="flex-container">
+              <regular-button wide type="call-to-action">
+                Save position in list
+              </regular-button>
+              <regular-button no-right-margin type="primary" @pressed="showAdjustPositionInListModal = false">
+                Go back
+              </regular-button>
+            </div>
+          </div>
+          <div v-else>
+            <dropdown
+              name="selected-list"
+              description-value="2020 favourites, for example."
+              :options="['Example list 1', 'Example list 2']"
+              @change="listItemToAdd.selectedList = $event"
+            >
+              Selected list
+            </dropdown>
+            <text-area name="list-item-description" full-width placeholder="Descriptions are optional, but should be related to the album or artist if included." @input="listItemToAdd.description=$event">
+              Description
+            </text-area>
+            <div class="flex-container secondary-list-buttons">
+              <regular-button wide type="secondary" @pressed="showCreateListModal = true">
+                Create new list
+              </regular-button>
+              <regular-button
+                wide
+                no-right-margin
+                type="secondary"
+                :disable="!listItemToAdd.selectedList"
+                disabled-reason="Please select a list first."
+                @pressed="showAdjustPositionInListModal = true"
+              >
+                Adjust position in list
+              </regular-button>
+            </div>
+            <regular-button wide type="call-to-action">
+              <span v-if="release.title.length <= 128">
+                Add {{ release.title }} to list
+              </span>
+              <span v-else>
+                Add release to list
+              </span>
+            </regular-button>
+          </div>
         </template>
       </modal>
     </transition>
@@ -62,10 +143,10 @@
         :class="[colourMode]"
         :src="release.image"
         :alt="release.title"
-        @load="loading = false"
+        @load="loading = false; createParagraphOnlyReviews()"
       >
     </hero>
-    <div v-if="selectedReview === false" class="flex-container content">
+    <div v-if="!editing && !selectedReview" class="flex-container content">
       <div class="left-column">
         <div class="flex-container">
           <regular-button type="secondary">
@@ -78,7 +159,7 @@
             Edit this release
           </regular-button>
         </div>
-        <div class="flex-container user-review-container">
+        <div class="flex-container user-review-container" emphasised-block>
           <div class="user-score-container">
             <div v-if="user">
               <profile-picture :username="user.username" size="medium" :url="user.avatar" />
@@ -93,17 +174,30 @@
               maxlength="125"
               placeholder="Something provocative and enticing!"
               name="review-header"
-              :default-value="reviewContent.header"
-              @input="reviewContent.header=$event"
+              :default-value="reviewContent.headerDraft"
+              @input="reviewContent.headerDraft=$event"
             >
               Header
             </text-input>
-            <text-area name="review-body" full-width placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin felis nibh, condimentum sit amet tempor quis, ultricies eu massa. Pellentesque aliquam mi at odio commodo, at pharetra arcu consectetur." :default-value="reviewContent.body" @input="reviewContent.body=$event">
+            <text-area
+              v-if="paragraphOnlyUserReview[1] === 'passed'"
+              name="review-body"
+              full-width
+              placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin felis nibh, condimentum sit amet tempor quis, ultricies eu massa. Pellentesque aliquam mi at odio commodo, at pharetra arcu consectetur."
+              :default-value="paragraphOnlyUserReview[0]"
+              @input="reviewContent.body[editableBlockIndex].contentDraft = $event"
+            >
               Body
             </text-area>
+            <paragraph v-else-if="paragraphOnlyUserReview[1] === 'non paragraph blocks'" no-top-margin soft>
+              Your review body has blocks other than paragraphs. Please use the <a @click="openRichEditor">rich editor</a> to edit the review.
+            </paragraph>
+            <paragraph v-else-if="paragraphOnlyUserReview[1] === 'multiple blocks'" no-top-margin soft>
+              Your review body has multiple blocks. Please use the <a @click="openRichEditor">rich editor</a> to edit the review.
+            </paragraph>
             <div class="flex-container">
-              <regular-button type="primary" @pressed="postReview()">
-                Post review
+              <regular-button type="primary" @pressed="publishReview">
+                Publish review
               </regular-button>
               <regular-button type="tertiary" @pressed="openRichEditor">
                 Open rich editor
@@ -112,10 +206,10 @@
           </div>
         </div>
         <vertical-table class="relevant-lists-and-charts">
-          <template v-slot:header>
+          <template #header>
             Relevant lists and charts
           </template>
-          <template v-slot:content>
+          <template #content>
             <div class="row">
               <div class="flex-container">
                 <profile-picture size="small" url="https://pbs.twimg.com/profile_images/1320206650469502976/Ic6iMceQ_400x400.jpg" />
@@ -157,7 +251,7 @@
             :key="review.id"
             :index="i"
             :user="user"
-            :review="review"
+            :review-prop="review"
             :release="id"
             @liked="likeReview(review, i)"
             @show="selectedReview = i"
@@ -167,16 +261,21 @@
     </div>
     <div v-else class="review-container">
       <article-content>
-        <masthead :editable="editing">
-          {{ reviews[selectedReview].header }}
+        <masthead :editable="editing" @change="reviewContent.headerDraft = $event">
+          <span v-if="editing">
+            {{ reviewContent.headerDraft }}
+          </span>
+          <span v-else>
+            {{ reviewContent.header }}
+          </span>
         </masthead>
         <div class="flex-container review-author-container">
-          <profile-picture :username="reviews[selectedReview].username" size="small" :url="reviews[selectedReview].avatar" />
+          <profile-picture :username="reviewContent.username" size="small" :url="reviewContent.avatar" />
           <div class="review-author">
             <subheading smaller no-margin>
               Review by
-              <nuxt-link :to="'/user/' + reviews[selectedReview].username">
-                {{ reviews[selectedReview].username }}
+              <nuxt-link :to="'/user/' + reviewContent.username">
+                {{ reviewContent.username }}
               </nuxt-link>
             </subheading>
             <subheading smallest no-margin>
@@ -184,49 +283,66 @@
             </subheading>
           </div>
         </div>
-        <div v-for="(block, i) in reviews[selectedReview].body" :key="block.id" class="review-content-block">
+        <div v-for="(block, i) in reviewContent.body" :key="block.id" class="review-content-block">
           <div v-if="editing" class="block-editing-toolbar">
             <div class="block-number">
               <p>{{ i + 1 }}</p>
             </div>
-            <div class="block-information">
-              <dropdown
-                alternate
-                name="block-type"
-                description-value="This determines the block type."
-                :options="['Image', 'Paragraph', 'Subheading']"
-                :default-value="block.type.charAt(0).toUpperCase() + block.type.slice(1)"
-                @change="block = changeBlockType(block, $event.toLowerCase())"
-              />
+            <div v-if="block.typeDraft !== 'deleted'" class="block-editing-toolbar-content flex-container">
+              <div class="block-information">
+                <dropdown
+                  alternate
+                  name="block-type"
+                  description-value="This determines the block type."
+                  :options="['Image', 'Paragraph', 'Subheading']"
+                  :default-value="block.typeDraft.charAt(0).toUpperCase() + block.typeDraft.slice(1)"
+                  @change="block = changeBlockType(block, $event.toLowerCase())"
+                />
+              </div>
+              <button class="delete-review-block-button" @click="deleteBlock(i)">
+                <close-icon title="Delete block" class="delete-review-icon" />
+              </button>
             </div>
-            <button class="delete-review-block-button" @click="reviews[selectedReview].body.splice(i, 1)">
-              <close-icon title="Delete block" class="delete-review-icon" />
-            </button>
+            <div v-else class="block-editing-toolbar-deleted">
+              <paragraph>
+                Deleted block
+              </paragraph>
+            </div>
           </div>
-          <paragraph v-if="block.type === 'paragraph'" :editable="editing">
-            {{ block.content }}
+          <paragraph v-if="block.typeDraft === 'paragraph'" :editable="editing" @change="block.contentDraft = $event">
+            <span v-if="editing">
+              {{ block.contentPreviousDraft }}
+            </span>
+            <span v-else>
+              {{ block.content }}
+            </span>
           </paragraph>
-          <subheading v-if="block.type === 'subheading'" :top-margin="editing" :editable="editing">
-            {{ block.content }}
+          <subheading v-if="block.typeDraft === 'subheading'" :top-margin="editing" :editable="editing" @change="block.contentDraft = $event">
+            <span v-if="editing">
+              {{ block.contentPreviousDraft }}
+            </span>
+            <span v-else>
+              {{ block.content }}
+            </span>
           </subheading>
-          <div v-else-if="block.type === 'image'" class="review-image-container">
+          <div v-else-if="block.typeDraft === 'image'" class="review-image-container">
             <img
-              v-if="block.imageURL && !block.changeImage"
+              v-if="(block.imageURL || block.imageURLDraft) && !block.changeImage"
               class="review-image"
-              :src="block.imageURL"
+              :src="getReviewImage(block)"
               :alt="block.content"
               @error="$set(block, 'changeImage', true)"
-              @click="clickedReviewImage(block.imageURL, selectedReview, i)"
+              @click="clickedReviewImage(block.imageURLDraft, selectedReview, i)"
             >
-            <div v-else-if="block.changeImage && editing" class="review-image-selector">
+            <div v-else-if="block.changeImage && editing" class="emphasised-block">
               <text-input
                 alternate
                 full-width
                 no-margin
                 placeholder="https://something.com/images/relevant-photo.jpg"
                 name="review-imageURL-input"
-                :default-value="block.imageURL"
-                @input="imageURLToAdd = $event"
+                :default-value="block.imageURLDraft"
+                @input="block.imageURLToAdd = $event"
               >
                 Image URL
               </text-input>
@@ -234,25 +350,35 @@
                 Image uploading is not currently supported. Consider using a third party service, such as <a href="https://imgur.com/" target="_blank">Imgur</a>.
                 Ensure you use a direct link (<a href="https://i.imgur.com/wMeVWI7.png" target="_blank">here's an example</a>, if you're not quite following).
               </paragraph>
-              <regular-button class="review-image-save-changes-button" type="primary" @pressed="saveReviewImageChanges(block.imageURL, selectedReview, i)">
+              <regular-button centred type="primary" @pressed="saveReviewImageChanges(block.imageURL, selectedReview, i)">
                 Save changes
               </regular-button>
             </div>
-            <subheading :editable="editing" smaller>
+            <subheading :editable="editing" smaller @change="block.contentDraft = $event">
               <span v-if="block.content">{{ block.content }}</span>
               <span v-if="editing && !block.content">Click me to add a caption.</span>
             </subheading>
           </div>
+          <div v-else-if="block.typeDraft === 'deleted'" class="review-image-container">
+            <div class="emphasised-block">
+              <paragraph centred soft>
+                This block has been deleted. It will be permanently removed when this review is published.
+              </paragraph>
+              <regular-button centred type="primary" @pressed="restoreBlock(i)">
+                Restore block
+              </regular-button>
+            </div>
+          </div>
         </div>
         <div v-if="editing" id="add-new-block-container" class="review-content-block">
           <div class="flex-container">
-            <regular-button type="primary">
-              Publish
+            <regular-button type="primary" @pressed="publishReview">
+              Publish review
             </regular-button>
-            <regular-button type="secondary" @pressed="addNewBlock(selectedReview)">
+            <regular-button type="secondary" @pressed="addNewBlock()">
               Add new block
             </regular-button>
-            <regular-button no-right-margin type="secondary" @pressed="selectedReview = false; editing = false">
+            <regular-button no-right-margin type="secondary" @pressed="autosave(); editing = false; getParagraphOnlyUserReview()">
               Close editor
             </regular-button>
           </div>
@@ -260,13 +386,10 @@
             By publishing this review you agree to tasteful's Content Guidelines. Breaking these rules may result in the removal of this review or the suspension of your account.
           </paragraph>
           <paragraph no-top-margin centred>
-            Your content is automatically saved as a draft if you're not finished!
+            Your content is automatically saved as a draft twice each minute and when you close the editor.
           </paragraph>
         </div>
       </article-content>
-      <bar v-if="editing">
-        You are currently in <strong>edit mode</strong>. Click on a block to edit its contents.
-      </bar>
     </div>
   </main>
 </template>
@@ -276,6 +399,7 @@
 import { mapGetters } from 'vuex'
 import sanitizeHtml from 'sanitize-html'
 import closeIcon from 'vue-material-design-icons/Close.vue'
+import _ from 'lodash'
 import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
 import hero from '~/components/Hero.vue'
@@ -292,7 +416,6 @@ import dropdown from '~/components/Dropdown.vue'
 import review from '~/components/Review.vue'
 import paragraph from '~/components/Paragraph.vue'
 import articleContent from '~/components/ArticleContent.vue'
-import bar from '~/components/Bar.vue'
 
 export default {
   name: 'Release',
@@ -313,7 +436,6 @@ export default {
     review,
     paragraph,
     articleContent,
-    bar,
     closeIcon
   },
   data () {
@@ -326,7 +448,7 @@ export default {
       release: {
         'artist-credit': [
           {
-            'artist': {
+            artist: {
               name: 'Loading...'
             }
           }
@@ -335,35 +457,39 @@ export default {
       },
       reviewContent: {
         header: '',
-        body: ''
+        body: []
       },
+      paragraphOnlyUserReview: ['', 'passed'],
       listItemToAdd: {
         selectedList: '',
         description: ''
       },
+      previousAutosave: [],
       initialScore: undefined,
       paragraphOnlyReviews: undefined,
       loading: false,
       consideredUser: false,
       showAddToListModal: false,
+      showCreateListModal: false,
+      showAdjustPositionInListModal: false,
+      newList: {
+        name: '',
+        description: '',
+        imageURL: 'https://coverartarchive.org/release/315bbc48-dea9-463c-bfa9-a6ccab78b990/25806517352-1200.jpg'
+      },
       selectedReview: false,
       editing: false,
       newBlockCount: 0,
-      imageURLToAdd: ''
+      editableBlockIndex: -1
     }
   },
   computed: mapGetters({
     colourMode: 'theme/colourMode',
     user: 'login/user'
   }),
-  watch: {
-    user (user) {
-      this.checkIfExistingRating()
-      this.checkIfExistingReview()
-    }
-  },
   mounted () {
     this.loading = true
+    this.onUserLoad()
     if (this.release.title === undefined) {
       // if the page is not loaded following a search we must find all the information again
       // get release group info
@@ -375,6 +501,14 @@ export default {
           this.release = res.data
           document.title = 'tasteful | ' + this.release.title
           this.checkForReleaseInDatabase()
+        })
+        .catch((err) => {
+          const error = err.response.data
+          return this.$nuxt.error(
+            {
+              statusCode: 500,
+              message: error.message
+            })
         })
     } else {
       this.release = this.$store.state.search.release
@@ -432,16 +566,21 @@ export default {
         })
     },
     checkIfExistingReview () {
-      this.$fire.firestore.collection('users').doc(this.user.id).collection('reviews').doc(this.id)
+      this.$fire.firestore.collection('releases').doc(this.id).collection('reviews').doc(this.user.id)
         .get()
         .then((doc) => {
-          doc.data().review.get()
-            .then((review) => {
-              this.reviewContent = review.data()
-            })
+          const reviewData = doc.data()
+          if (reviewData) {
+            this.reviewContent = reviewData
+          }
+          this.getParagraphOnlyUserReview()
         })
-        .catch(() => {
-          // User does not have a review.
+        .catch((err) => {
+          return this.$nuxt.error(
+            {
+              statusCode: 500,
+              message: err
+            })
         })
     },
     getRatingsAndReviews () {
@@ -459,8 +598,9 @@ export default {
           }
         })
         .catch((err) => {
-          console.log('Release may not exist. Will add to database.')
-          console.error(err)
+          console.log('Release may not exist. Will add to database (tried getting ratings).')
+          // add adding-to-db support
+          console.log(err.response.data)
         })
 
       // get reviews
@@ -470,7 +610,10 @@ export default {
           this.reviews = res.docs.map(doc => doc.data())
           this.getReviewerAvatars()
           this.getReviewerUsernames()
-          this.createParagraphOnlyReviews()
+        })
+        .catch((err) => {
+          console.log('Release does not exist. Will add to database (tried getting reviews).')
+          console.log(err.response.data)
         })
     },
     postReview () {
@@ -534,9 +677,16 @@ export default {
         likers
       })
     },
+    getReviewImage (block) {
+      if (this.editing) {
+        return block.imageURLDraft
+      } else {
+        return block.imageURL
+      }
+    },
     onUserLoad () {
       this.checkIfExistingRating()
-      this.checkForExistingReview()
+      this.checkIfExistingReview()
     },
     getAvatar (id) {
       const imagePath = 'users/' + id + '/avatar.jpg'
@@ -570,8 +720,8 @@ export default {
     },
     sanitise (html) {
       const sanitiser = {
-        'allowedTags': ['strong'],
-        'allowedAttributes': {}
+        allowedTags: ['strong'],
+        allowedAttributes: {}
       }
       const sanitisedHTML = sanitizeHtml(html, sanitiser)
       return sanitisedHTML
@@ -579,24 +729,166 @@ export default {
     createParagraphOnlyReviews () {
       const paragraphOnlyReviews = []
       this.reviews.forEach((review) => {
-        const body = review.body // array of 'blocks'
-        const bodyOnlyParagraphs = []
-        body.forEach((block) => {
-          if (block.type === 'paragraph') {
-            bodyOnlyParagraphs.push(block)
-          }
-        })
-        const reviewWithOnlyParagraphBlocks = Object.assign({}, review)
-        reviewWithOnlyParagraphBlocks.body = bodyOnlyParagraphs // The Line.
-        paragraphOnlyReviews.push(reviewWithOnlyParagraphBlocks)
+        if (review.author !== this.user.id) {
+          const body = review.body // array of 'blocks'
+          const bodyOnlyParagraphs = []
+          body.forEach((block) => {
+            if (block.type === 'paragraph') {
+              bodyOnlyParagraphs.push(block)
+            }
+          })
+          const reviewWithOnlyParagraphBlocks = Object.assign({}, review)
+          reviewWithOnlyParagraphBlocks.body = bodyOnlyParagraphs // The Line.
+          paragraphOnlyReviews.push(reviewWithOnlyParagraphBlocks)
+        }
       })
       this.paragraphOnlyReviews = paragraphOnlyReviews
     },
+    getParagraphOnlyUserReview () {
+      const userReviewBody = this.reviewContent.body
+      let paragraphOnlyUserReviewBody = ''
+      let userReviewTruncatedIssue = 'passed'
+      let length = -1
+      userReviewBody.forEach((block) => {
+        if (block.typeDraft !== 'deleted') {
+          length = length + 1
+        }
+        if (length > 0) {
+          userReviewTruncatedIssue = 'multiple blocks'
+        } else if (block.typeDraft === 'paragraph') {
+          paragraphOnlyUserReviewBody = paragraphOnlyUserReviewBody + block.contentPreviousDraft
+        } else if (block.typeDraft !== 'deleted') {
+          console.log(block.typeDraft)
+          userReviewTruncatedIssue = 'non paragraph blocks'
+        }
+      })
+      this.editableBlockIndex = length
+      this.paragraphOnlyUserReview = [paragraphOnlyUserReviewBody, userReviewTruncatedIssue, length]
+      // i provide length as an argument because it determines the index of the block that's being edited.
+      // this is useful in the instance where the user has a deleted block at index 0 but a paragraph at index 1, for example.
+    },
     openRichEditor () {
       this.editing = true
-      this.selectedReview = 0
+      const header = this.reviewContent.headerPreviousDraft
+      const body = this.reviewContent.body
+      const author = this.reviewContent.author
+      if (!body.length) {
+        // Automatically add an additional block if the body is empty.
+        this.addNewBlock()
+      }
+      if (!header) {
+        // Add a header if there is none.
+        this.addHeader()
+      }
+      if (!author) {
+        // If this is a new review add the necessary properties
+        this.reviewContent.author = this.user.id
+        this.reviewContent.username = this.user.username
+        this.reviewContent.avatar = this.user.avatar
+      }
+      this.previousAutosave = JSON.parse(JSON.stringify(body))
+      // load previous values
+      body.forEach((block) => {
+        block.contentPreviousDraft = block.contentDraft
+        // 'contentPreviousDraft' is never altered beyond this point and is only used to display the initial body on the DOM.
+        // 'contentDraft' isn't used as that variable is being written to. Displaying that messes with the cursor as it re-renders
+        // after its updated with a new value.
+      })
+      // begin autosaving
+      this.$store.commit('interface/setBarVisible', true)
+      this.$store.commit('interface/setBarMessage', 'You are in edit mode. Click a block to edit its contents.')
+      const autosaveLoop = setInterval(() => {
+        if (!this.editing) {
+          clearInterval(autosaveLoop)
+        } else {
+          this.autosave()
+        }
+      }, 30000)
     },
-    addNewBlock (selectedReview) {
+    autosave () {
+      const reviewDraft = this.reviewContent
+      // reviewDraft.body = this.reviewContent.body
+      // reviewDraft.header = this.reviewContent.headerDraft
+      // reviewDraft.author = this.reviewContent.author
+      if (!_.isEqual(this.previousAutosave, reviewDraft)) {
+        // a save is necessary because the content has changed since last save
+        this.$store.commit('interface/setBarVisible', true)
+        this.$store.commit('interface/setBarMessage', 'Saving draft... 💾')
+        this.saveDraft(reviewDraft)
+      } else {
+        // save is not necessary
+        this.showDraftSavedMessage()
+      }
+      this.previousAutosave = reviewDraft
+    },
+    saveDraft (draft) {
+      // draft needs to be filtered to remove certain tags
+      const filteredDraft = JSON.parse(JSON.stringify(draft))
+      filteredDraft.body.forEach((block) => {
+        delete block.changeImage
+        delete block.imageURLToAdd
+      })
+      const releases = this.$fire.firestore.collection('releases')
+      releases.doc(this.id)
+        .collection('reviews')
+        .doc(this.user.id)
+        .set(filteredDraft,
+          {
+            merge: true
+          }
+        )
+        .then(() => {
+          this.showDraftSavedMessage()
+        })
+    },
+    publishReview () {
+      // get the final draft
+      const reviewDraft = JSON.parse(JSON.stringify(this.reviewContent.body))
+      const headerDraft = this.reviewContent.headerDraft
+      const publishDraft = reviewDraft.filter((block) => {
+        return block.typeDraft !== 'deleted'
+      })
+      publishDraft.forEach((block) => {
+        block.content = block.contentDraft
+        block.type = block.typeDraft
+      })
+      this.reviewContent.body = JSON.parse(JSON.stringify(publishDraft))
+      publishDraft.forEach((block) => {
+        delete block.changeImage
+        delete block.imageURLToAdd
+      })
+      const review = {
+        body: publishDraft,
+        header: headerDraft
+      }
+      // save to database
+      const releases = this.$fire.firestore.collection('releases')
+      releases.doc(this.id)
+        .collection('reviews')
+        .doc(this.user.id)
+        .set(review,
+          {
+            merge: true
+          }
+        )
+        .then(() => {
+          this.showDraftSavedMessage('Your review has been published! 🎉')
+        })
+    },
+    showDraftSavedMessage (message = 'Draft saved. 😊') {
+      this.$store.commit('interface/setBarVisible', true)
+      this.$store.commit('interface/setBarMessage', message)
+      setTimeout(() => {
+        if (!this.editing) {
+          this.$store.commit('interface/setBarVisible', false)
+          this.$store.commit('interface/setBarMessage', '')
+        } else {
+          this.$store.commit('interface/setBarVisible', true)
+          this.$store.commit('interface/setBarMessage', 'You are in edit mode. Click a block to edit its contents.')
+        }
+      }, 3000)
+    },
+    addNewBlock () {
       const possibleBlockContent = [
         'This is a fresh, new, and lovely block with which you can do what you please.',
         'An empty canvas which permits all sorts of wonderful and delightful expression.',
@@ -610,39 +902,68 @@ export default {
       if (this.newBlockCount !== (possibleBlockContent.length - 1)) {
         this.newBlockCount = this.newBlockCount + 1
       }
-      this.reviews[selectedReview].body.push({
-        content: blockContent,
-        type: 'paragraph'
+      this.reviewContent.body.push({
+        contentDraft: blockContent,
+        contentPreviousDraft: blockContent,
+        typeDraft: 'paragraph'
       })
+    },
+    addHeader () {
+      const possibleHeaderContent = [
+        'A wonderful opening line!',
+        'Something to grab their attention.',
+        'Something provocative and enticing!',
+        'Your thoughts in one sentence.'
+      ]
+      const index = Math.floor(Math.random() * possibleHeaderContent.length)
+      this.reviewContent.headerDraft = possibleHeaderContent[index]
     },
     clickedReviewImage (imageURL, selectedReview, i) {
       if (!this.editing) {
         window.open(imageURL, '_blank')
       } else {
         // Allow the user to change the image.
-        this.imageURLToAdd = imageURL
-        this.$set(this.reviews[selectedReview].body[i], 'changeImage', true)
+        this.$set(this.reviewContent.body[i], 'imageURLToAdd', imageURL)
+        this.$set(this.reviewContent.body[i], 'changeImage', true)
       }
     },
     saveReviewImageChanges (imageURL, selectedReview, i) {
-      if (this.imageURLToAdd === '') {
+      if (!this.reviewContent.body[i].imageURLToAdd) {
         // remove block
-        this.reviews[selectedReview].body.splice(i, 1)
+        this.reviewContent.body.splice(i, 1)
       } else {
-        this.reviews[selectedReview].body[i].changeImage = false
-        this.$set(this.reviews[selectedReview].body[i], 'imageURL', this.imageURLToAdd)
-        this.imageURLToAdd = ''
+        this.reviewContent.body[i].changeImage = false
+        this.$set(this.reviewContent.body[i], 'imageURLDraft', this.reviewContent.body[i].imageURLToAdd)
+        this.$set(this.reviewContent.body[i], 'imageURLToAdd', '')
       }
     },
     changeBlockType (block, type) {
       const updatedBlock = block
-      updatedBlock.type = type
+      updatedBlock.typeDraft = type
       if (type === 'image') {
         const imageBlock = updatedBlock
         imageBlock.changeImage = true
         return imageBlock
       }
       return updatedBlock
+    },
+    deleteBlock (blockIndex) {
+      // the block is not actually deleted from the array until the draft is published.
+      this.reviewContent.body[blockIndex].typeDraftBeforeDeletion = this.reviewContent.body[blockIndex].typeDraft
+      this.reviewContent.body[blockIndex].contentPreviousDraft = this.reviewContent.body[blockIndex].contentDraft
+      this.reviewContent.body[blockIndex].typeDraft = 'deleted'
+    },
+    restoreBlock (blockIndex) {
+      this.reviewContent.body[blockIndex].typeDraft = this.reviewContent.body[blockIndex].typeDraftBeforeDeletion
+    },
+    createNewList () {
+      this.showCreateListModal = false
+      this.$store.commit('interface/setBarVisible', true)
+      this.$store.commit('interface/setBarMessage', `✨ Your list '${this.newList.name}' has been created!`)
+      setTimeout(() => {
+        this.$store.commit('interface/setBarVisible', false)
+        this.$store.commit('interface/setBarMessage', '')
+      }, 3000)
     }
   }
 }
@@ -719,7 +1040,10 @@ export default {
   margin-left: 8px;
 }
 .review-image-container {
-  margin-top: 64px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 16px;
   margin-bottom: 64px;
   max-width: 512px;
 }
@@ -732,15 +1056,11 @@ export default {
     cursor: pointer;
   }
 }
-.review-image-selector {
+.emphasised-block {
   background: $lighter-purple;
   padding: 32px;
   border-radius: 10px;
   margin-bottom: 32px;
-}
-.review-image-save-changes-button {
-  margin-left: auto;
-  margin-right: auto;
 }
 .review-caption {
   max-width: 90%;
@@ -763,6 +1083,14 @@ export default {
   background: $lighter-purple;
   width: 100%;
   margin-top: 32px;
+}
+.block-editing-toolbar-content {
+  width: 100%;
+}
+.block-editing-toolbar-deleted {
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
 }
 .block-number {
   background: $desaturated-dimmish-purple;
@@ -787,5 +1115,17 @@ export default {
     color: $saturated-purple;
     cursor: pointer;
   }
+}
+.new-list-image-preview {
+  min-width: 64px;
+  min-height: 64px;
+  border-radius: 10px;
+  margin-left: 16px;
+  margin-top: auto;
+  margin-bottom: 16px;
+  background-size: cover;
+}
+.secondary-list-buttons {
+  margin-bottom: 16px;
 }
 </style>
