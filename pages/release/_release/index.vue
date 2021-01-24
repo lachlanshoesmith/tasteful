@@ -9,7 +9,7 @@
             <span v-else>
               Add
               <span v-if="release.title.length < 100">
-                {{ release.tile }}
+                {{ release.title }}
               </span>
               <span v-else>
                 release
@@ -26,10 +26,10 @@
               name="new-list-name"
               @input="newList.name=$event"
             >
-              List name
+              List name*
             </text-input>
             <text-area name="new-list-description" full-width placeholder="Descriptions are optional, but they can help give your list some identity and purpose." @input="newList.description=$event">
-              Description
+              List description
             </text-area>
             <div class="flex-container">
               <text-input
@@ -38,13 +38,16 @@
                 name="new-list-imageURL-input"
                 @input="newList.imageURL = $event"
               >
-                Image URL
+                List image
               </text-input>
               <div class="new-list-image-preview" :style="{ backgroundImage: `url(${newList.imageURL})` }" />
             </div>
             <paragraph soft>
               Image uploading is not currently supported. Consider using a third party service, such as <a href="https://imgur.com/" target="_blank">Imgur</a>.
               Ensure you use a direct link (<a href="https://i.imgur.com/wMeVWI7.png" target="_blank">here's an example</a>, if you're not quite following).
+            </paragraph>
+            <paragraph softer>
+              * Mandatory field.
             </paragraph>
             <div class="flex-container">
               <regular-button wide type="call-to-action" @pressed="createNewList()">
@@ -70,13 +73,14 @@
             <dropdown
               name="selected-list"
               description-value="2020 favourites, for example."
-              :options="['Example list 1', 'Example list 2']"
+              :default-value="listItemToAdd.selectedList"
+              :options="userListNames"
               @change="listItemToAdd.selectedList = $event"
             >
               Selected list
             </dropdown>
             <text-area name="list-item-description" full-width placeholder="Descriptions are optional, but should be related to the album or artist if included." @input="listItemToAdd.description=$event">
-              Description
+              Release description
             </text-area>
             <div class="flex-container secondary-list-buttons">
               <regular-button wide type="secondary" @pressed="showCreateListModal = true">
@@ -93,7 +97,7 @@
                 Adjust position in list
               </regular-button>
             </div>
-            <regular-button wide type="call-to-action">
+            <regular-button wide type="call-to-action" @pressed="addReleaseToList">
               <span v-if="release.title.length <= 128">
                 Add {{ release.title }} to list
               </span>
@@ -397,7 +401,6 @@
 <script>
 // @ is an alias to /src
 import { mapGetters } from 'vuex'
-import sanitizeHtml from 'sanitize-html'
 import closeIcon from 'vue-material-design-icons/Close.vue'
 import _ from 'lodash'
 import blur from '~/components/Blur.vue'
@@ -475,12 +478,15 @@ export default {
       newList: {
         name: '',
         description: '',
-        imageURL: 'https://coverartarchive.org/release/315bbc48-dea9-463c-bfa9-a6ccab78b990/25806517352-1200.jpg'
+        imageURL: 'https://coverartarchive.org/release/315bbc48-dea9-463c-bfa9-a6ccab78b990/25806517352-1200.jpg',
+        releases: {}
       },
       selectedReview: false,
       editing: false,
       newBlockCount: 0,
-      editableBlockIndex: -1
+      editableBlockIndex: -1,
+      userLists: {},
+      userListNames: []
     }
   },
   computed: mapGetters({
@@ -583,6 +589,17 @@ export default {
             })
         })
     },
+    getUserLists () {
+      this.$fire.firestore.collection('users').doc(this.user.id).collection('lists')
+        .get()
+        .then((user) => {
+          this.userLists = user.docs.map(list => list.data())
+          this.userLists.forEach((list) => {
+            this.userListNames.push(list.name)
+          })
+          this.listItemToAdd.selectedList = this.userListNames[0]
+        })
+    },
     getRatingsAndReviews () {
       const releases = this.$fire.firestore.collection('releases')
       releases.doc(this.id)
@@ -615,31 +632,6 @@ export default {
           console.log('Release does not exist. Will add to database (tried getting reviews).')
           console.log(err.response.data)
         })
-    },
-    postReview () {
-      if (!this.reviewContent.body) {
-        alert('Your review\'s body seems empty. That\'s a pretty important part of a review, don\'t you think?')
-      } else {
-        // create review object
-        const review = this.reviewContent
-        // add review to release in database
-        const releases = this.$fire.firestore.collection('releases')
-        releases.doc(this.id).collection('reviews').doc(this.user.id).set({
-          author: this.user.id,
-          header: review.header,
-          body: review.body,
-          likes: 0,
-          likers: []
-        })
-        // add review to user in database
-        const users = this.$fire.firestore.collection('users')
-        users.doc(this.user.id).collection('reviews').doc(this.id).set({
-          review: releases.doc(this.id).collection('reviews').doc(this.user.id) // reference
-        })
-          .then(() => {
-            alert('Your review for ' + this.release.title + ' has been submitted.')
-          })
-      }
     },
     checkForReleaseInDatabase () {
       const releases = this.$fire.firestore.collection('releases')
@@ -687,6 +679,7 @@ export default {
     onUserLoad () {
       this.checkIfExistingRating()
       this.checkIfExistingReview()
+      this.getUserLists()
     },
     getAvatar (id) {
       const imagePath = 'users/' + id + '/avatar.jpg'
@@ -717,14 +710,6 @@ export default {
         const username = await this.getUsername(review.author)
         this.$set(this.reviews[i], 'username', username)
       })
-    },
-    sanitise (html) {
-      const sanitiser = {
-        allowedTags: ['strong'],
-        allowedAttributes: {}
-      }
-      const sanitisedHTML = sanitizeHtml(html, sanitiser)
-      return sanitisedHTML
     },
     createParagraphOnlyReviews () {
       const paragraphOnlyReviews = []
@@ -795,8 +780,7 @@ export default {
         // after its updated with a new value.
       })
       // begin autosaving
-      this.$store.commit('interface/setBarVisible', true)
-      this.$store.commit('interface/setBarMessage', 'You are in edit mode. Click a block to edit its contents.')
+      this.$store.dispatch('interface/displayBar', { message: 'You are in edit mode. Click a block to edit its contents.', temporary: false })
       const autosaveLoop = setInterval(() => {
         if (!this.editing) {
           clearInterval(autosaveLoop)
@@ -812,8 +796,7 @@ export default {
       // reviewDraft.author = this.reviewContent.author
       if (!_.isEqual(this.previousAutosave, reviewDraft)) {
         // a save is necessary because the content has changed since last save
-        this.$store.commit('interface/setBarVisible', true)
-        this.$store.commit('interface/setBarMessage', 'Saving draft... 💾')
+        this.$store.dispatch('interface/displayBar', { message: 'Saving draft... 💾', temporary: true })
         this.saveDraft(reviewDraft)
       } else {
         // save is not necessary
@@ -859,7 +842,12 @@ export default {
       })
       const review = {
         body: publishDraft,
-        header: headerDraft
+        header: headerDraft,
+        headerDraft,
+        likers: [],
+        username: this.user.username,
+        author: this.user.id,
+        avatar: this.user.avatar
       }
       // save to database
       const releases = this.$fire.firestore.collection('releases')
@@ -874,17 +862,19 @@ export default {
         .then(() => {
           this.showDraftSavedMessage('Your review has been published! 🎉')
         })
+      // add review to user in database
+      const users = this.$fire.firestore.collection('users')
+      users.doc(this.user.id).collection('reviews').doc(this.id).set({
+        review: releases.doc(this.id).collection('reviews').doc(this.user.id) // reference
+      })
     },
     showDraftSavedMessage (message = 'Draft saved. 😊') {
-      this.$store.commit('interface/setBarVisible', true)
-      this.$store.commit('interface/setBarMessage', message)
+      this.$store.dispatch('interface/displayBar', { message, temporary: false })
       setTimeout(() => {
-        if (!this.editing) {
-          this.$store.commit('interface/setBarVisible', false)
-          this.$store.commit('interface/setBarMessage', '')
+        if (this.editing) {
+          this.$store.dispatch('interface/displayBar', { message: 'You are in edit mode. Click a block to edit its contents.', temporary: false })
         } else {
-          this.$store.commit('interface/setBarVisible', true)
-          this.$store.commit('interface/setBarMessage', 'You are in edit mode. Click a block to edit its contents.')
+          this.$store.dispatch('interface/hideBar')
         }
       }, 3000)
     },
@@ -957,13 +947,55 @@ export default {
       this.reviewContent.body[blockIndex].typeDraft = this.reviewContent.body[blockIndex].typeDraftBeforeDeletion
     },
     createNewList () {
-      this.showCreateListModal = false
-      this.$store.commit('interface/setBarVisible', true)
-      this.$store.commit('interface/setBarMessage', `✨ Your list '${this.newList.name}' has been created!`)
-      setTimeout(() => {
-        this.$store.commit('interface/setBarVisible', false)
-        this.$store.commit('interface/setBarMessage', '')
-      }, 3000)
+      const newListMessage = this.checkNewListData()
+      this.showCreateListModal = !newListMessage[1]
+      if (newListMessage[1]) {
+        const users = this.$fire.firestore.collection('users')
+        const userLists = users.doc(this.user.id).collection('lists')
+        const listID = this.newList.name.toLowerCase().replaceAll(' ', '-')
+        if (this.newList.imageURL === this.release.imageURL) {
+          this.newList.imageURL = ''
+        }
+        this.newList.id = listID
+        userLists.doc(listID).set(this.newList)
+        this.userLists.push(this.newList)
+        this.userListNames.push(this.newList.name)
+      }
+      this.$store.dispatch('interface/displayBar', { message: newListMessage[0], temporary: true })
+    },
+    checkNewListData () {
+      const newList = this.newList
+      if (newList.name.length >= 3 && !this.userListNames.includes(newList.name)) {
+        return [`✨ Your list '${newList.name}' has been created!`, true] // true = success, close create list screen
+      } else if (this.userListNames.includes(newList.name)) {
+        return ['✍️ The name you chose must be really good, because you\'ve already made a list with the same name before!', false]
+      } else if (newList.name.length === 0) {
+        return ['✍️ Please give your list a fitting name.', false] // false = error, continue to show create list screen
+      } else if (newList.name.length > 0 && newList.name.length < 3) {
+        return ['✍️ Please make sure your list\'s name is at least three characters long.', false]
+      }
+    },
+    addReleaseToList () {
+      // get list index
+      const listIndex = this.userListNames.indexOf(this.listItemToAdd.selectedList)
+      // get list data
+      const list = this.userLists[listIndex]
+      // add release to list
+      list.releases[this.release.id] = {
+        id: this.release.id,
+        description: this.listItemToAdd.description
+      }
+      // add to database
+      const users = this.$fire.firestore.collection('users')
+      const userLists = users.doc(this.user.id).collection('lists')
+      userLists.doc(list.id).set(list)
+      let message
+      if (this.release.title.length <= 30) {
+        message = `✨ '${this.release.title}' was added to your list '${list.name}'!`
+      } else {
+        message = `✨ This release was added to your list '${list.name}'!`
+      }
+      this.$store.dispatch('interface/displayBar', { message, temporary: true })
     }
   }
 }

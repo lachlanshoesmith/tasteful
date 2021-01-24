@@ -2,7 +2,7 @@
   <p
     v-if="!hidden"
     ref="body"
-    :class="[{error, soft, smaller, noLeftMarginOnMobile, noTopMargin, noBottomMargin, centred}, colourMode]"
+    :class="[{error, soft, softer, smaller, noLeftMarginOnMobile, noTopMargin, noBottomMargin, centred}, colourMode]"
     :contenteditable="editable"
     class="paragraph"
     @input="emitValue"
@@ -28,6 +28,7 @@ export default {
     smaller: Boolean,
     centred: Boolean,
     soft: Boolean,
+    softer: Boolean,
     alwaysShow: Boolean,
     truncate: {
       type: Number,
@@ -101,6 +102,9 @@ export default {
     &.black {
       color: $quite-dark-grey;
     }
+  }
+  &.softer {
+    opacity: 0.5;
   }
   &.dark {
     color: hsl(222, 10%, 55%);

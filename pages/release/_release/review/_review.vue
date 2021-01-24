@@ -101,7 +101,6 @@
 <script>
 // @ is an alias to /src
 import { mapGetters } from 'vuex'
-import sanitizeHtml from 'sanitize-html'
 import blur from '~/components/Blur.vue'
 import masthead from '~/components/Masthead.vue'
 import hero from '~/components/Hero.vue'
@@ -211,14 +210,6 @@ export default {
           const avatar = await this.getAvatar(this.reviewID)
           this.$set(this.review, 'avatar', avatar)
         })
-    },
-    sanitise (html) {
-      const sanitiser = {
-        allowedTags: ['strong'],
-        allowedAttributes: {}
-      }
-      const sanitisedHTML = sanitizeHtml(html, sanitiser)
-      return sanitisedHTML
     }
   }
 }

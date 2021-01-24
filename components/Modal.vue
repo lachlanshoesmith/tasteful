@@ -70,7 +70,7 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 997;
+  z-index: 997; // lower than bar!
   display: flex;
   justify-content: center;
   align-items: center;

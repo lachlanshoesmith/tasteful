@@ -28,6 +28,7 @@ export default {
   text-align: center;
   left: calc(50vw - (30vw / 2) - 16px);
   transition: bottom 0.2s ease-in-out;
+  z-index: 999; // the highest!
   &.visible {
     bottom: 4vh;
   }
