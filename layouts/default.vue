@@ -104,10 +104,13 @@
     <div v-else class="advert">
       <article>
         <masthead centred>
-          tasteful is launching soon.
+          🤞
+        </masthead>
+        <masthead centred>
+          2021 is the goal
         </masthead>
         <subheading centred smaller>
-          Follow our Twitter to learn more.
+          Follow our Twitter to stay up to date.
         </subheading>
         <regular-button style="margin-top: 16px;" centred type="primary" to="https://twitter.com/tasteful_app">
           Go to our Twitter
