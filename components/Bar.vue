@@ -3,12 +3,30 @@
     <span>
       <slot>Bar content</slot>
     </span>
+    <div class="prompt-container">
+      <div class="prompt">
+        <regular-button type="primary">
+          Yes
+        </regular-button>
+        <regular-button type="primary">
+          No
+        </regular-button>
+        <regular-button type="primary">
+          Update
+        </regular-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import regularButton from '~/components/RegularButton'
+
 export default {
   name: 'Bar',
+  components: {
+    regularButton
+  },
   props: {
     visible: Boolean
   }
@@ -31,6 +49,15 @@ export default {
   z-index: 999; // the highest!
   &.visible {
     bottom: 4vh;
+  }
+  .prompt-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .prompt {
+    display: flex;
   }
 }
 </style>

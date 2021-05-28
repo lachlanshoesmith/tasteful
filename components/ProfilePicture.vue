@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-picture" :class="[size]" :style="{'background-image': `url(${url}`}" @click="sendToProfile" />
+  <div class="profile-picture" :class="[{noClick}, size]" :style="{'background-image': `url(${url}`}" @click="sendToDestination" />
 </template>
 
 <script>
@@ -17,11 +17,22 @@ export default {
     username: {
       type: String,
       default: ''
+    },
+    noClick: Boolean,
+    release: {
+      type: String,
+      default: ''
     }
   },
   methods: {
-    sendToProfile () {
-      this.$router.push({ path: `/user/${this.username}` })
+    sendToDestination () {
+      if (this.noClick) {
+        return false
+      } else if (this.release) {
+        this.$router.push({ path: `/release/${this.release}` })
+      } else {
+        this.$router.push({ path: `/user/${this.username}` })
+      }
     }
   }
 }
@@ -43,6 +54,12 @@ export default {
   &:hover {
     cursor: pointer;
     opacity: 0.8;
+  }
+  &.noClick {
+    &:hover {
+      cursor: default;
+      opacity: 1;
+    }
   }
 }
 </style>

@@ -37,6 +37,7 @@ export default {
       type: String,
       default: ''
     },
+    returnIndex: Boolean,
     options: {
       type: Array,
       default: () => {
@@ -73,7 +74,12 @@ export default {
   },
   methods: {
     reportValue () {
-      this.$emit('change', this.value)
+      let returnValue = this.value
+      if (this.returnIndex) {
+        const selectedItemIndex = this.options.indexOf(this.value)
+        returnValue = [this.value, selectedItemIndex]
+      }
+      this.$emit('change', returnValue)
     }
   }
 }

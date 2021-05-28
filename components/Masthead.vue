@@ -1,6 +1,6 @@
 <template>
-  <div :class="[{ noShadow, fitWidth, noLeftMarginOnLargeScreens, smallBottomMargin, fullWidth }, colourMode]" class="masthead">
-    <h1 :class="[{ centred, fitWidth, smaller }, colourMode]" class="masthead-content" :contenteditable="editable" @keydown.enter.prevent @input="emitValue">
+  <div :class="[{ noShadow, fitWidth, noLeftMarginOnLargeScreens, smallBottomMargin, fullWidth, noMargin }, colourMode]" class="masthead">
+    <h1 :class="[{ centred, fitWidth, smaller, bigger }, colourMode]" class="masthead-content" :contenteditable="editable" @keydown.enter.prevent @input="emitValue">
       <slot>Masthead content</slot>
     </h1>
   </div>
@@ -17,7 +17,9 @@ export default {
     noLeftMarginOnLargeScreens: Boolean,
     smallBottomMargin: Boolean,
     noShadow: Boolean,
-    editable: Boolean
+    editable: Boolean,
+    bigger: Boolean,
+    noMargin: Boolean
   },
   computed: {
     colourMode () {
@@ -37,6 +39,9 @@ export default {
 .masthead {
   margin-top: 8px;
   margin-bottom: 8px;
+  &.noMargin {
+    margin: 0;
+  }
 }
 .masthead-content {
   font-size: 36px;
@@ -46,6 +51,12 @@ export default {
   margin: 0;
   &.smaller {
     font-size: 24px;
+  }
+  &.bigger {
+    font-size: 96px;
+  }
+  &.centred {
+    text-align: center;
   }
 }
 </style>

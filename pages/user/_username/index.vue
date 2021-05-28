@@ -68,6 +68,7 @@ export default {
   },
   mounted () {
     const usernamesDatabase = this.$fire.firestore.collection('usernames')
+    console.log(this.$route.params)
     let username = this.$route.params.username.toLowerCase()
     this.loading = true
     usernamesDatabase.get()

@@ -14,9 +14,9 @@
     </div> -->
 
     <!-- The new modal design is a slightly modified DividedContainer, essentially. -->
-    <div :class="[{redBorder, shadow}, colourMode]" class="modal">
-      <div class="modal-content-left" :class="{largerLeftSide}">
-        <div class="flex-container">
+    <div ref="modal" :class="[{redBorder, shadow, narrow}, colourMode]" class="modal">
+      <div class="modal-content-left" :class="{narrow, largerLeftSide}">
+        <div :class="{narrow}" class="flex-container">
           <close-icon :class="colourMode" class="large-close-icon" title="Close" @click="closeModal" />
           <slot name="heading" />
         </div>
@@ -45,16 +45,33 @@ export default {
       type: String,
       default: ''
     },
-    largerLeftSide: Boolean
+    largerLeftSide: Boolean,
+    narrow: Boolean,
+    reportWidth: Boolean
   },
   computed: {
     colourMode () {
       return this.$store.state.theme.colourMode
     }
   },
+  mounted () {
+    if (this.reportWidth) {
+      window.addEventListener('resize', this.widthUpdated)
+      this.widthUpdated()
+    }
+  },
+  destroyed () {
+    if (this.reportWidth) {
+      window.removeEventListener('resize', this.widthUpdated)
+    }
+  },
   methods: {
     closeModal () {
       this.$emit('closeModal')
+    },
+    widthUpdated (e) {
+      const modalWidth = this.$refs.modal.clientWidth
+      this.$emit('widthUpdated', modalWidth)
     }
   }
 }
@@ -92,6 +109,12 @@ export default {
   z-index: 1;
   position: relative;
   box-shadow: 0px 0px 50px $desaturated-dimmest-purple;
+  &.narrow {
+    width: 25vw;
+    align-items: center;
+    min-height: 16vh;
+    flex-direction: column;
+  }
 }
 
 .modal-content {
@@ -108,6 +131,14 @@ export default {
   &.largerLeftSide {
     margin-right: 64px;
     width: calc(50% - 48px);
+  }
+  &.narrow {
+    width: calc(100% - 96px);
+    padding-left: 0;
+    margin-right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -145,6 +176,9 @@ export default {
 
 .flex-container {
   display: flex;
+  &.narrow {
+    justify-content: center;
+  }
 }
 
 </style>

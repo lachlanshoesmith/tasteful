@@ -1,6 +1,6 @@
 <template>
   <div class="subheading" :class="{ noMargin, topMargin }">
-    <h1 :class="[colourMode, { smaller, smallest }]" class="subheading-content" :contenteditable="editable" @input="emitValue" @keydown.enter.prevent>
+    <h1 :class="[colourMode, { centred, smaller, smallest, titleCase }]" class="subheading-content" :contenteditable="editable" @input="emitValue" @keydown.enter.prevent>
       <slot>Subheading content</slot>
     </h1>
   </div>
@@ -10,11 +10,13 @@
 export default {
   name: 'Subheading',
   props: {
+    centred: Boolean,
     smaller: Boolean,
     smallest: Boolean,
     noMargin: Boolean,
     editable: Boolean,
-    topMargin: Boolean
+    topMargin: Boolean,
+    titleCase: Boolean
   },
   computed: {
     colourMode () {
@@ -48,13 +50,26 @@ export default {
   text-transform: uppercase;
   letter-spacing: 4px;
   margin: 0;
-  &.smaller, &.smallest {
+  &.smaller {
     font-size: 14px;
     letter-spacing: 2px;
+    &.titleCase {
+      letter-spacing: normal;
+      font-size: 18px;
+    }
   }
   &.smallest {
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: normal;
+    text-transform: none;
     color: $muted-purple;
+  }
+  &.titleCase {
+    text-transform: none;
+  }
+  &.centred {
+    text-align: center;
   }
 }
 </style>

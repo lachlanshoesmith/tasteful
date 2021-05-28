@@ -1,104 +1,119 @@
 <template>
   <div id="app" :class="[colourMode]">
-    <transition name="fade">
-      <modal v-if="showModal" scrollable @closeModal="showModal = false">
-        <template #heading>
-          <subheading no-defined-width smaller no-top-margin>
-            <span v-if="showSignIn">Welcome back!</span>
-            <span v-else>Welcome aboard!</span>
-          </subheading>
-        </template>
-        <template #left>
-          <paragraph>
-            <span v-if="showSignIn">It's always a pleasure to see you.</span>
-            <span v-else>Well, this is awkward... I guess we've never met. Let's change that.</span>
-            <br>
-            <a @click="showSignIn = !showSignIn">
-              <span v-if="showSignIn">Don't have an account yet?</span>
-              <span v-else>Already got an account with us?</span>
-            </a>
-          </paragraph>
-          <!-- <input-label no-top-margin>
-              <span v-if="showSignIn">Sign in</span>
-              <span v-else>Sign up</span>
-            </input-label> -->
-          <paragraph v-if="allowSignup && !showSignIn">
-            Your Invitation has been approved, so you're good to sign up.
-          </paragraph>
-          <form @submit.prevent="signIn">
-            <text-input name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @input="email = $event" @animation-over="emailFlashRed = false">
-              <template #icon>
-                <email-icon title="Email" />
-              </template>
-            </text-input>
-            <text-input
-              v-if="!showSignIn"
-              name="username-input"
-              placeholder="Username"
-              :class="{'flashRed' : usernameFlashRed}"
-              @input="username = $event"
-              @animation-over="usernameFlashRed = false"
-            >
-              <template #icon>
-                <face-icon title="Username" />
-              </template>
-            </text-input>
-            <text-input
-              name="password-input"
-              placeholder="Password"
-              :class="{'flashRed' : passwordFlashRed}"
-              password
-              @input="password = $event"
-              @animation-over="passwordFlashRed = false"
-            >
-              <template #icon>
-                <key-icon title="Password" />
-              </template>
-            </text-input>
-            <div id="sign-in-button-container">
-              <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed || usernameFlashRed" :success="user !== null && user !== false">
-                <span v-if="user === null || user === false" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
-                <span v-else v-text="showSignIn ? 'Signed in' : 'Signed up'" />
-              </submit-button>
-              <!-- <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a> -->
-              <a class="soft modal-link display-only-if-on-mobile" @click="showSignIn = !showSignIn">
+    <div v-if="user && user.username === 'lachlantula'">
+      <transition name="fade">
+        <modal v-if="showModal" scrollable @closeModal="showModal = false">
+          <template #heading>
+            <subheading no-defined-width smaller no-top-margin>
+              <span v-if="showSignIn">Welcome back!</span>
+              <span v-else>Welcome aboard!</span>
+            </subheading>
+          </template>
+          <template #left>
+            <paragraph>
+              <span v-if="showSignIn">It's always a pleasure to see you.</span>
+              <span v-else>Well, this is awkward... I guess we've never met. Let's change that.</span>
+              <br>
+              <a @click="showSignIn = !showSignIn">
                 <span v-if="showSignIn">Don't have an account yet?</span>
                 <span v-else>Already got an account with us?</span>
               </a>
-            </div>
-          </form>
-          <paragraph v-if="error.display" error>
-            {{ error.message }}
-          </paragraph>
+            </paragraph>
+            <!-- <input-label no-top-margin>
+              <span v-if="showSignIn">Sign in</span>
+              <span v-else>Sign up</span>
+            </input-label> -->
+            <paragraph v-if="allowSignup && !showSignIn">
+              Your Invitation has been approved, so you're good to sign up.
+            </paragraph>
+            <form @submit.prevent="signIn">
+              <text-input name="email-input" placeholder="Email" :class="{'flashRed' : emailFlashRed}" @input="email = $event" @animation-over="emailFlashRed = false">
+                <template #icon>
+                  <email-icon title="Email" />
+                </template>
+              </text-input>
+              <text-input
+                v-if="!showSignIn"
+                name="username-input"
+                placeholder="Username"
+                :class="{'flashRed' : usernameFlashRed}"
+                @input="username = $event"
+                @animation-over="usernameFlashRed = false"
+              >
+                <template #icon>
+                  <face-icon title="Username" />
+                </template>
+              </text-input>
+              <text-input
+                name="password-input"
+                placeholder="Password"
+                :class="{'flashRed' : passwordFlashRed}"
+                password
+                @input="password = $event"
+                @animation-over="passwordFlashRed = false"
+              >
+                <template #icon>
+                  <key-icon title="Password" />
+                </template>
+              </text-input>
+              <div id="sign-in-button-container">
+                <submit-button include-arrow-icon centre-on-small-screens :stop-loading="emailFlashRed || passwordFlashRed || usernameFlashRed" :success="user !== null && user !== false">
+                  <span v-if="user === null || user === false" v-text="showSignIn ? 'Sign in' : 'Sign up'" />
+                  <span v-else v-text="showSignIn ? 'Signed in' : 'Signed up'" />
+                </submit-button>
+                <!-- <a v-if="showSignIn" class="soft modal-link" @click="showSignIn = !showSignIn">Having trouble with your password?</a> -->
+                <a class="soft modal-link display-only-if-on-mobile" @click="showSignIn = !showSignIn">
+                  <span v-if="showSignIn">Don't have an account yet?</span>
+                  <span v-else>Already got an account with us?</span>
+                </a>
+              </div>
+            </form>
+            <paragraph v-if="error.display" error>
+              {{ error.message }}
+            </paragraph>
           <!-- <paragraph v-if="!showSignIn" smaller>
               By signing up for tasteful you agree to our Terms of Service and Privacy Policy, as well as the license the Software follows.
             </paragraph> -->
-        </template>
-      </modal>
-    </transition>
-    <div v-if="user">
-      <span>Logged in as: {{ user.username }}</span>
-      <nuxt-link to="/user/settings">
-        Go sign out
-      </nuxt-link>
+          </template>
+        </modal>
+      </transition>
+      <div v-if="user">
+        <span>Logged in as: {{ user.username }}</span>
+        <nuxt-link to="/user/settings">
+          Go sign out
+        </nuxt-link>
+      </div>
+      <div v-else>
+        <button @click="showModal = true">
+          Login
+        </button>
+      </div>
+      <div v-if="user">
+        <nuxt v-if="user.username === 'lachlantula' || user.username === 'lachlan' || user.username === 'yves'" />
+      </div>
+      <div v-else>
+        that was fun. but it's time for me to go (unless you're logged in as lachlantula).
+      </div>
+      <bar :visible="barVisible">
+        <span v-if="barMessage">{{ barMessage }}</span>
+        <span v-else> <!-- little easter egg for the eagle eyed; shows when the editor is closed and after draft is saved -->
+          Weeeeeeeeeee! 🙌
+        </span>
+      </bar>
     </div>
-    <div v-else>
-      <button @click="showModal = true">
-        Login
-      </button>
+    <div v-else class="advert">
+      <article>
+        <masthead centred>
+          tasteful is launching soon.
+        </masthead>
+        <subheading centred smaller>
+          Follow our Twitter to learn more.
+        </subheading>
+        <regular-button style="margin-top: 16px;" centred type="primary" to="https://twitter.com/tasteful_app">
+          Go to our Twitter
+        </regular-button>
+      </article>
     </div>
-    <div v-if="user">
-      <nuxt v-if="user.username === 'lachlantula' || user.username === 'lachlan'" />
-    </div>
-    <div v-else>
-      that was fun. but it's time for me to go (unless you're logged in as lachlantula).
-    </div>
-    <bar :visible="barVisible">
-      <span v-if="barMessage">{{ barMessage }}</span>
-      <span v-else> <!-- little easter egg for the eagle eyed; shows when the editor is closed and after draft is saved -->
-        Weeeeeeeeeee! 🙌
-      </span>
-    </bar>
   </div>
 </template>
 
@@ -113,6 +128,9 @@ import Paragraph from '@/components/Paragraph.vue'
 import TextInput from '@/components/TextInput.vue'
 import SubmitButton from '@/components/SubmitButton.vue'
 import bar from '@/components/Bar.vue'
+import masthead from '@/components/Masthead.vue'
+import subheading from '@/components/Subheading.vue'
+import RegularButton from '~/components/RegularButton.vue'
 
 export default {
   components: {
@@ -124,7 +142,10 @@ export default {
     Paragraph,
     TextInput,
     SubmitButton,
-    bar
+    bar,
+    masthead,
+    subheading,
+    RegularButton
   },
   layout: 'default',
   data () {
@@ -557,6 +578,14 @@ a {
 
 .display-only-if-on-mobile {
   display: none;
+}
+
+.advert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
 }
 
 input, button, a {

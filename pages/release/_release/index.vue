@@ -24,7 +24,7 @@
               maxlength="96"
               placeholder="The inspiration for the list, perhaps?"
               name="new-list-name"
-              @input="newList.name=$event"
+              @input="newList.name = $event"
             >
               List name*
             </text-input>
@@ -59,10 +59,13 @@
             </div>
           </div>
           <div v-else-if="showAdjustPositionInListModal">
-            Hello
+            <release-list editable :list-items="userLists[listItemToAdd.selectedListIndex].releases" max-height="50" :selected-release="release.id" @change="selectedListReleasesOrder = $event" />
+            <paragraph softer>
+              Press and drag on a release to adjust its position, or press on the rank itself to edit it.
+            </paragraph>
             <div class="flex-container">
-              <regular-button wide type="call-to-action">
-                Save position in list
+              <regular-button wide type="call-to-action" @pressed="updateReleasePositionInList">
+                Save release positions in list
               </regular-button>
               <regular-button no-right-margin type="primary" @pressed="showAdjustPositionInListModal = false">
                 Go back
@@ -75,7 +78,8 @@
               description-value="2020 favourites, for example."
               :default-value="listItemToAdd.selectedList"
               :options="userListNames"
-              @change="listItemToAdd.selectedList = $event"
+              return-index
+              @change="listItemToAdd.selectedList = $event[0]; listItemToAdd.selectedListIndex = $event[1]"
             >
               Selected list
             </dropdown>
@@ -86,6 +90,7 @@
               <regular-button wide type="secondary" @pressed="showCreateListModal = true">
                 Create new list
               </regular-button>
+              <!-- disabled if a list hasn't been selected *or* if release isn't in list -->
               <regular-button
                 wide
                 no-right-margin
@@ -106,6 +111,28 @@
               </span>
             </regular-button>
           </div>
+        </template>
+      </modal>
+      <modal v-if="showUpdateRatingModal" report-width narrow @closeModal="showUpdateRatingModal = false" @widthUpdated="updateRatingModalWidth = $event">
+        <template #heading>
+          <masthead centred>
+            Update rating
+          </masthead>
+        </template>
+        <template #left>
+          <ring shadow colour="hsl(252, 70%, 56%)" :width="updateRatingModalWidth - 256" :percent="Number(initialScore)" :stroke-width="4">
+            <!-- colour is saturated-purple -->
+            <masthead
+              class="user-score-input"
+              bigger
+              centred
+              editable
+              no-margin
+              @change="initialScore = $event"
+            >
+              86
+            </masthead>
+          </ring>
         </template>
       </modal>
     </transition>
@@ -153,8 +180,9 @@
     <div v-if="!editing && !selectedReview" class="flex-container content">
       <div class="left-column">
         <div class="flex-container">
-          <regular-button type="secondary">
-            Update rating
+          <regular-button type="secondary" @pressed="showUpdateRatingModal = true">
+            <span v-if="initialScore">Update rating</span>
+            <span v-else>Rate this release</span>
           </regular-button>
           <regular-button type="secondary" @pressed="showAddToListModal = true">
             Add to list
@@ -189,7 +217,7 @@
               full-width
               placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin felis nibh, condimentum sit amet tempor quis, ultricies eu massa. Pellentesque aliquam mi at odio commodo, at pharetra arcu consectetur."
               :default-value="paragraphOnlyUserReview[0]"
-              @input="reviewContent.body[editableBlockIndex].contentDraft = $event"
+              @input="reviewContent.body[0].contentDraft = $event"
             >
               Body
             </text-area>
@@ -214,16 +242,23 @@
             Relevant lists and charts
           </template>
           <template #content>
-            <div class="row">
+            <div v-for="list in releaseLists" :key="list.id" class="row">
               <div class="flex-container">
-                <profile-picture size="small" url="https://pbs.twimg.com/profile_images/1320206650469502976/Ic6iMceQ_400x400.jpg" />
+                <profile-picture size="medium" :url="list.imageURL" no-click />
+                <section class="list-information">
+                  <subheading smallest no-margin>
+                    <nuxt-link :to="`/user/${list.username}/lists/${list.id}`">
+                      {{ list.name }}
+                    </nuxt-link>
+                  </subheading>
+                  <paragraph no-top-margin no-bottom-margin>
+                    By
+                    <nuxt-link :to="`/user/${list.username}`">
+                      {{ list.username }}
+                    </nuxt-link>
+                  </paragraph>
+                </section>
               </div>
-            </div>
-            <div class="row">
-              Content
-            </div>
-            <div class="row">
-              Content
             </div>
           </template>
         </vertical-table>
@@ -419,6 +454,8 @@ import dropdown from '~/components/Dropdown.vue'
 import review from '~/components/Review.vue'
 import paragraph from '~/components/Paragraph.vue'
 import articleContent from '~/components/ArticleContent.vue'
+import releaseList from '~/components/ReleaseList.vue'
+import ring from '~/components/Ring.vue'
 
 export default {
   name: 'Release',
@@ -439,7 +476,9 @@ export default {
     review,
     paragraph,
     articleContent,
-    closeIcon
+    closeIcon,
+    releaseList,
+    ring
   },
   data () {
     return {
@@ -465,48 +504,57 @@ export default {
       paragraphOnlyUserReview: ['', 'passed'],
       listItemToAdd: {
         selectedList: '',
-        description: ''
+        description: '',
+        selectedListIndex: null
       },
       previousAutosave: [],
-      initialScore: undefined,
+      initialScore: 86,
       paragraphOnlyReviews: undefined,
       loading: false,
       consideredUser: false,
       showAddToListModal: false,
       showCreateListModal: false,
       showAdjustPositionInListModal: false,
+      showUpdateRatingModal: false,
       newList: {
         name: '',
         description: '',
         imageURL: 'https://coverartarchive.org/release/315bbc48-dea9-463c-bfa9-a6ccab78b990/25806517352-1200.jpg',
-        releases: {}
+        releases: []
       },
       selectedReview: false,
       editing: false,
       newBlockCount: 0,
       editableBlockIndex: -1,
       userLists: {},
-      userListNames: []
+      userListNames: [],
+      releaseLists: [],
+      selectedListReleasesOrder: [],
+      updateRatingModalWidth: 0
     }
   },
-  computed: mapGetters({
-    colourMode: 'theme/colourMode',
-    user: 'login/user'
-  }),
+  computed: {
+    ...mapGetters({
+      colourMode: 'theme/colourMode',
+      user: 'login/user'
+    })
+  },
   mounted () {
-    this.loading = true
-    this.onUserLoad()
-    if (this.release.title === undefined) {
-      // if the page is not loaded following a search we must find all the information again
-      // get release group info
+    this.onPageLoad()
+  },
+  methods: {
+    onPageLoad () {
+      this.loading = true
+      this.onUserLoad()
       this.$axios
         .get(
-          `https://us-central1-tasteful.cloudfunctions.net/getReleaseData?query=${this.id}`
+        `https://us-central1-tasteful.cloudfunctions.net/getReleaseData?query=${this.id}`
         )
         .then((res) => {
           this.release = res.data
           document.title = 'tasteful | ' + this.release.title
           this.checkForReleaseInDatabase()
+          this.getReleaseLists()
         })
         .catch((err) => {
           const error = err.response.data
@@ -516,13 +564,8 @@ export default {
               message: error.message
             })
         })
-    } else {
-      this.release = this.$store.state.search.release
-      document.title = 'tasteful | ' + this.release.title
-    }
-    this.getRatingsAndReviews()
-  },
-  methods: {
+      this.getRatingsAndReviews()
+    },
     rate (scoreString) {
       const applyRating = (score) => {
         // rate on the release page
@@ -577,6 +620,12 @@ export default {
         .then((doc) => {
           const reviewData = doc.data()
           if (reviewData) {
+            if (reviewData.body.length === 0) {
+              reviewData.body.push({
+                contentPreviousDraft: '',
+                typeDraft: 'paragraph'
+              })
+            }
             this.reviewContent = reviewData
           }
           this.getParagraphOnlyUserReview()
@@ -595,10 +644,42 @@ export default {
         .then((user) => {
           this.userLists = user.docs.map(list => list.data())
           this.userLists.forEach((list) => {
+            const releases = this.getListReleases(list.releases)
+            list.releases = releases
             this.userListNames.push(list.name)
           })
           this.listItemToAdd.selectedList = this.userListNames[0]
+          this.listItemToAdd.selectedListIndex = 0
         })
+    },
+    getReleaseLists () {
+      const listReferences = this.release.lists
+      const lists = []
+      listReferences.forEach((listReference) => {
+        this.$fire.firestore.doc(listReference)
+          .get()
+          .then((res) => {
+            const listData = res.data()
+            const releases = this.getListReleases(listData.releases)
+            listData.releases = releases
+            lists.push(listData)
+            this.getListUsernames()
+          })
+      })
+      this.releaseLists = lists
+    },
+    getListReleases (listReleases) {
+      // release is certainly in database, so don't need to use getReleaseData function and waste bandwidth
+      const releasesRef = this.$fire.firestore.collection('releases')
+      const releases = [...listReleases]
+      releases.forEach((release) => {
+        releasesRef.doc(release.id)
+          .get()
+          .then((res) => {
+            release.data = res.data()
+          })
+      })
+      return releases
     },
     getRatingsAndReviews () {
       const releases = this.$fire.firestore.collection('releases')
@@ -711,8 +792,20 @@ export default {
         this.$set(this.reviews[i], 'username', username)
       })
     },
+    getListUsernames () {
+      this.releaseLists.forEach(async (list, i) => {
+        const author = list.author
+        const username = await this.getUsername(author)
+        this.$set(this.releaseLists[i], 'username', username)
+      })
+    },
     createParagraphOnlyReviews () {
       const paragraphOnlyReviews = []
+      if (!this.reviews) {
+        // reviews may not be defined if the page is accessed after vue has already been mounted
+        this.onPageLoad()
+        return false
+      }
       this.reviews.forEach((review) => {
         if (review.author !== this.user.id) {
           const body = review.body // array of 'blocks'
@@ -950,6 +1043,7 @@ export default {
       const newListMessage = this.checkNewListData()
       this.showCreateListModal = !newListMessage[1]
       if (newListMessage[1]) {
+        this.newList.author = this.user.id
         const users = this.$fire.firestore.collection('users')
         const userLists = users.doc(this.user.id).collection('lists')
         const listID = this.newList.name.toLowerCase().replaceAll(' ', '-')
@@ -980,22 +1074,50 @@ export default {
       const listIndex = this.userListNames.indexOf(this.listItemToAdd.selectedList)
       // get list data
       const list = this.userLists[listIndex]
-      // add release to list
-      list.releases[this.release.id] = {
-        id: this.release.id,
-        description: this.listItemToAdd.description
+      // check if release is already in database
+      if (list.releases.some(release => release.id === this.release.id)) {
+        this.$store.dispatch('interface/displayBar', { message: '✋ Release is already in list! Add anyway?', promptOptions: ['Add duplicate', 'Update', 'Do not add'], temporary: false })
+      } else {
+        // add release to list
+        list.releases.push({
+          id: this.release.id,
+          description: this.listItemToAdd.description,
+          data: this.releases
+        })
+        // add updated list to database
+        const users = this.$fire.firestore.collection('users')
+        const userLists = users.doc(this.user.id).collection('lists')
+        userLists.doc(list.id).set(list)
+        // add reference on release page that it is included in this list, so other users may view it
+        const releases = this.$fire.firestore.collection('releases')
+        const release = releases.doc(this.release.id)
+        let lists = this.release.lists
+        if (!lists) {
+        // if there weren't any existing lists
+          lists = []
+        }
+        lists.push('/users/' + this.user.id + '/lists/' + list.id)
+        release.update({
+          lists
+        })
+        // notify user
+        let message
+        if (this.release.title.length <= 30) {
+          message = `✨ '${this.release.title}' was added to your list '${list.name}'!`
+        } else {
+          message = `✨ This release was added to your list '${list.name}'!`
+        }
+        this.$store.dispatch('interface/displayBar', { message, temporary: true })
       }
-      // add to database
+    },
+    updateReleasePositionInList () {
+      const list = this.userLists[this.listItemToAdd.selectedListIndex]
+      list.releases = this.selectedListReleasesOrder
+      // add updated list to database
       const users = this.$fire.firestore.collection('users')
       const userLists = users.doc(this.user.id).collection('lists')
       userLists.doc(list.id).set(list)
-      let message
-      if (this.release.title.length <= 30) {
-        message = `✨ '${this.release.title}' was added to your list '${list.name}'!`
-      } else {
-        message = `✨ This release was added to your list '${list.name}'!`
-      }
-      this.$store.dispatch('interface/displayBar', { message, temporary: true })
+      this.$store.dispatch('interface/displayBar', { message: `✨ Your list '${this.listItemToAdd.selectedList}' has been updated!`, temporary: true })
     }
   }
 }
@@ -1159,5 +1281,10 @@ export default {
 }
 .secondary-list-buttons {
   margin-bottom: 16px;
+}
+.list-information {
+  margin-top: auto;
+  margin-left: 16px;
+  margin-bottom: auto;
 }
 </style>

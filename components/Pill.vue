@@ -1,12 +1,16 @@
 :<template>
-  <div class="pill">
+  <div class="pill" :class="{alt, smaller}">
     <slot />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Pill'
+  name: 'Pill',
+  props: {
+    alt: Boolean,
+    smaller: Boolean
+  }
 }
 </script>
 
@@ -15,5 +19,11 @@ export default {
     background: $lighter-purple;
     border-radius: 10px;
     padding: 32px;
+    &.alt {
+      background: $lightest-purple;
+    }
+    &.smaller {
+      padding: 16px;
+    }
   }
 </style>

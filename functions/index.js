@@ -147,25 +147,25 @@ exports.search = functions.https.onRequest((req, res) => {
         })
     }
 
-    const processArtistReleases = async (releases, i) => {
-      // get album artworks
-      for (const releasegroup of releases) {
-        searchResults[i].releases[releasegroup.id] = {}
-        const releaseTitle = releasegroup.title
-        const imageURL = await getArtistReleaseImageURL(releasegroup)
-        searchResults[i].releases[releasegroup.id].image = imageURL
-        searchResults[i].releases[releasegroup.id].title = releaseTitle
-      }
-    }
+    // const processArtistReleases = async (releases, i) => {
+    //   // get album artworks
+    //   for (const releasegroup of releases) {
+    //     searchResults[i].releases[releasegroup.id] = {}
+    //     const releaseTitle = releasegroup.title
+    //     const imageURL = await getArtistReleaseImageURL(releasegroup)
+    //     searchResults[i].releases[releasegroup.id].image = imageURL
+    //     searchResults[i].releases[releasegroup.id].title = releaseTitle
+    //   }
+    // }
 
-    const saveSearchResultToDatabase = (i) => {
-      const id = searchResults[i].id
-      admin.firestore().collection('artists')
-        .doc(id)
-        .set(
-          searchResults[i]
-        )
-    }
+    // const saveSearchResultToDatabase = (i) => {
+    //   const id = searchResults[i].id
+    //   admin.firestore().collection('artists')
+    //     .doc(id)
+    //     .set(
+    //       searchResults[i]
+    //     )
+    // }
 
     const processArtists = async (data) => {
       const artists = data.artists
@@ -344,26 +344,51 @@ exports.getReleaseData = functions.https.onRequest((req, res) => {
       return [day, month, year, formattedDate]
     }
 
-    axios
-      .get(
-        'https://musicbrainz.org/ws/2/release-group/?query=mbid:"' + id + '"&fmt=json',
-        headers
-      )
-      .then(async (queryResult) => {
-        const release = queryResult.data['release-groups'][0]
-        const releaseInfo = await getReleaseInfo()
-        const artwork = await getReleaseArtwork(release)
-        release.image = artwork[0]
-        release.imageHQ = artwork[1]
-        release.genres = releaseInfo.genres
-        const firstReleaseDate = releaseInfo['first-release-date']
-        const formattedReleaseDate = formatReleaseDate(firstReleaseDate)
-        release.firstReleaseDate = formattedReleaseDate
+    const getReleaseFromDatabase = () => {
+      return admin.firestore().collection('releases').doc(id)
+        .get()
+        .then((res) => {
+          return res.data()
+        })
+        .catch(() => {
+          return false
+        })
+    }
+
+    const getReleaseFromMusicbrainz = () => {
+      axios
+        .get(
+          'https://musicbrainz.org/ws/2/release-group/?query=mbid:"' + id + '"&fmt=json',
+          headers
+        )
+        .then(async (queryResult) => {
+          const release = queryResult.data['release-groups'][0]
+          const releaseInfo = await getReleaseInfo()
+          const artwork = await getReleaseArtwork(release)
+          release.image = artwork[0]
+          release.imageHQ = artwork[1]
+          release.genres = releaseInfo.genres
+          const firstReleaseDate = releaseInfo['first-release-date']
+          const formattedReleaseDate = formatReleaseDate(firstReleaseDate)
+          release.firstReleaseDate = formattedReleaseDate
+          release.lists = []
+          res.status(200).send(release)
+        })
+        .catch((err) => {
+          res.status(500).send(err)
+        })
+    }
+
+    const getRelease = async () => {
+      const release = await getReleaseFromDatabase()
+      if (release) {
         res.status(200).send(release)
-      })
-      .catch((err) => {
-        res.status(500).send(err)
-      })
+      } else {
+        getReleaseFromMusicbrainz()
+      }
+    }
+
+    getRelease()
   })
 })
 admin.initializeApp({
